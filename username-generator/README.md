@@ -5,7 +5,7 @@ A powerful and customizable username generator with multiple themes, configurabl
 ## 🚀 Features
 
 ### 🎯 Username Generation API
-- **Multiple themes**: Gaming, Professional, Fun, Nature, Tech, and Space
+- **Multiple themes**: Gaming, Professional, Fun, Nature, Tech, Space, and DevOps
 - **Word combination approach**: Combines adjectives and nouns for meaningful usernames
 - **Customizable length**: Min/max character constraints
 - **Multiple options**: Numbers, symbols, capitalization control
@@ -41,6 +41,7 @@ A powerful and customizable username generator with multiple themes, configurabl
 | **Nature** | Nature-inspired with organic feel | Wild, Forest, Eagle, Mountain |
 | **Tech** | Technology and programming themed | Digital, Cyber, Algorithm, Cloud |
 | **Space** | Cosmic and space exploration themed | Stellar, Galaxy, Nebula, Voyager |
+| **DevOps** | Linux commands, cybersecurity, DevOps tools | Secure, Encrypted, Docker, Kubectl, Nmap, Ansible |
 
 ## 🔧 Usage
 
@@ -189,6 +190,13 @@ curl -d "theme=fun&include_symbols=true&max_length=15" http://your-domain.com/us
 ```bash
 # Technology themed with custom words
 curl -d "theme=tech&custom_words=AI,Robot,Code&count=15" http://your-domain.com/username-generator/api/
+```
+
+### DevOps & Cybersecurity
+```bash
+# DevOps themed usernames for tech professionals
+curl -d "theme=devops&include_numbers=true&count=8" http://your-domain.com/username-generator/api/
+# Example: ["SecureDocker123", "EncryptedKubectl", "MonitoredNginx7"]
 ```
 
 ## 📁 File Structure
