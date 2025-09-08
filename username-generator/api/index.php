@@ -28,7 +28,7 @@ class UsernameGenerator {
         ],
         'nature' => [
             'adjectives' => ['Wild', 'Forest', 'Mountain', 'Ocean', 'River', 'Sky', 'Earth', 'Green', 'Blue', 'Golden', 'Silver', 'Crystal', 'Pure', 'Fresh', 'Natural', 'Organic', 'Living', 'Growing', 'Flowing', 'Shining', 'Glowing', 'Peaceful', 'Calm', 'Serene', 'Tranquil', 'Gentle', 'Soft', 'Warm', 'Cool', 'Misty'],
-            'nouns' => ['Tree', 'Leaf', 'Branch', 'Root', 'Flower', 'Rose', 'Lily', 'Oak', 'Pine', 'Willow', 'Eagle', 'Falcon', 'Deer', 'Wolf', 'Bear', 'Lion', 'Tiger', 'Whale', 'Dolphin', 'Shark', 'Stone', 'Rock', 'Mountain', 'Valley', 'River', 'Lake', 'Ocean', 'Beach', 'Island', 'Forest','Snake','Cobra','Viper','Cactus','Desert','Jungle','Savanna','Tundra','Volcano','Geyser','Waterfall','Cave','Cliff','Hill','Meadow','Prairie','Swamp','Marsh','Reef']
+            'nouns' => ['Tree', 'Leaf', 'Branch', 'Root', 'Flower', 'Rose', 'Lily', 'Oak', 'Pine', 'Willow', 'Eagle', 'Falcon', 'Deer', 'Wolf', 'Bear', 'Lion', 'Tiger', 'Whale', 'Dolphin', 'Shark', 'Stone', 'Rock', 'Mountain', 'Valley', 'River', 'Lake', 'Ocean', 'Beach', 'Island', 'Forest', 'Snake', 'Cobra', 'Viper', 'Cactus', 'Desert', 'Jungle', 'Savanna', 'Tundra', 'Volcano', 'Geyser', 'Waterfall', 'Cave', 'Cliff', 'Hill', 'Meadow', 'Prairie', 'Swamp', 'Marsh', 'Reef']
         ],
         'tech' => [
             'adjectives' => ['Digital', 'Virtual', 'Cyber', 'Tech', 'Smart', 'AI', 'Quantum', 'Nano', 'Micro', 'Macro', 'Meta', 'Neo', 'Next', 'Future', 'Advanced', 'Modern', 'High', 'Fast', 'Quick', 'Instant', 'Real', 'Live', 'Active', 'Dynamic', 'Interactive', 'Responsive', 'Adaptive', 'Intelligent', 'Automated', 'Optimized'],
