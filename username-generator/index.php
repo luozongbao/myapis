@@ -89,7 +89,7 @@
 
         .checkbox-group {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(165px, 1fr));
             gap: 15px;
             margin-top: 10px;
         }
@@ -368,6 +368,10 @@
                             <input type="checkbox" id="useAllAdjectives" name="use_all_adjectives">
                             <label for="useAllAdjectives">Use All Adjectives</label>
                         </div>
+                        <div class="checkbox-item" data-checkbox="useGeneralAdjectives">
+                            <input type="checkbox" id="useGeneralAdjectives" name="use_general_adjectives">
+                            <label for="useGeneralAdjectives">General Adjectives</label>
+                        </div>
                         <div class="checkbox-item" data-checkbox="capitalize">
                             <input type="checkbox" id="capitalize" name="capitalize" checked>
                             <label for="capitalize">Capitalize Words</label>
@@ -378,7 +382,8 @@
                         </div>
                     </div>
                     <div class="option-description">
-                        💡 <strong>Use All Adjectives:</strong> Combines adjectives from all themes with your selected theme's nouns for creative combinations like "GalacticPuppy" or "CyberBunny"
+                        💡 <strong>Use All Adjectives:</strong> Combines adjectives from all themes with your selected theme's nouns for creative combinations like "GalacticPuppy" or "CyberBunny"<br>
+                        🎨 <strong>General Adjectives:</strong> Adds colors, shapes, sizes, and common descriptive words like "RedWarrior", "BigData", or "SmoothAlgorithm"
                     </div>
                 </div>
 
@@ -503,7 +508,7 @@
             
             // Convert form data to options object
             for (let [key, value] of formData.entries()) {
-                if (['include_numbers', 'include_symbols', 'use_all_adjectives', 'capitalize', 'avoid_repetition'].includes(key)) {
+                if (['include_numbers', 'include_symbols', 'use_all_adjectives', 'use_general_adjectives', 'capitalize', 'avoid_repetition'].includes(key)) {
                     options[key] = true; // Checkbox is checked if it exists in formData
                 } else {
                     options[key] = value;
@@ -511,7 +516,7 @@
             }
 
             // Set unchecked checkboxes to false
-            ['include_numbers', 'include_symbols', 'use_all_adjectives', 'capitalize', 'avoid_repetition'].forEach(key => {
+            ['include_numbers', 'include_symbols', 'use_all_adjectives', 'use_general_adjectives', 'capitalize', 'avoid_repetition'].forEach(key => {
                 if (!(key in options)) {
                     options[key] = false;
                 }

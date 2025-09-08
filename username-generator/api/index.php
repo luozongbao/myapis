@@ -40,6 +40,22 @@ class UsernameGenerator {
         ]
     ];
 
+    // General adjectives (colors, shapes, sizes, etc.)
+    private $general_adjectives = [
+        // Colors
+        'Red', 'Blue', 'Green', 'Yellow', 'Purple', 'Orange', 'Pink', 'Black', 'White', 'Gray', 'Brown', 'Silver', 'Gold', 'Violet', 'Crimson', 'Azure', 'Emerald', 'Amber', 'Ruby', 'Sapphire',
+        // Shapes & Sizes
+        'Round', 'Square', 'Big', 'Small', 'Tiny', 'Huge', 'Giant', 'Mini', 'Mega', 'Micro', 'Large', 'Little', 'Tall', 'Short', 'Wide', 'Thin', 'Thick', 'Long', 'Curved', 'Straight',
+        // Textures & Materials
+        'Smooth', 'Rough', 'Soft', 'Hard', 'Fluffy', 'Silky', 'Fuzzy', 'Glossy', 'Matte', 'Shiny', 'Metallic', 'Wooden', 'Stone', 'Crystal', 'Glass', 'Steel', 'Iron', 'Velvet', 'Marble', 'Diamond',
+        // Temperatures & Weather
+        'Hot', 'Cold', 'Warm', 'Cool', 'Frozen', 'Burning', 'Icy', 'Fiery', 'Sunny', 'Cloudy', 'Stormy', 'Misty', 'Foggy', 'Windy', 'Rainy', 'Snowy', 'Frosty', 'Blazing', 'Chilly', 'Tropical',
+        // Time & Speed
+        'Fast', 'Slow', 'Quick', 'Rapid', 'Swift', 'Speedy', 'Instant', 'Ancient', 'Modern', 'Old', 'New', 'Young', 'Fresh', 'Vintage', 'Classic', 'Retro', 'Future', 'Past', 'Present', 'Eternal',
+        // Qualities & States
+        'Perfect', 'Pure', 'Simple', 'Complex', 'Easy', 'Tough', 'Gentle', 'Bold', 'Calm', 'Active', 'Quiet', 'Loud', 'Bright', 'Dark', 'Light', 'Heavy', 'Empty', 'Full', 'Open', 'Closed'
+    ];
+
     // Numbers and symbols for additional options
     private $numbers = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '69', '99', '123', '777', '2024', '2025'];
     private $symbols = ['_', '-', '.', 'X', 'Z'];
@@ -57,6 +73,7 @@ class UsernameGenerator {
             'capitalize' => true,
             'avoid_repetition' => true,
             'use_all_adjectives' => false,
+            'use_general_adjectives' => false,
             'custom_words' => []
         ];
 
@@ -82,6 +99,13 @@ class UsernameGenerator {
             // Use both adjectives and nouns from selected theme
             $adjectives = $theme_words['adjectives'];
             $nouns = $theme_words['nouns'];
+        }
+
+        // Add general adjectives if requested
+        if ($options['use_general_adjectives']) {
+            $adjectives = array_merge($adjectives, $this->general_adjectives);
+            // Remove duplicates
+            $adjectives = array_unique($adjectives);
         }
 
         // Add custom words if provided
@@ -196,6 +220,7 @@ $options['include_symbols'] = filter_var($input['include_symbols'] ?? $_GET['inc
 $options['capitalize'] = filter_var($input['capitalize'] ?? $_GET['capitalize'] ?? true, FILTER_VALIDATE_BOOLEAN);
 $options['avoid_repetition'] = filter_var($input['avoid_repetition'] ?? $_GET['avoid_repetition'] ?? true, FILTER_VALIDATE_BOOLEAN);
 $options['use_all_adjectives'] = filter_var($input['use_all_adjectives'] ?? $_GET['use_all_adjectives'] ?? false, FILTER_VALIDATE_BOOLEAN);
+$options['use_general_adjectives'] = filter_var($input['use_general_adjectives'] ?? $_GET['use_general_adjectives'] ?? false, FILTER_VALIDATE_BOOLEAN);
 $options['custom_words'] = $input['custom_words'] ?? $_GET['custom_words'] ?? '';
 
 // Handle special request for available themes

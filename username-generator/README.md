@@ -77,6 +77,7 @@ GET /api/?action=themes  # Get available themes
 | `capitalize` | boolean | `true` | Capitalize words |
 | `avoid_repetition` | boolean | `true` | Avoid duplicate word combinations |
 | `use_all_adjectives` | boolean | `false` | Use adjectives from all themes with selected theme's nouns |
+| `use_general_adjectives` | boolean | `false` | Add general adjectives (colors, shapes, sizes, etc.) |
 | `custom_words` | string | `""` | Comma-separated custom words |
 
 #### Example Requests
@@ -97,6 +98,18 @@ curl -X POST http://your-domain.com/username-generator/api/ \
     "count": 5,
     "include_numbers": true,
     "custom_words": "Dragon,Phoenix"
+  }'
+```
+
+**Generate with General Adjectives:**
+```bash
+curl -X POST http://your-domain.com/username-generator/api/ \
+  -H "Content-Type: application/json" \
+  -d '{
+    "theme": "tech",
+    "use_general_adjectives": true,
+    "count": 10,
+    "include_numbers": false
   }'
 ```
 
@@ -201,6 +214,7 @@ username-generator/
 - **Capitalization**: Controls word capitalization
 - **Repetition Avoidance**: Prevents duplicate word combinations
 - **Use All Adjectives**: 🆕 Combines adjectives from all themes with selected theme's nouns for creative cross-theme combinations
+- **General Adjectives**: 🆕 Adds 100+ general descriptive words including colors, shapes, sizes, textures, and qualities
 
 ### Creative Cross-Theme Generation
 When "Use All Adjectives" is enabled, the generator creates unique combinations by mixing adjectives from all themes with nouns from your selected theme:
@@ -216,6 +230,24 @@ When "Use All Adjectives" is enabled, the generator creates unique combinations 
 - `WildAlgorithm` (Nature + Tech)
 - `StellarCode` (Space + Tech)
 - `LegendaryAI` (Gaming + Tech)
+
+### General Adjectives Enhancement
+When "General Adjectives" is enabled, the generator adds common descriptive words to create more diverse combinations:
+
+**Color-based combinations:**
+- `RedWarrior` (Color + Gaming)
+- `BlueData` (Color + Tech)
+- `GoldPanda` (Color + Fun)
+
+**Size & Shape combinations:**
+- `BigAlgorithm` (Size + Tech)
+- `TinyDragon` (Size + Gaming)
+- `RoundStar` (Shape + Space)
+
+**Texture & Quality combinations:**
+- `SmoothCode` (Texture + Tech)
+- `ShinyKnight` (Texture + Gaming)
+- `PerfectMoon` (Quality + Space)
 
 ### Custom Words
 - Add your own words to any theme
