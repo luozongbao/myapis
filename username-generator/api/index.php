@@ -15,7 +15,7 @@ class UsernameGenerator {
     // Word lists for different themes
     private $themes = [
         'gaming' => [
-            'adjectives' => ['Epic', 'Legendary', 'Shadow', 'Dark', 'Fire', 'Ice', 'Storm', 'Lightning', 'Mystic', 'Cyber', 'Neon', 'Plasma', 'Toxic', 'Savage', 'Elite', 'Pro', 'Mega', 'Ultra', 'Super', 'Alpha', 'Beta', 'Omega', 'Prime', 'Stealth', 'Phantom', 'Ghost', 'Demon', 'Angel', 'Dragon', 'Phoenix','Burned'],
+            'adjectives' => ['Epic', 'Legendary', 'Shadow', 'Dark', 'Fire', 'Ice', 'Storm', 'Lightning', 'Mystic', 'Cyber', 'Neon', 'Plasma', 'Toxic', 'Savage', 'Elite', 'Pro', 'Mega', 'Ultra', 'Super', 'Alpha', 'Beta', 'Omega', 'Prime', 'Stealth', 'Phantom', 'Ghost', 'Demon', 'Angel', 'Dragon', 'Phoenix', 'Burned'],
             'nouns' => ['Warrior', 'Hunter', 'Assassin', 'Mage', 'Ninja', 'Samurai', 'Knight', 'Wizard', 'Ranger', 'Sniper', 'Fighter', 'Striker', 'Destroyer', 'Guardian', 'Champion', 'Hero', 'Legend', 'Master', 'Lord', 'King', 'Emperor', 'Slayer', 'Reaper', 'Beast', 'Wolf', 'Tiger', 'Eagle', 'Hawk', 'Viper', 'Scorpion','Ghost','Shadow','Blade','Arrow','Bolt','Fury','Rage','Storm','Flame','Frost','Ice','Thunder','Lightning','Venom','Toxic']
         ],
         'professional' => [
