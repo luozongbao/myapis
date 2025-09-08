@@ -1,7 +1,13 @@
 <?php
 /**
  * PromptPay QR Code Generator - Frontend
- * Uses the /api/ endpoint for QR code generation
+ * U            if ($httpCode === 200 && $data && isset($data['success']) && $data['success']) {
+                $success = true;
+                $qrCodeUrl = $data['qr_url'];
+                $payload = $data['payload'];
+            } else {
+                $error = $data['message'] ?? $data['error'] ?? 'Unknown error occurred';
+            }/api/ endpoint for QR code generation
  */
 
 $error = '';
@@ -21,7 +27,7 @@ if ($_POST) {
         // Call our API endpoint
         $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
         $host = $_SERVER['HTTP_HOST'];
-        $currentDir = dirname($_SERVER['REQUEST_URI']);
+        $currentDir = dirname($_SERVER['SCRIPT_NAME']); // Use SCRIPT_NAME instead of REQUEST_URI
         if ($currentDir === '/') $currentDir = '';
         $apiUrl = $protocol . '://' . $host . $currentDir . '/api/?format=json';
         
@@ -49,12 +55,18 @@ if ($_POST) {
         } else {
             $data = json_decode($response, true);
             
+            // Debug info (remove in production)
+            // error_log("API Response: " . $response);
+            // error_log("HTTP Code: " . $httpCode);
+            // error_log("Decoded data: " . print_r($data, true));
+            
             if ($httpCode === 200 && $data && isset($data['success']) && $data['success']) {
                 $success = true;
                 $qrCodeUrl = $data['qr_url'];
                 $payload = $data['payload'];
             } else {
-                $error = $data['message'] ?? 'Unknown error occurred';
+            // Temporary debug
+            $error = "Debug: HTTP=$httpCode, URL=$apiUrl, Response=" . substr($response, 0, 100) . "...";
             }
         }
     }

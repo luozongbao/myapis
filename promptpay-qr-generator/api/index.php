@@ -128,7 +128,7 @@ class PromptPayAPI {
         
         return "https://api.qrserver.com/v1/create-qr-code/?" . http_build_query($params);
     }
-
+    
     /**
      * Generate and save QR code using goQR.me API
      */
@@ -221,15 +221,20 @@ try {
             // Return JSON response with payload and QR URL
             header('Content-Type: application/json');
             $payload = $api->generatePayload($target, $amount ? floatval($amount) : null);
-            $qrUrl = $api->generateQrCodeUrl($target, $amount ? floatval($amount) : null, $size);
+            
+            // Generate QR code data and convert to base64 to avoid URL issues
+            $qrData = $api->generateQrCodeData($target, $amount ? floatval($amount) : null, $size);
+            $base64Image = 'data:image/png;base64,' . base64_encode($qrData);
             
             echo json_encode([
                 'success' => true,
+                'message' => 'QR code generated successfully',
                 'payload' => $payload,
-                'qr_url' => $qrUrl,
+                'qr_url' => $base64Image,
                 'target' => $target,
                 'amount' => $amount ? floatval($amount) : null,
-                'size' => $size
+                'target_type' => strlen($target) >= 15 ? 'ewallet' : (strlen($target) >= 13 ? 'tax_id' : 'phone'),
+                'qr_size' => $size
             ]);
             
         } else if ($format === 'base64') {
