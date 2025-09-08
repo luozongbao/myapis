@@ -76,6 +76,7 @@ GET /api/?action=themes  # Get available themes
 | `include_symbols` | boolean | `false` | Add symbols like _, -, . |
 | `capitalize` | boolean | `true` | Capitalize words |
 | `avoid_repetition` | boolean | `true` | Avoid duplicate word combinations |
+| `use_all_adjectives` | boolean | `false` | Use adjectives from all themes with selected theme's nouns |
 | `custom_words` | string | `""` | Comma-separated custom words |
 
 #### Example Requests
@@ -96,6 +97,18 @@ curl -X POST http://your-domain.com/username-generator/api/ \
     "count": 5,
     "include_numbers": true,
     "custom_words": "Dragon,Phoenix"
+  }'
+```
+
+**Generate Creative Cross-Theme Usernames:**
+```bash
+curl -X POST http://your-domain.com/username-generator/api/ \
+  -H "Content-Type: application/json" \
+  -d '{
+    "theme": "fun",
+    "use_all_adjectives": true,
+    "count": 10,
+    "include_numbers": false
   }'
 ```
 
@@ -187,6 +200,22 @@ username-generator/
 - **Symbols**: Adds symbols (_, -, ., X, Z)
 - **Capitalization**: Controls word capitalization
 - **Repetition Avoidance**: Prevents duplicate word combinations
+- **Use All Adjectives**: 🆕 Combines adjectives from all themes with selected theme's nouns for creative cross-theme combinations
+
+### Creative Cross-Theme Generation
+When "Use All Adjectives" is enabled, the generator creates unique combinations by mixing adjectives from all themes with nouns from your selected theme:
+
+**Examples with Fun theme + All adjectives:**
+- `GalacticPuppy` (Space + Fun)
+- `CyberBunny` (Tech + Fun)
+- `WildPanda` (Nature + Fun)
+- `EpicKitten` (Gaming + Fun)
+
+**Examples with Tech theme + All adjectives:**
+- `HappyData` (Fun + Tech)
+- `WildAlgorithm` (Nature + Tech)
+- `StellarCode` (Space + Tech)
+- `LegendaryAI` (Gaming + Tech)
 
 ### Custom Words
 - Add your own words to any theme

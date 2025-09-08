@@ -56,6 +56,7 @@ class UsernameGenerator {
             'include_symbols' => false,
             'capitalize' => true,
             'avoid_repetition' => true,
+            'use_all_adjectives' => false,
             'custom_words' => []
         ];
 
@@ -65,8 +66,23 @@ class UsernameGenerator {
 
         // Get word lists
         $theme_words = $this->themes[$options['theme']] ?? $this->themes['gaming'];
-        $adjectives = $theme_words['adjectives'];
-        $nouns = $theme_words['nouns'];
+        
+        // Handle "Use All Adjectives" option
+        if ($options['use_all_adjectives']) {
+            // Combine all adjectives from all themes
+            $adjectives = [];
+            foreach ($this->themes as $theme_data) {
+                $adjectives = array_merge($adjectives, $theme_data['adjectives']);
+            }
+            // Remove duplicates and keep only unique adjectives
+            $adjectives = array_unique($adjectives);
+            // Use nouns from selected theme only
+            $nouns = $theme_words['nouns'];
+        } else {
+            // Use both adjectives and nouns from selected theme
+            $adjectives = $theme_words['adjectives'];
+            $nouns = $theme_words['nouns'];
+        }
 
         // Add custom words if provided
         if (!empty($options['custom_words'])) {
@@ -179,6 +195,7 @@ $options['include_numbers'] = filter_var($input['include_numbers'] ?? $_GET['inc
 $options['include_symbols'] = filter_var($input['include_symbols'] ?? $_GET['include_symbols'] ?? false, FILTER_VALIDATE_BOOLEAN);
 $options['capitalize'] = filter_var($input['capitalize'] ?? $_GET['capitalize'] ?? true, FILTER_VALIDATE_BOOLEAN);
 $options['avoid_repetition'] = filter_var($input['avoid_repetition'] ?? $_GET['avoid_repetition'] ?? true, FILTER_VALIDATE_BOOLEAN);
+$options['use_all_adjectives'] = filter_var($input['use_all_adjectives'] ?? $_GET['use_all_adjectives'] ?? false, FILTER_VALIDATE_BOOLEAN);
 $options['custom_words'] = $input['custom_words'] ?? $_GET['custom_words'] ?? '';
 
 // Handle special request for available themes
