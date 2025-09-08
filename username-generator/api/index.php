@@ -16,7 +16,7 @@ class UsernameGenerator {
     private $themes = [
         'gaming' => [
             'adjectives' => ['Epic', 'Legendary', 'Shadow', 'Dark', 'Fire', 'Ice', 'Storm', 'Lightning', 'Mystic', 'Cyber', 'Neon', 'Plasma', 'Toxic', 'Savage', 'Elite', 'Pro', 'Mega', 'Ultra', 'Super', 'Alpha', 'Beta', 'Omega', 'Prime', 'Stealth', 'Phantom', 'Ghost', 'Demon', 'Angel', 'Dragon', 'Phoenix', 'Burned'],
-            'nouns' => ['Warrior', 'Hunter', 'Assassin', 'Mage', 'Ninja', 'Samurai', 'Knight', 'Wizard', 'Ranger', 'Sniper', 'Fighter', 'Striker', 'Destroyer', 'Guardian', 'Champion', 'Hero', 'Legend', 'Master', 'Lord', 'King', 'Emperor', 'Slayer', 'Reaper', 'Beast', 'Wolf', 'Tiger', 'Eagle', 'Hawk', 'Viper', 'Scorpion','Ghost','Shadow','Blade','Arrow','Bolt','Fury','Rage','Storm','Flame','Frost','Ice','Thunder','Lightning','Venom','Toxic']
+            'nouns' => ['Warrior', 'Hunter', 'Assassin', 'Mage', 'Ninja', 'Samurai', 'Knight', 'Wizard', 'Ranger', 'Sniper', 'Fighter', 'Striker', 'Destroyer', 'Guardian', 'Champion', 'Hero', 'Legend', 'Master', 'Lord', 'King', 'Emperor', 'Slayer', 'Reaper', 'Beast', 'Wolf', 'Tiger', 'Eagle', 'Hawk', 'Viper', 'Scorpion', 'Ghost', 'Shadow', 'Blade', 'Arrow', 'Bolt', 'Fury', 'Rage', 'Storm', 'Flame', 'Frost', 'Ice', 'Thunder', 'Lightning', 'Venom', 'Toxic']
         ],
         'professional' => [
             'adjectives' => ['General', 'Smart', 'Wise', 'Bright', 'Sharp', 'Quick', 'Swift', 'Clever', 'Creative', 'Innovative', 'Dynamic', 'Strategic', 'Efficient', 'Productive', 'Reliable', 'Focused', 'Skilled', 'Expert', 'Advanced', 'Premium', 'Quality', 'Modern', 'Fresh', 'Clean', 'Clear', 'Solid', 'Strong', 'Stable', 'Secure', 'Professional', 'Corporate'],
