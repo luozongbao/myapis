@@ -95,6 +95,7 @@ function calculateDailyIntake($weight, $height, $age, $gender, $activity, $goal)
     $targetCalories = $maintenanceCalories + $adjustment;
     
     // Calculate macronutrient breakdown (basic recommendation)
+    // Protein recommendation of 1.6g per kg body weight is based on research and guidelines for optimal intake for active adults (e.g., International Society of Sports Nutrition, 2017; higher than RDA for muscle maintenance and growth).
     $protein = round($weight * 1.6, 0); // 1.6g per kg body weight
     $proteinCals = $protein * 4;
     
