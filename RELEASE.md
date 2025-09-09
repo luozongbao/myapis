@@ -1,13 +1,48 @@
 # 📋 MyAPIs Release Notes
 
-## Current Release: Version 1.2.0
+## Current Release: Version 1.3.0
 
 **Release Date**: September 9, 2025  
 **Status**: Stable Release  
 
 ---
 
-## � Version 1.2.0 - Water Intake Calculator Addition
+## 📚 Version 1.3.0 - API Documentation Enhancement
+*Released: September 9, 2025*
+
+### 🌟 New Features
+
+#### 📖 Comprehensive API Documentation
+- **Interactive API Specs**: Added `spec.php` files for all tools with comprehensive documentation
+- **Enhanced Navigation**: Added navigation links to API documentation from all web interfaces
+- **Consistent Design**: Beautiful, responsive documentation pages with consistent styling
+- **Complete Examples**: Detailed request/response examples for all API endpoints
+- **Error Documentation**: Comprehensive error codes and troubleshooting guides
+- **Integration Examples**: Code examples in multiple programming languages
+
+#### 🔗 Improved User Experience
+- **Main Interface Enhancement**: Added "API Docs" buttons to all tool cards
+- **Tool Navigation**: Added breadcrumb navigation and quick links to API resources
+- **Updated Project Structure**: Documentation reflects new file organization
+- **Enhanced README**: Updated main README with documentation links and features
+
+### 📁 New Files Added
+- `health-calculator/spec.php` - Health Calculator API Documentation
+- `password-generator/spec.php` - Password Generator API Documentation  
+- `username-generator/spec.php` - Username Generator API Documentation
+- `promptpay-qr-generator/spec.php` - PromptPay QR Generator API Documentation
+- `fortune-teller/spec.php` - Fortune Teller API Documentation
+- `randomizer/spec.php` - Random Generator API Documentation
+
+### 🔄 Enhancements
+- **Main README Updated**: Added documentation column to tools table
+- **Interface Improvements**: All tools now have consistent navigation
+- **Project Structure**: Updated documentation to reflect spec.php additions
+- **User Flow**: Seamless navigation between tools, APIs, and documentation
+
+---
+
+## 💧 Version 1.2.0 - Water Intake Calculator Addition
 *Released: September 9, 2025*
 
 ### 🌟 New Features
