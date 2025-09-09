@@ -499,8 +499,8 @@
                     <input type="number" id="card-count" value="1" min="1" max="52">
                 </div>
                 <div class="checkbox-group">
-                    <input type="checkbox" id="include-jokers">
-                    <label for="include-jokers">Include Jokers</label>
+                    <input type="checkbox" id="include-jokers" aria-describedby="include-jokers-label">
+                    <label for="include-jokers" id="include-jokers-label">Include Jokers</label>
                 </div>
             </div>
 
