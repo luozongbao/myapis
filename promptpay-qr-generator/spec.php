@@ -669,7 +669,7 @@ fetch('https://api.lorwongam.com/promptpay-qr-generator/api/', {
                 <h3>🎯 Ready to Try?</h3>
                 <p>Test the PromptPay QR Generator API with our interactive web interface or start integrating it into your application.</p>
                 <a href="../" class="btn">Try Web Interface</a>
-                <a href="../api/" class="btn btn-secondary">Test API Endpoint</a>
+                <a href="api/" class="btn btn-secondary">Test API Endpoint</a>
             </div>
         </div>
     </div>

@@ -641,7 +641,7 @@ curl -X POST "https://api.lorwongam.com/password-generator/api/" \
                 <h3>🎯 Ready to Try?</h3>
                 <p>Test the Password Generator API with our interactive web interface or start integrating it into your application.</p>
                 <a href="../" class="btn">Try Web Interface</a>
-                <a href="../api/" class="btn btn-secondary">Test API Endpoint</a>
+                <a href="api/" class="btn btn-secondary">Test API Endpoint</a>
             </div>
         </div>
     </div>
