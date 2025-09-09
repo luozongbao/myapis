@@ -377,6 +377,23 @@
                     <a href="fortune-teller/api/" class="btn btn-secondary">API</a>
                 </div>
             </div>
+
+            <!-- Random Generator -->
+            <div class="tool-card">
+                <div class="tool-icon">🎲</div>
+                <h3 class="tool-title">Random Generator</h3>
+                <p class="tool-description">Generate random numbers, roll dice, flip coins, and draw cards with beautiful animations</p>
+                <ul class="tool-features">
+                    <li>Number ranges & dice rolling</li>
+                    <li>Coin flips & card drawing</li>
+                    <li>Animated visual results</li>
+                    <li>Cryptographically secure</li>
+                </ul>
+                <div class="tool-actions">
+                    <a href="randomizer/" class="btn btn-primary">Try Tool</a>
+                    <a href="randomizer/api/" class="btn btn-secondary">API</a>
+                </div>
+            </div>
         </div>
 
         <!-- Statistics -->
@@ -384,11 +401,11 @@
             <h2 class="stats-title">📊 Platform Statistics</h2>
             <div class="stats-grid">
                 <div class="stat-item">
-                    <div class="stat-number">5</div>
+                    <div class="stat-number">6</div>
                     <div class="stat-label">Active Tools</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-number">10</div>
+                    <div class="stat-number">12</div>
                     <div class="stat-label">API Endpoints</div>
                 </div>
                 <div class="stat-item">
