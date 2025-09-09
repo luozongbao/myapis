@@ -4,7 +4,6 @@
 
 **Release Date**: September 9, 2025  
 **Status**: Stable Release  
-**Branch**: `dev`
 
 ---
 

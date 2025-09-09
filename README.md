@@ -188,7 +188,7 @@ This project is open source and available under the [MIT License](LICENSE).
 ## 🔗 Links
 
 - **Repository**: [GitHub](https://github.com/luozongbao/myapis)
-- **Live Demo**: [MyAPIs Platform](https://yourserver.com)
+- **Live Demo**: [MyAPIs Platform](https://api.lorwongam.com)
 - **Documentation**: Each tool includes comprehensive README files
 - **Issues**: [Report bugs or request features](https://github.com/luozongbao/myapis/issues)
 
