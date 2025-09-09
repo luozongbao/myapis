@@ -309,6 +309,7 @@
                 <div class="tool-actions">
                     <a href="health-calculator/" class="btn btn-primary">Try Tool</a>
                     <a href="health-calculator/api/" class="btn btn-secondary">API</a>
+                    <a href="health-calculator/spec.php" class="btn btn-secondary">API Docs</a>
                 </div>
             </div>
 
@@ -326,6 +327,7 @@
                 <div class="tool-actions">
                     <a href="password-generator/" class="btn btn-primary">Try Tool</a>
                     <a href="password-generator/api/" class="btn btn-secondary">API</a>
+                    <a href="password-generator/spec.php" class="btn btn-secondary">API Docs</a>
                 </div>
             </div>
 
@@ -343,6 +345,7 @@
                 <div class="tool-actions">
                     <a href="username-generator/" class="btn btn-primary">Try Tool</a>
                     <a href="username-generator/api/" class="btn btn-secondary">API</a>
+                    <a href="username-generator/spec.php" class="btn btn-secondary">API Docs</a>
                 </div>
             </div>
 
@@ -360,6 +363,7 @@
                 <div class="tool-actions">
                     <a href="promptpay-qr-generator/" class="btn btn-primary">Try Tool</a>
                     <a href="promptpay-qr-generator/api/" class="btn btn-secondary">API</a>
+                    <a href="promptpay-qr-generator/spec.php" class="btn btn-secondary">API Docs</a>
                 </div>
             </div>
 
@@ -377,6 +381,7 @@
                 <div class="tool-actions">
                     <a href="fortune-teller/" class="btn btn-primary">Try Tool</a>
                     <a href="fortune-teller/api/" class="btn btn-secondary">API</a>
+                    <a href="fortune-teller/spec.php" class="btn btn-secondary">API Docs</a>
                 </div>
             </div>
 
@@ -394,6 +399,7 @@
                 <div class="tool-actions">
                     <a href="randomizer/" class="btn btn-primary">Try Tool</a>
                     <a href="randomizer/api/" class="btn btn-secondary">API</a>
+                    <a href="randomizer/spec.php" class="btn btn-secondary">API Docs</a>
                 </div>
             </div>
         </div>
@@ -407,7 +413,7 @@
                     <div class="stat-label">Active Tools</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-number">12</div>
+                    <div class="stat-number">18</div>
                     <div class="stat-label">API Endpoints</div>
                 </div>
                 <div class="stat-item">
