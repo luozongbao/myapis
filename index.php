@@ -293,20 +293,22 @@
 
         <!-- Tools Grid -->
         <div class="tools-grid">
-            <!-- BMI Calculator -->
+            <!-- Health Calculator -->
             <div class="tool-card">
-                <div class="tool-icon">⚖️</div>
-                <h3 class="tool-title">BMI Calculator</h3>
-                <p class="tool-description">Calculate Body Mass Index with WHO standard categories and health recommendations</p>
+                <div class="tool-icon">🏥</div>
+                <h3 class="tool-title">Health Calculator</h3>
+                <p class="tool-description">Calculate BMI, BMR, Daily Intake, and Water Intake with personalized health recommendations</p>
                 <ul class="tool-features">
-                    <li>WHO standard BMI categories</li>
+                    <li>BMI, BMR, Daily Intake & Water calculators</li>
                     <li>Metric and Imperial units</li>
-                    <li>Health recommendations</li>
+                    <li>Activity level adjustments</li>
+                    <li>Goal-based recommendations</li>
+                    <li>Climate & health condition factors</li>
                     <li>REST API endpoint</li>
                 </ul>
                 <div class="tool-actions">
-                    <a href="bmi-calculator/" class="btn btn-primary">Try Tool</a>
-                    <a href="bmi-calculator/api/" class="btn btn-secondary">API</a>
+                    <a href="health-calculator/" class="btn btn-primary">Try Tool</a>
+                    <a href="health-calculator/api/" class="btn btn-secondary">API</a>
                 </div>
             </div>
 
