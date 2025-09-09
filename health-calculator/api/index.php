@@ -130,6 +130,7 @@ function getIntakeAdvice($goal, $calories) {
 // Water Intake Calculator Functions
 function calculateWaterIntake($weight, $age, $gender, $activity, $climate, $healthCondition) {
     // Base water intake: 35ml per kg of body weight
+    // Reference: European Food Safety Authority (EFSA), Scientific Opinion on Dietary Reference Values for water, EFSA Journal 2010;8(3):1459. https://efsa.onlinelibrary.wiley.com/doi/10.2903/j.efsa.2010.1459
     $baseIntake = $weight * 35;
     
     // Age adjustments
