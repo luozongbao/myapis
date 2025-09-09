@@ -710,14 +710,14 @@
         // Input validation
         document.getElementById('min-number').addEventListener('change', function() {
             const max = document.getElementById('max-number');
-            if (parseInt(this.value) > parseInt(max.value)) {
+            if (parseInt(this.value, 10) > parseInt(max.value, 10)) {
                 max.value = this.value;
             }
         });
 
         document.getElementById('max-number').addEventListener('change', function() {
             const min = document.getElementById('min-number');
-            if (parseInt(this.value) < parseInt(min.value)) {
+            if (parseInt(this.value, 10) < parseInt(min.value, 10)) {
                 min.value = this.value;
             }
         });
