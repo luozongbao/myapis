@@ -127,8 +127,9 @@ class RandomGenerator {
         
         $count = (int)$count;
         
-        if ($count < 1 || $count > 52) {
-            throw new Exception('Card count must be between 1 and 52');
+        $maxCount = $withJokers ? 54 : 52;
+        if ($count < 1 || $count > $maxCount) {
+            throw new Exception('Card count must be between 1 and ' . $maxCount);
         }
         
         // Build deck
