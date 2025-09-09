@@ -218,7 +218,11 @@ try {
     
     // Get request method and data
     $method = $_SERVER['REQUEST_METHOD'];
-    $input = json_decode(file_get_contents('php://input'), true);
+    $rawInput = file_get_contents('php://input');
+    if ($rawInput === false) {
+        throw new Exception('Failed to read input stream');
+    }
+    $input = json_decode($rawInput, true);
     
     // Handle GET and POST requests
     if ($method === 'GET') {
