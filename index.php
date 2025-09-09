@@ -341,7 +341,7 @@
             <div class="tool-card">
                 <div class="tool-icon">👤</div>
                 <h3 class="tool-title">Username Generator</h3>
-                <p class="tool-description">Creative username generator featuring 6 themed categories with intelligent word combinations, perfect for gaming, social media, and professional platforms with guaranteed uniqueness</p>
+                <p class="tool-description">Creative username generator featuring 7 themed categories with intelligent word combinations, perfect for gaming, social media, and professional platforms with guaranteed uniqueness</p>
                 <ul class="tool-features">
                     <li>7 themed categories (Nature, Tech, Space, etc.)</li>
                     <li>Cross-theme intelligent combinations</li>
