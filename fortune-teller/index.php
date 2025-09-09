@@ -223,6 +223,19 @@
 </head>
 <body>
     <div class="container">
+        <!-- Navigation -->
+        <div style="background: #f8f9fa; padding: 15px; border-radius: 10px 10px 0 0; border-bottom: 1px solid #e9ecef;">
+            <div style="display: flex; align-items: center; gap: 10px; font-size: 0.9em; color: #666; flex-wrap: wrap;">
+                <a href="../" style="color: #667eea; text-decoration: none;">← Back to Main</a>
+                <span>/</span>
+                <span>Fortune Teller</span>
+                <div style="margin-left: auto; display: flex; gap: 10px; flex-wrap: wrap;">
+                    <a href="api/" style="color: #667eea; text-decoration: none; padding: 6px 12px; background: white; border-radius: 5px; border: 1px solid #ddd;">🔗 API</a>
+                    <a href="spec.php" style="color: #667eea; text-decoration: none; padding: 6px 12px; background: white; border-radius: 5px; border: 1px solid #ddd;">📚 API Docs</a>
+                </div>
+            </div>
+        </div>
+        
         <div class="header">
             <h1>🔮 ดูดวงออนไลน์</h1>
             <p>คำพยากรณ์ 52 บท ครอบคลุมทุกเรื่องในชีวิต</p>

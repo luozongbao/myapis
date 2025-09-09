@@ -6,20 +6,21 @@ A comprehensive collection of developer tools and APIs designed to streamline yo
 
 ### 📊 Available Tools
 
-| Tool | Description | Web Interface | API |
-|------|-------------|---------------|-----|
-| 🏥 **Health Calculator** | Calculate BMI, BMR, Daily Intake, and Water Intake with health recommendations | [Try Tool](health-calculator/) | [API Docs](health-calculator/api/) |
-| 🔐 **Password Generator** | Generate cryptographically secure passwords | [Try Tool](password-generator/) | [API Docs](password-generator/api/) |
-| 👤 **Username Generator** | Create unique usernames using word combinations | [Try Tool](username-generator/) | [API Docs](username-generator/api/) |
-| 💳 **PromptPay QR Generator** | Generate EMV-compliant PromptPay QR codes | [Try Tool](promptpay-qr-generator/) | [API Docs](promptpay-qr-generator/api/) |
-| 🔮 **Fortune Teller** | Get multilingual fortune predictions | [Try Tool](fortune-teller/) | [API Docs](fortune-teller/api/) |
-| 🎲 **Random Generator** | Generate random numbers, dice, coins, and cards | [Try Tool](randomizer/) | [API Docs](randomizer/api/) |
+| Tool | Description | Web Interface | API | Documentation |
+|------|-------------|---------------|-----|---------------|
+| 🏥 **Health Calculator** | Calculate BMI, BMR, Daily Intake, and Water Intake with health recommendations | [Try Tool](health-calculator/) | [API Docs](health-calculator/api/) | [Full Specs](health-calculator/spec.php) |
+| 🔐 **Password Generator** | Generate cryptographically secure passwords | [Try Tool](password-generator/) | [API Docs](password-generator/api/) | [Full Specs](password-generator/spec.php) |
+| 👤 **Username Generator** | Create unique usernames using word combinations | [Try Tool](username-generator/) | [API Docs](username-generator/api/) | [Full Specs](username-generator/spec.php) |
+| 💳 **PromptPay QR Generator** | Generate EMV-compliant PromptPay QR codes | [Try Tool](promptpay-qr-generator/) | [API Docs](promptpay-qr-generator/api/) | [Full Specs](promptpay-qr-generator/spec.php) |
+| 🔮 **Fortune Teller** | Get multilingual fortune predictions | [Try Tool](fortune-teller/) | [API Docs](fortune-teller/api/) | [Full Specs](fortune-teller/spec.php) |
+| 🎲 **Random Generator** | Generate random numbers, dice, coins, and cards | [Try Tool](randomizer/) | [API Docs](randomizer/api/) | [Full Specs](randomizer/spec.php) |
 
 ### 🎯 Key Features
 
 - **🌐 Modern Web Interfaces**: Beautiful, responsive designs that work on all devices
 - **🔌 REST APIs**: Well-documented APIs with JSON responses
-- **🔒 Security First**: Cryptographically secure random generation
+- **� Comprehensive API Documentation**: Interactive documentation for all endpoints
+- **�🔒 Security First**: Cryptographically secure random generation
 - **🌍 Multi-language Support**: Thai, Chinese, and English support where applicable
 - **📱 Mobile Responsive**: Optimized for desktop, tablet, and mobile
 - **⚡ Fast & Lightweight**: Pure PHP implementation with minimal dependencies
@@ -120,31 +121,37 @@ myapis/
 ├── index.php                 # Main landing page
 ├── README.md                 # This file
 ├── RELEASE.md                # Release notes
-├── bmi-calculator/           # BMI Calculator tool
+├── health-calculator/        # Health Calculator tool
 │   ├── index.php            # Web interface
 │   ├── api/index.php        # REST API
+│   ├── spec.php             # API documentation
 │   └── README.md            # Tool documentation
 ├── password-generator/       # Password Generator tool
 │   ├── index.php            # Web interface
 │   ├── api/index.php        # REST API
+│   ├── spec.php             # API documentation
 │   └── README.md            # Tool documentation
 ├── username-generator/       # Username Generator tool
 │   ├── index.php            # Web interface
 │   ├── api/index.php        # REST API
+│   ├── spec.php             # API documentation
 │   └── README.md            # Tool documentation
 ├── promptpay-qr-generator/   # PromptPay QR Generator tool
 │   ├── index.php            # Web interface
 │   ├── api/index.php        # REST API
+│   ├── spec.php             # API documentation
 │   ├── assets/              # Static assets
 │   └── README.md            # Tool documentation
 ├── fortune-teller/           # Fortune Teller tool
 │   ├── index.php            # Web interface
 │   ├── api/index.php        # REST API
+│   ├── spec.php             # API documentation
 │   ├── predictions/         # Fortune data files
 │   └── README.md            # Tool documentation
 └── randomizer/               # Random Generator tool
     ├── index.php            # Web interface
     ├── api/index.php        # REST API
+    ├── spec.php             # API documentation
     └── README.md            # Tool documentation
 ```
 
@@ -169,7 +176,7 @@ myapis/
 ## 📊 Statistics
 
 - **6** Active Tools
-- **12** API Endpoints
+- **18** API Endpoints (12 API + 6 Documentation)
 - **100%** Uptime Target
 - **PHP** Technology Stack
 
