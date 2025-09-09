@@ -257,7 +257,10 @@ try {
             
         case 'card':
             $count = isset($data['count']) ? (int)$data['count'] : 1;
-            $withJokers = isset($data['with_jokers']) ? (bool)$data['with_jokers'] : false;
+            $withJokers = false;
+            if (isset($data['with_jokers'])) {
+                $withJokers = filter_var($data['with_jokers'], FILTER_VALIDATE_BOOLEAN);
+            }
             $response = $generator->drawCard($count, $withJokers);
             break;
             
