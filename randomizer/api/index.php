@@ -35,10 +35,6 @@ class RandomGenerator {
             throw new Exception('Minimum value cannot be greater than maximum value');
         }
         
-        if ($min < PHP_INT_MIN || $max > PHP_INT_MAX) {
-            throw new Exception('Values out of supported range');
-        }
-        
         $number = random_int($min, $max);
         
         return [
