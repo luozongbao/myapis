@@ -236,6 +236,32 @@
             color: #333;
         }
 
+        .water-title {
+            font-size: 1.5em;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .water-amount {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #2196F3;
+        }
+
+        .water-breakdown {
+            font-size: 1.1em;
+            margin-bottom: 15px;
+            color: #666;
+        }
+
+        .water-advice {
+            font-size: 1.1em;
+            line-height: 1.5;
+            color: #333;
+        }
+
         .loading {
             display: none;
             text-align: center;
@@ -275,7 +301,7 @@
     <div class="container">
         <div class="header">
             <h1>Health Calculator</h1>
-            <p>Calculate BMI, Daily Intake, and Basal Metabolic Rate</p>
+            <p>Calculate BMI, BMR, Daily Intake, and Water Intake</p>
         </div>
 
         <!-- Calculator Type Selector -->
@@ -288,6 +314,9 @@
             </div>
             <div class="calc-option" data-calc="intake">
                 Daily Intake
+            </div>
+            <div class="calc-option" data-calc="water">
+                Water Intake
             </div>
         </div>
 
@@ -399,6 +428,61 @@
                 </div>
             </div>
 
+            <!-- Daily Water Intake Calculator Fields -->
+            <div class="calculator-section hidden" id="water-section">
+                <div class="form-group">
+                    <label for="water-weight">Weight (<span id="waterWeightUnit">kg</span>):</label>
+                    <input type="number" id="water-weight" name="water-weight" step="0.1" min="1" max="1000">
+                </div>
+
+                <div class="form-group">
+                    <label for="water-age">Age (years):</label>
+                    <input type="number" id="water-age" name="water-age" min="1" max="120">
+                </div>
+
+                <div class="form-group">
+                    <label for="water-gender">Gender:</label>
+                    <select id="water-gender" name="water-gender">
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="water-activity">Activity Level:</label>
+                    <select id="water-activity" name="water-activity">
+                        <option value="sedentary">Sedentary (little or no exercise)</option>
+                        <option value="light">Light activity (light exercise 1-3 days/week)</option>
+                        <option value="moderate">Moderate activity (moderate exercise 3-5 days/week)</option>
+                        <option value="active">Very active (hard exercise 6-7 days/week)</option>
+                        <option value="extra">Extra active (very hard exercise, physical job)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="climate">Climate:</label>
+                    <select id="climate" name="climate">
+                        <option value="temperate">Temperate (15-25°C)</option>
+                        <option value="hot">Hot (25-35°C)</option>
+                        <option value="very-hot">Very Hot (>35°C)</option>
+                        <option value="cold">Cold (<15°C)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="health-condition">Health Condition:</label>
+                    <select id="health-condition" name="health-condition">
+                        <option value="normal">Normal</option>
+                        <option value="fever">Fever</option>
+                        <option value="diarrhea">Diarrhea/Vomiting</option>
+                        <option value="kidney">Kidney Issues</option>
+                        <option value="heart">Heart Condition</option>
+                        <option value="pregnancy">Pregnancy</option>
+                        <option value="breastfeeding">Breastfeeding</option>
+                    </select>
+                </div>
+            </div>
+
             <button type="submit" class="calculate-btn" id="calculateBtn">
                 <span id="btnText">Calculate BMI</span>
             </button>
@@ -434,6 +518,14 @@
                 <div class="intake-calories" id="intakeCalories"></div>
                 <div class="intake-breakdown" id="intakeBreakdown"></div>
                 <div class="intake-advice" id="intakeAdvice"></div>
+            </div>
+
+            <!-- Water Intake Results -->
+            <div class="result-section hidden" id="water-result">
+                <div class="water-title">Your Daily Water Intake</div>
+                <div class="water-amount" id="waterAmount"></div>
+                <div class="water-breakdown" id="waterBreakdown"></div>
+                <div class="water-advice" id="waterAdvice"></div>
             </div>
         </div>
     </div>
@@ -510,6 +602,9 @@
                     break;
                 case 'intake':
                     btnText.textContent = 'Calculate Daily Intake';
+                    break;
+                case 'water':
+                    btnText.textContent = 'Calculate Water Intake';
                     break;
             }
         }
@@ -608,6 +703,14 @@
                     data.activity = document.getElementById('intake-activity').value;
                     data.goal = document.getElementById('goal').value;
                     break;
+                case 'water':
+                    data.weight = parseFloat(document.getElementById('water-weight').value);
+                    data.age = parseInt(document.getElementById('water-age').value);
+                    data.gender = document.getElementById('water-gender').value;
+                    data.activity = document.getElementById('water-activity').value;
+                    data.climate = document.getElementById('climate').value;
+                    data.healthCondition = document.getElementById('health-condition').value;
+                    break;
             }
             
             return data;
@@ -633,6 +736,16 @@
                     }
                     if (data.weight <= 0 || data.height <= 0 || data.age <= 0) {
                         showError('All values must be positive.');
+                        return false;
+                    }
+                    break;
+                case 'water':
+                    if (!data.weight || !data.age) {
+                        showError('Please fill in weight and age.');
+                        return false;
+                    }
+                    if (data.weight <= 0 || data.age <= 0) {
+                        showError('Weight and age must be positive values.');
                         return false;
                     }
                     break;
@@ -672,6 +785,9 @@
                 case 'intake':
                     showIntakeResult(data);
                     break;
+                case 'water':
+                    showWaterResult(data);
+                    break;
             }
 
             resultDiv.classList.add('show');
@@ -704,6 +820,12 @@
             document.getElementById('intakeCalories').textContent = data.calories + ' cal/day';
             document.getElementById('intakeBreakdown').innerHTML = data.breakdown;
             document.getElementById('intakeAdvice').textContent = data.advice;
+        }
+
+        function showWaterResult(data) {
+            document.getElementById('waterAmount').textContent = data.amount;
+            document.getElementById('waterBreakdown').innerHTML = data.breakdown;
+            document.getElementById('waterAdvice').textContent = data.advice;
         }
 
         function hideResults() {

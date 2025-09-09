@@ -1,6 +1,6 @@
 # Health Calculator API & Web Interface
 
-A comprehensive health calculator with both a REST API and a responsive web interface. Calculate BMI, Basal Metabolic Rate (BMR), and Daily Caloric Intake using metric or imperial units with personalized health recommendations.
+A comprehensive health calculator with both a REST API and a responsive web interface. Calculate BMI, Basal Metabolic Rate (BMR), Daily Caloric Intake, and Daily Water Intake using metric or imperial units with personalized health recommendations.
 
 ## Features
 
@@ -8,17 +8,19 @@ A comprehensive health calculator with both a REST API and a responsive web inte
 - **BMI Calculator**: Body Mass Index calculation with WHO standard categories
 - **BMR Calculator**: Basal Metabolic Rate using Mifflin-St Jeor equation
 - **Daily Intake Calculator**: Personalized caloric needs based on goals
+- **Water Intake Calculator**: Daily water requirements based on multiple factors
 - **Multiple input formats**: JSON POST requests and GET parameters
 - **Unit support**: Metric (kg/cm) and Imperial (lbs/inches)
 - **Comprehensive validation**: Input sanitization and range checking
 - **Health categorization**: WHO standard BMI categories and health recommendations
 - **Activity level factors**: Sedentary to extra active lifestyle adjustments
 - **Goal-based calculations**: Weight maintenance, loss, or gain targets
+- **Environmental factors**: Climate and health condition adjustments for water intake
 - **CORS enabled**: Cross-origin request support
 - **Error handling**: Detailed error messages with HTTP status codes
 
 ### 🌐 Web Interface
-- **Multi-calculator interface**: Switch between BMI, BMR, and Daily Intake calculators
+- **Multi-calculator interface**: Switch between BMI, BMR, Daily Intake, and Water Intake calculators
 - **Responsive design**: Works on desktop, tablet, and mobile devices
 - **Modern UI**: Beautiful gradient design with smooth animations
 - **Unit switching**: Toggle between metric and imperial units
@@ -40,7 +42,7 @@ A comprehensive health calculator with both a REST API and a responsive web inte
 ### Web Interface
 
 1. Open `index.php` in your web browser
-2. Select your preferred calculator (BMI, BMR, or Daily Intake)
+2. Select your preferred calculator (BMI, BMR, Daily Intake, or Water Intake)
 3. Select your preferred unit system (Metric or Imperial)
 4. Fill in the required fields for your chosen calculator
 5. Click the calculate button to get your results
@@ -54,9 +56,9 @@ GET /api/
 ```
 
 #### Common Parameters
-- `calculator` (required): "bmi", "bmr", or "intake"
+- `calculator` (required): "bmi", "bmr", "intake", or "water"
 - `weight` (required): Weight value (kg for metric, lbs for imperial)
-- `height` (required): Height value (cm or m for metric, inches for imperial)
+- `height` (required for BMI/BMR/Intake): Height value (cm or m for metric, inches for imperial)
 - `unit` (optional): "metric" or "imperial" (default: "metric")
 
 #### BMI Calculator Parameters
@@ -77,6 +79,14 @@ GET /api/
 - `gender` (required): "male" or "female"
 - `activity` (required): Activity level ("sedentary", "light", "moderate", "active", "extra")
 - `goal` (required): Goal ("maintain", "lose", "lose-fast", "gain", "gain-fast")
+
+#### Water Intake Calculator Parameters
+- `weight` (required): Weight value
+- `age` (required): Age in years
+- `gender` (required): "male" or "female"
+- `activity` (required): Activity level ("sedentary", "light", "moderate", "active", "extra")
+- `climate` (required): Climate condition ("cold", "temperate", "hot", "very-hot")
+- `healthCondition` (required): Health condition ("normal", "fever", "diarrhea", "kidney", "heart", "pregnancy", "breastfeeding")
 
 #### Example Requests
 
@@ -99,6 +109,13 @@ curl -X POST http://your-domain.com/health-calculator/api/ \
 curl -X POST http://your-domain.com/health-calculator/api/ \
   -H "Content-Type: application/json" \
   -d '{"calculator": "intake", "weight": 70, "height": 175, "age": 30, "gender": "male", "activity": "moderate", "goal": "maintain", "unit": "metric"}'
+```
+
+**Water Intake Calculator (POST):**
+```bash
+curl -X POST http://your-domain.com/health-calculator/api/ \
+  -H "Content-Type: application/json" \
+  -d '{"calculator": "water", "weight": 70, "age": 30, "gender": "male", "activity": "moderate", "climate": "temperate", "healthCondition": "normal", "unit": "metric"}'
 ```
 
 **GET Request Example:**
@@ -155,6 +172,26 @@ curl "http://your-domain.com/health-calculator/api/?calculator=bmi&weight=154&he
 }
 ```
 
+**Water Intake Response:**
+```json
+{
+    "success": true,
+    "data": {
+        "amount": "2695ml/day",
+        "breakdown": "Total: 2695ml • From drinks: 2156ml • From food: 539ml<br>Approximately 8.6 glasses (250ml each)",
+        "advice": "Aim for approximately 2695ml (8.6 glasses) of water daily. Spread intake throughout the day and listen to your body's thirst signals.",
+        "details": {
+            "total": 2695,
+            "fromDrinks": 2156,
+            "fromFood": 539,
+            "glasses": 8.6
+        }
+    },
+    "calculator": "water",
+    "timestamp": "2025-09-09 12:34:56"
+}
+```
+
 ## Health Categories & Activity Levels
 
 ### BMI Categories
@@ -182,6 +219,27 @@ curl "http://your-domain.com/health-calculator/api/?calculator=bmi&weight=154&he
 | Lose Fast | Lose 1 kg/week | -1000 calories |
 | Gain | Gain 0.5 kg/week | +500 calories |
 | Gain Fast | Gain 1 kg/week | +1000 calories |
+
+### Water Intake Factors
+
+#### Climate Conditions
+| Climate | Description | Water Multiplier |
+|---------|-------------|------------------|
+| Cold | <15°C | 0.9x |
+| Temperate | 15-25°C | 1.0x |
+| Hot | 25-35°C | 1.3x |
+| Very Hot | >35°C | 1.5x |
+
+#### Health Conditions
+| Condition | Description | Water Multiplier |
+|-----------|-------------|------------------|
+| Normal | Healthy individual | 1.0x |
+| Fever | Body temperature elevated | 1.3x |
+| Diarrhea/Vomiting | Increased fluid loss | 1.5x |
+| Kidney Issues | May require restriction | 0.8x |
+| Heart Condition | May require slight restriction | 0.9x |
+| Pregnancy | Increased fluid needs | 1.3x |
+| Breastfeeding | Increased fluid needs | 1.5x |
 
 ## File Structure
 

@@ -8,7 +8,7 @@ A comprehensive collection of developer tools and APIs designed to streamline yo
 
 | Tool | Description | Web Interface | API |
 |------|-------------|---------------|-----|
-| 🏥 **Health Calculator** | Calculate BMI, BMR, and Daily Intake with health recommendations | [Try Tool](health-calculator/) | [API Docs](health-calculator/api/) |
+| 🏥 **Health Calculator** | Calculate BMI, BMR, Daily Intake, and Water Intake with health recommendations | [Try Tool](health-calculator/) | [API Docs](health-calculator/api/) |
 | 🔐 **Password Generator** | Generate cryptographically secure passwords | [Try Tool](password-generator/) | [API Docs](password-generator/api/) |
 | 👤 **Username Generator** | Create unique usernames using word combinations | [Try Tool](username-generator/) | [API Docs](username-generator/api/) |
 | 💳 **PromptPay QR Generator** | Generate EMV-compliant PromptPay QR codes | [Try Tool](promptpay-qr-generator/) | [API Docs](promptpay-qr-generator/api/) |

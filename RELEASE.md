@@ -1,25 +1,47 @@
 # 📋 MyAPIs Release Notes
 
-## Current Release: Version 1.1.0
+## Current Release: Version 1.2.0
 
 **Release Date**: September 9, 2025  
 **Status**: Stable Release  
 
 ---
 
-## 🚀 Version 1.1.0 - Health Calculator Enhancement
+## � Version 1.2.0 - Water Intake Calculator Addition
+*Released: September 9, 2025*
+
+### 🌟 New Features
+
+#### 🏥 Health Calculator - Water Intake Calculator
+- **Daily Water Intake Calculator**: Personalized water requirements based on multiple factors
+- **Comprehensive Factors**: Weight, age, gender, activity level, climate, and health conditions
+- **Smart Adjustments**: Automatic adjustments for different climates and health conditions
+- **Detailed Breakdown**: Shows water from drinks vs food, number of glasses needed
+- **Health Condition Support**: Special calculations for pregnancy, breastfeeding, fever, etc.
+- **Climate Awareness**: Adjustments for cold, temperate, hot, and very hot climates
+- **API Integration**: Full REST API support with detailed responses
+
+### 🔄 Enhancements
+- **Updated Interface**: Added fourth calculator tab for water intake
+- **Enhanced Documentation**: Complete API documentation with water intake examples
+- **Improved Validation**: Added validation for water intake specific parameters
+
+---
+
+## �🚀 Version 1.1.0 - Health Calculator Enhancement
 *Released: September 9, 2025*
 
 ### 🌟 Major Updates
 
 #### 🏥 Health Calculator (Formerly BMI Calculator)
 - **Enhanced Functionality**: Expanded from simple BMI calculator to comprehensive health calculator
-- **BMR Calculator**: Added Basal Metabolic Rate calculation using Mifflin-St Jeor equation
-- **Daily Intake Calculator**: Added personalized caloric needs with macronutrient breakdown
+- **BMI Calculator**: Body Mass Index calculation with WHO standard categories
+- **BMR Calculator**: Basal Metabolic Rate calculation using Mifflin-St Jeor equation
+- **Daily Intake Calculator**: Personalized caloric needs with macronutrient breakdown
 - **Activity Level Integration**: 5 activity levels from sedentary to extra active
 - **Goal-Based Calculations**: Support for weight maintenance, loss, or gain targets
 - **Improved UI**: Multi-tab interface for seamless switching between calculators
-- **Enhanced API**: Unified endpoint supporting all three calculation types
+- **Enhanced API**: Unified endpoint supporting all calculation types
 - **Better Documentation**: Comprehensive API documentation with examples for all calculators
 
 ### 🔄 Breaking Changes

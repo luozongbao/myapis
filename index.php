@@ -297,12 +297,13 @@
             <div class="tool-card">
                 <div class="tool-icon">🏥</div>
                 <h3 class="tool-title">Health Calculator</h3>
-                <p class="tool-description">Calculate BMI, BMR, and Daily Intake with personalized health recommendations</p>
+                <p class="tool-description">Calculate BMI, BMR, Daily Intake, and Water Intake with personalized health recommendations</p>
                 <ul class="tool-features">
-                    <li>BMI, BMR & Daily Intake calculators</li>
+                    <li>BMI, BMR, Daily Intake & Water calculators</li>
                     <li>Metric and Imperial units</li>
                     <li>Activity level adjustments</li>
                     <li>Goal-based recommendations</li>
+                    <li>Climate & health condition factors</li>
                     <li>REST API endpoint</li>
                 </ul>
                 <div class="tool-actions">
