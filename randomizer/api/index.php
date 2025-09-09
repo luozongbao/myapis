@@ -220,7 +220,7 @@ try {
     $method = $_SERVER['REQUEST_METHOD'];
     $rawInput = file_get_contents('php://input');
     if ($rawInput === false) {
-        throw new Exception('Failed to read input stream');
+        throw new Exception('Unable to process request data. Please check your request and try again.');
     }
     $input = json_decode($rawInput, true);
     
