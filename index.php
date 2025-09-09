@@ -297,14 +297,16 @@
             <div class="tool-card">
                 <div class="tool-icon">🏥</div>
                 <h3 class="tool-title">Health Calculator</h3>
-                <p class="tool-description">Calculate BMI, BMR, Daily Intake, and Water Intake with personalized health recommendations</p>
+                <p class="tool-description">Comprehensive health metrics calculator providing BMI, BMR, daily caloric intake, and water requirements with personalized recommendations based on your goals and lifestyle</p>
                 <ul class="tool-features">
-                    <li>BMI, BMR, Daily Intake & Water calculators</li>
-                    <li>Metric and Imperial units</li>
-                    <li>Activity level adjustments</li>
-                    <li>Goal-based recommendations</li>
-                    <li>Climate & health condition factors</li>
-                    <li>REST API endpoint</li>
+                    <li>BMI Calculator with WHO classification</li>
+                    <li>BMR Calculator (Mifflin-St Jeor equation)</li>
+                    <li>Daily Caloric Intake with activity levels</li>
+                    <li>Water Intake with climate adjustments</li>
+                    <li>Metric & Imperial unit support</li>
+                    <li>Goal-based recommendations (lose/gain/maintain)</li>
+                    <li>Health condition considerations</li>
+                    <li>Comprehensive REST API with JSON responses</li>
                 </ul>
                 <div class="tool-actions">
                     <a href="health-calculator/" class="btn btn-primary">Try Tool</a>
@@ -317,12 +319,16 @@
             <div class="tool-card">
                 <div class="tool-icon">🔐</div>
                 <h3 class="tool-title">Password Generator</h3>
-                <p class="tool-description">Generate cryptographically secure passwords with customizable complexity options</p>
+                <p class="tool-description">Advanced cryptographically secure password generator with real-time strength analysis, customizable character sets, and enterprise-grade security standards for bulletproof authentication</p>
                 <ul class="tool-features">
-                    <li>Cryptographically secure</li>
-                    <li>Customizable character sets</li>
-                    <li>Password strength analysis</li>
-                    <li>Multiple formats support</li>
+                    <li>Cryptographically secure random generation</li>
+                    <li>Customizable length (4-128 characters)</li>
+                    <li>Multiple character sets (letters, numbers, symbols)</li>
+                    <li>Real-time password strength analysis</li>
+                    <li>Entropy calculation and security scoring</li>
+                    <li>Bulk password generation support</li>
+                    <li>Copy-to-clipboard functionality</li>
+                    <li>Mobile-responsive interface</li>
                 </ul>
                 <div class="tool-actions">
                     <a href="password-generator/" class="btn btn-primary">Try Tool</a>
@@ -335,12 +341,16 @@
             <div class="tool-card">
                 <div class="tool-icon">👤</div>
                 <h3 class="tool-title">Username Generator</h3>
-                <p class="tool-description">Create unique usernames using word combinations with themed approaches</p>
+                <p class="tool-description">Creative username generator featuring 7 themed categories with intelligent word combinations, perfect for gaming, social media, and professional platforms with guaranteed uniqueness</p>
                 <ul class="tool-features">
-                    <li>6 themed word categories</li>
-                    <li>Cross-theme combinations</li>
-                    <li>100+ general adjectives</li>
-                    <li>Bulk generation support</li>
+                    <li>7 themed categories (Nature, Tech, Space, etc.)</li>
+                    <li>Cross-theme intelligent combinations</li>
+                    <li>100+ curated adjectives and nouns</li>
+                    <li>Bulk generation (up to 50 usernames)</li>
+                    <li>Availability checking suggestions</li>
+                    <li>Gaming & social media optimized</li>
+                    <li>Professional username options</li>
+                    <li>JSON API for integration</li>
                 </ul>
                 <div class="tool-actions">
                     <a href="username-generator/" class="btn btn-primary">Try Tool</a>
@@ -353,12 +363,16 @@
             <div class="tool-card">
                 <div class="tool-icon">💳</div>
                 <h3 class="tool-title">PromptPay QR Generator</h3>
-                <p class="tool-description">Generate EMV-compliant PromptPay QR codes for Thai payment system</p>
+                <p class="tool-description">Professional EMV-compliant PromptPay QR code generator for Thailand's national payment system, supporting phone numbers, tax IDs, and e-wallets with instant mobile-ready output</p>
                 <ul class="tool-features">
-                    <li>EMV QR standard compliant</li>
-                    <li>Phone/Tax ID/e-Wallet support</li>
-                    <li>Base64 image generation</li>
-                    <li>Multiple output formats</li>
+                    <li>EMV QR Code Standard (4.0) compliant</li>
+                    <li>Phone number (13-digit) support</li>
+                    <li>Tax ID (13-digit) integration</li>
+                    <li>e-Wallet ID compatibility</li>
+                    <li>Custom amount specification</li>
+                    <li>Base64 encoded image output</li>
+                    <li>PNG format with customizable size</li>
+                    <li>Real-time QR code preview</li>
                 </ul>
                 <div class="tool-actions">
                     <a href="promptpay-qr-generator/" class="btn btn-primary">Try Tool</a>
@@ -371,12 +385,16 @@
             <div class="tool-card">
                 <div class="tool-icon">🔮</div>
                 <h3 class="tool-title">Fortune Teller</h3>
-                <p class="tool-description">Get multilingual fortune predictions covering all aspects of life</p>
+                <p class="tool-description">Mystical multilingual fortune teller featuring 52 unique predictions across love, career, health, wealth, and luck with beautiful Thai, Chinese, and English interfaces for global accessibility</p>
                 <ul class="tool-features">
                     <li>52 unique fortune predictions</li>
-                    <li>Thai, Chinese & English support</li>
-                    <li>5 life categories coverage</li>
-                    <li>Beautiful multilingual interface</li>
+                    <li>Multilingual support (Thai, Chinese, English)</li>
+                    <li>5 life categories (Love, Career, Health, Wealth, Luck)</li>
+                    <li>Random prediction selection algorithm</li>
+                    <li>Beautiful cultural-themed interface</li>
+                    <li>Mobile-responsive design</li>
+                    <li>JSON API with language selection</li>
+                    <li>Share-friendly prediction format</li>
                 </ul>
                 <div class="tool-actions">
                     <a href="fortune-teller/" class="btn btn-primary">Try Tool</a>
@@ -389,12 +407,16 @@
             <div class="tool-card">
                 <div class="tool-icon">🎲</div>
                 <h3 class="tool-title">Random Generator</h3>
-                <p class="tool-description">Generate random numbers, roll dice, flip coins, and draw cards with beautiful animations</p>
+                <p class="tool-description">Comprehensive randomization toolkit with cryptographically secure number generation, dice rolling, coin flipping, and card drawing featuring stunning animations and true randomness</p>
                 <ul class="tool-features">
-                    <li>Number ranges & dice rolling</li>
-                    <li>Coin flips & card drawing</li>
-                    <li>Animated visual results</li>
-                    <li>Cryptographically secure</li>
+                    <li>Random number generation (custom ranges)</li>
+                    <li>Dice rolling (1-20 sided dice, multiple)</li>
+                    <li>Coin flipping with animated results</li>
+                    <li>Card drawing from standard 52-card deck</li>
+                    <li>Cryptographically secure randomness</li>
+                    <li>Beautiful CSS animations</li>
+                    <li>History tracking of results</li>
+                    <li>Multiple operations in single session</li>
                 </ul>
                 <div class="tool-actions">
                     <a href="randomizer/" class="btn btn-primary">Try Tool</a>
