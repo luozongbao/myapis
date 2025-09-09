@@ -334,12 +334,12 @@
             <div class="calculator-section" id="bmi-section">
                 <div class="form-group">
                     <label for="weight">Weight (<span id="weightUnit">kg</span>):</label>
-                    <input type="number" id="weight" name="weight" step="0.1" min="1" max="1000" required>
+                    <input type="number" id="weight" name="weight" step="0.1" min="1" max="1000">
                 </div>
 
                 <div class="form-group">
                     <label for="height">Height (<span id="heightUnit">cm</span>):</label>
-                    <input type="number" id="height" name="height" step="0.1" min="1" max="300" required>
+                    <input type="number" id="height" name="height" step="0.1" min="1" max="300">
                 </div>
             </div>
 
@@ -588,7 +588,12 @@
             });
 
             // Show current section
-            document.getElementById(currentCalculator + '-section').classList.remove('hidden');
+            const targetSection = document.getElementById(currentCalculator + '-section');
+            if (targetSection) {
+                targetSection.classList.remove('hidden');
+            } else {
+                console.error('Could not find section for calculator:', currentCalculator);
+            }
         }
 
         function updateButtonText() {
@@ -653,19 +658,22 @@
             hideError();
 
             try {
+                const requestData = {
+                    calculator: currentCalculator,
+                    unit: currentUnit,
+                    ...formData
+                };
+
                 const response = await fetch('./api/', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({
-                        calculator: currentCalculator,
-                        unit: currentUnit,
-                        ...formData
-                    })
+                    body: JSON.stringify(requestData)
                 });
 
                 const data = await response.json();
+                console.log('API response:', data);
 
                 if (data.success) {
                     showResult(data.data);
@@ -673,8 +681,8 @@
                     showError(data.message || 'An error occurred while calculating.');
                 }
             } catch (error) {
+                console.error('API Error:', error);
                 showError('Failed to connect to the calculator API. Please try again.');
-                console.error('Error:', error);
             } finally {
                 hideLoading();
             }
