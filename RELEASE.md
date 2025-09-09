@@ -1,9 +1,31 @@
 # 📋 MyAPIs Release Notes
 
-## Current Release: Version 1.0.0
+## Current Release: Version 1.1.0
 
 **Release Date**: September 9, 2025  
 **Status**: Stable Release  
+
+---
+
+## 🚀 Version 1.1.0 - Health Calculator Enhancement
+*Released: September 9, 2025*
+
+### 🌟 Major Updates
+
+#### 🏥 Health Calculator (Formerly BMI Calculator)
+- **Enhanced Functionality**: Expanded from simple BMI calculator to comprehensive health calculator
+- **BMR Calculator**: Added Basal Metabolic Rate calculation using Mifflin-St Jeor equation
+- **Daily Intake Calculator**: Added personalized caloric needs with macronutrient breakdown
+- **Activity Level Integration**: 5 activity levels from sedentary to extra active
+- **Goal-Based Calculations**: Support for weight maintenance, loss, or gain targets
+- **Improved UI**: Multi-tab interface for seamless switching between calculators
+- **Enhanced API**: Unified endpoint supporting all three calculation types
+- **Better Documentation**: Comprehensive API documentation with examples for all calculators
+
+### 🔄 Breaking Changes
+- **Folder Renamed**: `bmi-calculator/` → `health-calculator/`
+- **API Updates**: New parameter structure for BMR and Daily Intake calculations
+- **URL Changes**: All links updated to reflect new folder structure
 
 ---
 
@@ -18,12 +40,16 @@
 - **Mobile Responsive**: Full mobile optimization for all interfaces
 - **Statistics Dashboard**: Real-time platform statistics display
 
-#### ⚖️ BMI Calculator
-- **Web Interface**: Interactive BMI calculator with unit switching
-- **REST API**: JSON-based BMI calculation endpoint
-- **WHO Standards**: Official BMI categories and health recommendations
+#### 🏥 Health Calculator
+- **Multi-Calculator Interface**: BMI, BMR, and Daily Intake calculators in one tool
+- **BMI Calculator**: Body Mass Index with WHO standard categories
+- **BMR Calculator**: Basal Metabolic Rate using Mifflin-St Jeor equation
+- **Daily Intake Calculator**: Personalized caloric needs with macronutrient breakdown
+- **Activity Level Support**: 5 activity levels from sedentary to extra active
+- **Goal-Based Calculations**: Weight maintenance, loss, or gain targets
 - **Multi-Unit Support**: Metric (kg/cm) and Imperial (lbs/inches)
-- **Health Insights**: Personalized health advice based on BMI category
+- **Health Insights**: Personalized recommendations for each calculation type
+- **REST API**: Comprehensive JSON-based health calculation endpoints
 
 #### 🔐 Password Generator
 - **Advanced Generation**: Cryptographically secure password creation
@@ -94,7 +120,7 @@
 
 | Tool | Method | Endpoint | Description |
 |------|--------|----------|-------------|
-| BMI Calculator | POST | `/bmi-calculator/api/` | Calculate BMI with recommendations |
+| Health Calculator | POST | `/health-calculator/api/` | Calculate BMI, BMR, and Daily Intake |
 | Password Generator | POST | `/password-generator/api/` | Generate secure passwords |
 | Username Generator | POST | `/username-generator/api/` | Create unique usernames |
 | PromptPay QR | POST | `/promptpay-qr-generator/api/` | Generate PromptPay QR codes |
@@ -107,7 +133,7 @@ myapis/
 ├── 📄 index.php (Main landing page)
 ├── 📝 README.md (Project documentation)
 ├── 📋 RELEASE.md (This file)
-├── 📁 bmi-calculator/ (BMI calculation tool)
+├── 📁 health-calculator/ (Health calculation tool)
 ├── 📁 password-generator/ (Password generation tool)
 ├── 📁 username-generator/ (Username generation tool)
 ├── 📁 promptpay-qr-generator/ (QR code generation tool)
