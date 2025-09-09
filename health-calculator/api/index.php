@@ -278,8 +278,19 @@ if (!$input) {
     $input = $_GET;
 }
 
-$calculator = $input['calculator'] ?? $_GET['calculator'] ?? 'bmi';
+$calculator = $input['calculator'] ?? $_GET['calculator'] ?? null;
 $unit = $input['unit'] ?? $_GET['unit'] ?? 'metric';
+
+// Check if calculator is specified
+if (!$calculator) {
+    http_response_code(400);
+    echo json_encode([
+        'success' => false,
+        'message' => 'Calculator type is required',
+        'availableCalculators' => ['bmi', 'bmr', 'intake', 'water']
+    ]);
+    exit();
+}
 
 // Validate input
 $errors = validateInput($input, $calculator);
@@ -295,18 +306,39 @@ if (!empty($errors)) {
 
 try {
     $weight = floatval($input['weight']);
-    $height = floatval($input['height']);
     
-    // Convert units if needed
-    list($weight, $height) = convertUnits($weight, $height, $unit);
-    
-    // Validate converted values
-    if ($weight <= 0 || $height <= 0) {
-        throw new Exception('Weight and height must be positive values');
-    }
-    
-    if ($weight > 1000 || $height > 300) {
-        throw new Exception('Please check your height and weight values - they seem unrealistic');
+    // For water calculator, we don't need height
+    if ($calculator === 'water') {
+        // Convert weight if needed for water calculation
+        if ($unit === 'imperial') {
+            $weight = $weight * 0.453592; // Convert pounds to kg
+        }
+        
+        // Validate weight only for water calculator
+        if ($weight <= 0) {
+            throw new Exception('Weight must be a positive value');
+        }
+        
+        if ($weight > 1000) {
+            throw new Exception('Please check your weight value - it seems unrealistic');
+        }
+        
+        $height = 0; // Set height to 0 for water calculation (not needed)
+    } else {
+        // For other calculators, we need both weight and height
+        $height = floatval($input['height']);
+        
+        // Convert units if needed
+        list($weight, $height) = convertUnits($weight, $height, $unit);
+        
+        // Validate converted values
+        if ($weight <= 0 || $height <= 0) {
+            throw new Exception('Weight and height must be positive values');
+        }
+        
+        if ($weight > 1000 || $height > 300) {
+            throw new Exception('Please check your height and weight values - they seem unrealistic');
+        }
     }
     
     $result = [];
@@ -381,11 +413,7 @@ try {
                 throw new Exception('Age must be between 1 and 120 years');
             }
             
-            // Convert weight if needed (water calculation only needs weight, not height)
-            if ($unit === 'imperial') {
-                $weight = $weight * 0.453592; // Convert pounds to kg
-            }
-            
+            // Weight is already converted above, no need to convert again
             $waterIntake = calculateWaterIntake($weight, $age, $gender, $activity, $climate, $healthCondition);
             $breakdown = getWaterBreakdown($waterIntake);
             $advice = getWaterAdvice($waterIntake, $breakdown['glasses'], $activity, $climate, $healthCondition);

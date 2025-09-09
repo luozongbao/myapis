@@ -685,31 +685,50 @@
             
             switch(currentCalculator) {
                 case 'bmi':
-                    data.weight = parseFloat(document.getElementById('weight').value);
-                    data.height = parseFloat(document.getElementById('height').value);
+                    const weightEl = document.getElementById('weight');
+                    const heightEl = document.getElementById('height');
+                    data.weight = weightEl ? parseFloat(weightEl.value) : null;
+                    data.height = heightEl ? parseFloat(heightEl.value) : null;
                     break;
                 case 'bmr':
-                    data.weight = parseFloat(document.getElementById('bmr-weight').value);
-                    data.height = parseFloat(document.getElementById('bmr-height').value);
-                    data.age = parseInt(document.getElementById('age').value);
-                    data.gender = document.getElementById('gender').value;
-                    data.activity = document.getElementById('activity').value;
+                    const bmrWeightEl = document.getElementById('bmr-weight');
+                    const bmrHeightEl = document.getElementById('bmr-height');
+                    const ageEl = document.getElementById('age');
+                    const genderEl = document.getElementById('gender');
+                    const activityEl = document.getElementById('activity');
+                    data.weight = bmrWeightEl ? parseFloat(bmrWeightEl.value) : null;
+                    data.height = bmrHeightEl ? parseFloat(bmrHeightEl.value) : null;
+                    data.age = ageEl ? parseInt(ageEl.value) : null;
+                    data.gender = genderEl ? genderEl.value : null;
+                    data.activity = activityEl ? activityEl.value : null;
                     break;
                 case 'intake':
-                    data.weight = parseFloat(document.getElementById('intake-weight').value);
-                    data.height = parseFloat(document.getElementById('intake-height').value);
-                    data.age = parseInt(document.getElementById('intake-age').value);
-                    data.gender = document.getElementById('intake-gender').value;
-                    data.activity = document.getElementById('intake-activity').value;
-                    data.goal = document.getElementById('goal').value;
+                    const intakeWeightEl = document.getElementById('intake-weight');
+                    const intakeHeightEl = document.getElementById('intake-height');
+                    const intakeAgeEl = document.getElementById('intake-age');
+                    const intakeGenderEl = document.getElementById('intake-gender');
+                    const intakeActivityEl = document.getElementById('intake-activity');
+                    const goalEl = document.getElementById('goal');
+                    data.weight = intakeWeightEl ? parseFloat(intakeWeightEl.value) : null;
+                    data.height = intakeHeightEl ? parseFloat(intakeHeightEl.value) : null;
+                    data.age = intakeAgeEl ? parseInt(intakeAgeEl.value) : null;
+                    data.gender = intakeGenderEl ? intakeGenderEl.value : null;
+                    data.activity = intakeActivityEl ? intakeActivityEl.value : null;
+                    data.goal = goalEl ? goalEl.value : null;
                     break;
                 case 'water':
-                    data.weight = parseFloat(document.getElementById('water-weight').value);
-                    data.age = parseInt(document.getElementById('water-age').value);
-                    data.gender = document.getElementById('water-gender').value;
-                    data.activity = document.getElementById('water-activity').value;
-                    data.climate = document.getElementById('climate').value;
-                    data.healthCondition = document.getElementById('health-condition').value;
+                    const waterWeightEl = document.getElementById('water-weight');
+                    const waterAgeEl = document.getElementById('water-age');
+                    const waterGenderEl = document.getElementById('water-gender');
+                    const waterActivityEl = document.getElementById('water-activity');
+                    const climateEl = document.getElementById('climate');
+                    const healthConditionEl = document.getElementById('health-condition');
+                    data.weight = waterWeightEl ? parseFloat(waterWeightEl.value) : null;
+                    data.age = waterAgeEl ? parseInt(waterAgeEl.value) : null;
+                    data.gender = waterGenderEl ? waterGenderEl.value : null;
+                    data.activity = waterActivityEl ? waterActivityEl.value : null;
+                    data.climate = climateEl ? climateEl.value : null;
+                    data.healthCondition = healthConditionEl ? healthConditionEl.value : null;
                     break;
             }
             
@@ -723,7 +742,7 @@
                         showError('Please enter both weight and height.');
                         return false;
                     }
-                    if (data.weight <= 0 || data.height <= 0) {
+                    if (isNaN(data.weight) || isNaN(data.height) || data.weight <= 0 || data.height <= 0) {
                         showError('Weight and height must be positive values.');
                         return false;
                     }
@@ -734,7 +753,8 @@
                         showError('Please fill in all required fields.');
                         return false;
                     }
-                    if (data.weight <= 0 || data.height <= 0 || data.age <= 0) {
+                    if (isNaN(data.weight) || isNaN(data.height) || isNaN(data.age) || 
+                        data.weight <= 0 || data.height <= 0 || data.age <= 0) {
                         showError('All values must be positive.');
                         return false;
                     }
@@ -744,8 +764,12 @@
                         showError('Please fill in weight and age.');
                         return false;
                     }
-                    if (data.weight <= 0 || data.age <= 0) {
+                    if (isNaN(data.weight) || isNaN(data.age) || data.weight <= 0 || data.age <= 0) {
                         showError('Weight and age must be positive values.');
+                        return false;
+                    }
+                    if (!data.gender || !data.activity || !data.climate || !data.healthCondition) {
+                        showError('Please select all dropdown options.');
                         return false;
                     }
                     break;
