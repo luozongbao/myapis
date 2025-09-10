@@ -1,3 +1,12 @@
+<?php
+// Generate dynamic base URL based on current server
+function getBaseUrl($toolName) {
+    $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
+    $host = $_SERVER['HTTP_HOST'];
+    return $protocol . '://' . $host . '/api/' . $toolName . '/';
+}
+$baseUrl = getBaseUrl('fortune-teller');
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -409,7 +418,7 @@
             <div class="section">
                 <h2>🌐 Base URL</h2>
                 <div class="code-block">
-https://api.lorwongam.com/fortune-teller/api/
+<?php echo $baseUrl; ?>
                 </div>
             </div>
 
@@ -432,53 +441,17 @@ https://api.lorwongam.com/fortune-teller/api/
                     </h3>
                     <p>Retrieve a random fortune prediction in the specified language.</p>
 
-                    <h4>Query Parameters</h4>
-                    <table class="parameter-table">
-                        <thead>
-                            <tr>
-                                <th>Parameter</th>
-                                <th>Type</th>
-                                <th>Required</th>
-                                <th>Default</th>
-                                <th>Description</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><code>lang</code></td>
-                                <td>string</td>
-                                <td><span class="optional">Optional</span></td>
-                                <td>"en"</td>
-                                <td>Language code: "th", "zh", or "en"</td>
-                            </tr>
-                            <tr>
-                                <td><code>id</code></td>
-                                <td>integer</td>
-                                <td><span class="optional">Optional</span></td>
-                                <td>random</td>
-                                <td>Specific fortune ID (1-52) for testing purposes</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <h4>Parameters</h4>
+                    <p>This endpoint doesn't require any parameters. It returns a random fortune from the collection of 52 fortunes, with predictions in all three languages (Thai, Chinese, and English).</p>
 
-                    <h4>Example Request - Random English Fortune</h4>
+                    <h4>Example Request - Get Random Fortune</h4>
                     <div class="code-block">
-curl "https://api.lorwongam.com/fortune-teller/api/"
+curl "<?php echo $baseUrl; ?>"
                     </div>
 
-                    <h4>Example Request - Thai Fortune</h4>
+                    <h4>Example Request - POST Method</h4>
                     <div class="code-block">
-curl "https://api.lorwongam.com/fortune-teller/api/?lang=th"
-                    </div>
-
-                    <h4>Example Request - Chinese Fortune</h4>
-                    <div class="code-block">
-curl "https://api.lorwongam.com/fortune-teller/api/?lang=zh"
-                    </div>
-
-                    <h4>Example Request - Specific Fortune</h4>
-                    <div class="code-block">
-curl "https://api.lorwongam.com/fortune-teller/api/?lang=en&id=7"
+curl -X POST "<?php echo $baseUrl; ?>"
                     </div>
                 </div>
 
@@ -522,7 +495,7 @@ curl "https://api.lorwongam.com/fortune-teller/api/?lang=en&id=7"
 
                     <h4>Example POST Request</h4>
                     <div class="code-block">
-curl -X POST "https://api.lorwongam.com/fortune-teller/api/" \
+curl -X POST "<?php echo $baseUrl; ?>" \
   -H "Content-Type: application/json" \
   -d '{
     "lang": "th"
@@ -681,7 +654,7 @@ curl -X POST "https://api.lorwongam.com/fortune-teller/api/" \
 
                 <h3>JavaScript/AJAX</h3>
                 <div class="code-block">
-fetch('https://api.lorwongam.com/fortune-teller/api/?lang=en')
+fetch('<?php echo $baseUrl; ?>?lang=en')
   .then(response => response.json())
   .then(data => {
     if (data.success) {
@@ -693,7 +666,7 @@ fetch('https://api.lorwongam.com/fortune-teller/api/?lang=en')
 
                 <h3>PHP</h3>
                 <div class="code-block">
-$response = file_get_contents('https://api.lorwongam.com/fortune-teller/api/?lang=th');
+$response = file_get_contents('<?php echo $baseUrl; ?>?lang=th');
 $data = json_decode($response, true);
 
 if ($data['success']) {
@@ -706,7 +679,7 @@ if ($data['success']) {
                 <div class="code-block">
 import requests
 
-response = requests.get('https://api.lorwongam.com/fortune-teller/api/?lang=zh')
+response = requests.get('<?php echo $baseUrl; ?>?lang=zh')
 data = response.json()
 
 if data['success']:

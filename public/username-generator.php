@@ -442,7 +442,7 @@
 
         async function loadThemes() {
             try {
-                const response = await fetch('./api/?action=themes');
+                const response = await fetch('/api/username-generator/?action=themes');
                 const data = await response.json();
                 
                 if (data.success) {

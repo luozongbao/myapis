@@ -1,3 +1,12 @@
+<?php
+// Generate dynamic base URL based on current server
+function getBaseUrl($toolName) {
+    $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
+    $host = $_SERVER['HTTP_HOST'];
+    return $protocol . '://' . $host . '/api/' . $toolName . '/';
+}
+$baseUrl = getBaseUrl('health-calculator');
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -315,7 +324,7 @@
             <div class="section">
                 <h2>🌐 Base URL</h2>
                 <div class="code-block">
-https://api.lorwongam.com/health-calculator/api/
+<?php echo $baseUrl; ?>
                 </div>
             </div>
 
@@ -350,22 +359,28 @@ https://api.lorwongam.com/health-calculator/api/
                         </thead>
                         <tbody>
                             <tr>
-                                <td><code>type</code></td>
+                                <td><code>calculator</code></td>
                                 <td>string</td>
                                 <td><span class="required">Required</span></td>
-                                <td>Calculation type: "bmi", "bmr", "daily-intake", or "water-intake"</td>
+                                <td>Calculation type: "bmi", "bmr", "intake", or "water"</td>
                             </tr>
                             <tr>
                                 <td><code>weight</code></td>
                                 <td>number</td>
                                 <td><span class="required">Required</span></td>
-                                <td>Weight in kilograms</td>
+                                <td>Weight in kilograms (or pounds if unit=imperial)</td>
                             </tr>
                             <tr>
                                 <td><code>height</code></td>
                                 <td>number</td>
                                 <td><span class="required">Required</span></td>
-                                <td>Height in centimeters or meters</td>
+                                <td>Height in centimeters (or inches if unit=imperial). Not required for water calculator.</td>
+                            </tr>
+                            <tr>
+                                <td><code>unit</code></td>
+                                <td>string</td>
+                                <td><span class="optional">Optional</span></td>
+                                <td>"metric" (default) or "imperial" - Unit system for weight/height conversion</td>
                             </tr>
                             <tr>
                                 <td><code>age</code></td>
@@ -408,10 +423,10 @@ https://api.lorwongam.com/health-calculator/api/
 
                     <h4>Example Request - BMI Calculation</h4>
                     <div class="code-block">
-curl -X POST "https://api.lorwongam.com/health-calculator/api/" \
+curl -X POST "<?php echo $baseUrl; ?>" \
   -H "Content-Type: application/json" \
   -d '{
-    "type": "bmi",
+    "calculator": "bmi",
     "weight": 70,
     "height": 175
   }'
@@ -419,10 +434,10 @@ curl -X POST "https://api.lorwongam.com/health-calculator/api/" \
 
                     <h4>Example Request - Daily Intake Calculation</h4>
                     <div class="code-block">
-curl -X POST "https://api.lorwongam.com/health-calculator/api/" \
+curl -X POST "<?php echo $baseUrl; ?>" \
   -H "Content-Type: application/json" \
   -d '{
-    "type": "daily-intake",
+    "calculator": "intake",
     "weight": 70,
     "height": 175,
     "age": 30,
@@ -434,12 +449,11 @@ curl -X POST "https://api.lorwongam.com/health-calculator/api/" \
 
                     <h4>Example Request - Water Intake Calculation</h4>
                     <div class="code-block">
-curl -X POST "https://api.lorwongam.com/health-calculator/api/" \
+curl -X POST "<?php echo $baseUrl; ?>" \
   -H "Content-Type: application/json" \
   -d '{
-    "type": "water-intake",
+    "calculator": "water",
     "weight": 70,
-    "height": 175,
     "age": 30,
     "gender": "male",
     "activity": "moderate",

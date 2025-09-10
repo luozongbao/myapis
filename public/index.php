@@ -381,7 +381,7 @@
                 <div class="tool-actions">
                     <a href="promptpay-qr-generator.php" class="btn btn-primary">Try Tool</a>
                     <a href="/api/promptpay-qr-generator/" class="btn btn-secondary">API</a>
-                    <a href="promptpay-qr-generator-specs.php" class="btn btn-secondary">API Docs</a>
+                    <a href="api-specs/promptpay-qr-generator.php" class="btn btn-secondary">API Docs</a>
                 </div>
             </div>
 
