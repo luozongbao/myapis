@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PromptPay QR Generator API Documentation</title>
+    <title>Username Generator API Documentation</title>
     <style>
         * {
             margin: 0;
@@ -248,22 +248,29 @@
             opacity: 0.9;
         }
 
-        .warning-box {
-            background: #fff3cd;
-            border: 1px solid #ffeaa7;
-            border-radius: 8px;
-            padding: 15px;
-            margin: 15px 0;
-            color: #856404;
+        .theme-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
         }
 
-        .info-box {
-            background: #d1ecf1;
-            border: 1px solid #bee5eb;
-            border-radius: 8px;
+        .theme-item {
+            background: #f8f9fa;
             padding: 15px;
-            margin: 15px 0;
-            color: #0c5460;
+            border-radius: 8px;
+            text-align: center;
+            border: 2px solid #e9ecef;
+        }
+
+        .theme-item h5 {
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .theme-item p {
+            color: #666;
+            font-size: 0.9em;
         }
 
         @media (max-width: 768px) {
@@ -285,16 +292,16 @@
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <h1>💳 PromptPay QR Generator API</h1>
-            <p>Generate EMV-compliant PromptPay QR codes for Thai payment system</p>
+            <h1>👤 Username Generator API</h1>
+            <p>Create unique usernames using themed word combinations</p>
         </div>
 
         <!-- Navigation -->
         <div class="nav">
             <div class="breadcrumb">
-                <a href="../">← Back to Main</a>
+                <a href="../index.php">← Back to Main</a>
                 <span>/</span>
-                <a href="./">PromptPay QR Generator</a>
+                <a href="../username-generator.php">Username Generator</a>
                 <span>/</span>
                 <span>API Documentation</span>
             </div>
@@ -305,29 +312,56 @@
             <!-- Overview -->
             <div class="section">
                 <h2>📖 Overview</h2>
-                <p>The PromptPay QR Generator API creates EMV-compliant QR codes for Thailand's PromptPay payment system. Generate QR codes for mobile numbers, tax IDs, or e-Wallet IDs with optional payment amounts.</p>
+                <p>The Username Generator API creates unique usernames by combining words from various themed categories. Perfect for user registration systems, game character names, or any application requiring creative username suggestions.</p>
                 
                 <div class="features-grid">
                     <div class="feature-card">
-                        <h4>📱 Multiple ID Types</h4>
-                        <p>Support for mobile numbers, tax IDs, and e-Wallet IDs</p>
+                        <h4>🎭 6 Themed Categories</h4>
+                        <p>Animals, Colors, Nature, Tech, Space, and Fantasy themed word sets</p>
                     </div>
                     <div class="feature-card">
-                        <h4>💰 Optional Amounts</h4>
-                        <p>Generate QR codes with or without predefined payment amounts</p>
+                        <h4>🔄 Cross-Theme Combinations</h4>
+                        <p>Mix words from different themes for creative combinations</p>
                     </div>
                     <div class="feature-card">
-                        <h4>🔧 EMV Compliant</h4>
-                        <p>Follows EMV QR Code specification for payment systems</p>
+                        <h4>📚 Rich Word Database</h4>
+                        <p>100+ general adjectives plus hundreds of themed words</p>
                     </div>
                     <div class="feature-card">
-                        <h4>🖼️ Multiple Formats</h4>
-                        <p>Base64 image output and raw QR code data</p>
+                        <h4>📊 Bulk Generation</h4>
+                        <p>Generate multiple username suggestions in a single request</p>
                     </div>
                 </div>
+            </div>
 
-                <div class="info-box">
-                    <strong>About PromptPay:</strong> PromptPay is Thailand's national e-payment system that allows real-time money transfers using mobile numbers or tax identification numbers.
+            <!-- Themes -->
+            <div class="section">
+                <h2>🎨 Available Themes</h2>
+                <div class="theme-list">
+                    <div class="theme-item">
+                        <h5>🐾 Animals</h5>
+                        <p>Wildlife and domestic animals</p>
+                    </div>
+                    <div class="theme-item">
+                        <h5>🌈 Colors</h5>
+                        <p>Colors and color variations</p>
+                    </div>
+                    <div class="theme-item">
+                        <h5>🌿 Nature</h5>
+                        <p>Natural elements and phenomena</p>
+                    </div>
+                    <div class="theme-item">
+                        <h5>💻 Technology</h5>
+                        <p>Tech terms and digital concepts</p>
+                    </div>
+                    <div class="theme-item">
+                        <h5>🚀 Space</h5>
+                        <p>Celestial bodies and space terms</p>
+                    </div>
+                    <div class="theme-item">
+                        <h5>🧙 Fantasy</h5>
+                        <p>Mythical creatures and magical elements</p>
+                    </div>
                 </div>
             </div>
 
@@ -335,7 +369,7 @@
             <div class="section">
                 <h2>🌐 Base URL</h2>
                 <div class="code-block">
-https://api.lorwongam.com/promptpay-qr-generator/api/
+https://api.lorwongam.com/username-generator/api/
                 </div>
             </div>
 
@@ -349,14 +383,14 @@ https://api.lorwongam.com/promptpay-qr-generator/api/
             <div class="section">
                 <h2>📡 API Endpoints</h2>
 
-                <!-- Generate QR Code Endpoint -->
+                <!-- Generate Username Endpoint -->
                 <div class="endpoint">
                     <h3>
                         <span class="method post">POST</span>
                         <span class="url">/</span>
-                        Generate PromptPay QR Code
+                        Generate Username
                     </h3>
-                    <p>Generate a PromptPay QR code for the specified recipient and optional amount.</p>
+                    <p>Generate unique usernames based on specified themes and options.</p>
 
                     <h4>Request Parameters</h4>
                     <table class="parameter-table">
@@ -365,95 +399,98 @@ https://api.lorwongam.com/promptpay-qr-generator/api/
                                 <th>Parameter</th>
                                 <th>Type</th>
                                 <th>Required</th>
+                                <th>Default</th>
                                 <th>Description</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td><code>id</code></td>
+                                <td><code>theme</code></td>
                                 <td>string</td>
-                                <td><span class="required">Required</span></td>
-                                <td>PromptPay ID (mobile number, tax ID, or e-Wallet ID)</td>
-                            </tr>
-                            <tr>
-                                <td><code>amount</code></td>
-                                <td>number</td>
                                 <td><span class="optional">Optional</span></td>
-                                <td>Payment amount in Thai Baht (THB)</td>
-                            </tr>
-                            <tr>
-                                <td><code>size</code></td>
-                                <td>integer</td>
-                                <td><span class="optional">Optional</span></td>
-                                <td>QR code size in pixels (default: 300, max: 1000)</td>
+                                <td>"random"</td>
+                                <td>Theme: "animals", "colors", "nature", "tech", "space", "fantasy", "random"</td>
                             </tr>
                             <tr>
                                 <td><code>format</code></td>
                                 <td>string</td>
                                 <td><span class="optional">Optional</span></td>
-                                <td>Output format: "base64" or "data" (default: "base64")</td>
+                                <td>"adjective_noun"</td>
+                                <td>Format: "adjective_noun", "noun_adjective", "noun_only"</td>
+                            </tr>
+                            <tr>
+                                <td><code>separator</code></td>
+                                <td>string</td>
+                                <td><span class="optional">Optional</span></td>
+                                <td>"_"</td>
+                                <td>Word separator: "_", "-", "", "." (empty for no separator)</td>
+                            </tr>
+                            <tr>
+                                <td><code>numbers</code></td>
+                                <td>boolean</td>
+                                <td><span class="optional">Optional</span></td>
+                                <td>false</td>
+                                <td>Append random numbers to username</td>
+                            </tr>
+                            <tr>
+                                <td><code>case_style</code></td>
+                                <td>string</td>
+                                <td><span class="optional">Optional</span></td>
+                                <td>"lowercase"</td>
+                                <td>Case style: "lowercase", "uppercase", "title", "camel"</td>
+                            </tr>
+                            <tr>
+                                <td><code>count</code></td>
+                                <td>integer</td>
+                                <td><span class="optional">Optional</span></td>
+                                <td>1</td>
+                                <td>Number of usernames to generate (1-20)</td>
+                            </tr>
+                            <tr>
+                                <td><code>max_length</code></td>
+                                <td>integer</td>
+                                <td><span class="optional">Optional</span></td>
+                                <td>null</td>
+                                <td>Maximum username length (excludes numbers)</td>
                             </tr>
                         </tbody>
                     </table>
 
-                    <h4>ID Format Guidelines</h4>
-                    <table class="parameter-table">
-                        <thead>
-                            <tr>
-                                <th>ID Type</th>
-                                <th>Format</th>
-                                <th>Example</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Mobile Number</td>
-                                <td>+66XXXXXXXXX or 0XXXXXXXXX</td>
-                                <td>+66812345678 or 0812345678</td>
-                            </tr>
-                            <tr>
-                                <td>Tax ID</td>
-                                <td>13-digit number</td>
-                                <td>1234567890123</td>
-                            </tr>
-                            <tr>
-                                <td>e-Wallet ID</td>
-                                <td>15-digit number</td>
-                                <td>123456789012345</td>
-                            </tr>
-                        </tbody>
-                    </table>
-
-                    <h4>Example Request - Mobile Number with Amount</h4>
+                    <h4>Example Request - Simple Username</h4>
                     <div class="code-block">
-curl -X POST "https://api.lorwongam.com/promptpay-qr-generator/api/" \
+curl -X POST "https://api.lorwongam.com/username-generator/api/" \
   -H "Content-Type: application/json" \
   -d '{
-    "id": "0812345678",
-    "amount": 100.50,
-    "size": 300
+    "theme": "animals",
+    "format": "adjective_noun",
+    "separator": "_"
   }'
                     </div>
 
-                    <h4>Example Request - Tax ID without Amount</h4>
+                    <h4>Example Request - Gaming Username</h4>
                     <div class="code-block">
-curl -X POST "https://api.lorwongam.com/promptpay-qr-generator/api/" \
+curl -X POST "https://api.lorwongam.com/username-generator/api/" \
   -H "Content-Type: application/json" \
   -d '{
-    "id": "1234567890123",
-    "size": 400
+    "theme": "fantasy",
+    "format": "adjective_noun",
+    "separator": "",
+    "numbers": true,
+    "case_style": "title",
+    "count": 5
   }'
                     </div>
 
-                    <h4>Example Request - e-Wallet ID with Large Amount</h4>
+                    <h4>Example Request - Professional Username</h4>
                     <div class="code-block">
-curl -X POST "https://api.lorwongam.com/promptpay-qr-generator/api/" \
+curl -X POST "https://api.lorwongam.com/username-generator/api/" \
   -H "Content-Type: application/json" \
   -d '{
-    "id": "123456789012345",
-    "amount": 2500,
-    "size": 500,
-    "format": "data"
+    "theme": "tech",
+    "format": "noun_adjective",
+    "separator": "-",
+    "case_style": "lowercase",
+    "max_length": 15
   }'
                     </div>
                 </div>
@@ -463,40 +500,69 @@ curl -X POST "https://api.lorwongam.com/promptpay-qr-generator/api/" \
             <div class="section">
                 <h2>📊 Response Format</h2>
 
-                <h3>Success Response (Base64 Format)</h3>
+                <h3>Success Response</h3>
                 <div class="response-box">
+                    <h4>Single Username Response</h4>
                     <div class="code-block">
 {
   "success": true,
   "data": {
-    "qr_code": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA...",
-    "promptpay_id": "0812345678",
-    "amount": 100.50,
-    "currency": "THB",
-    "emv_qr_data": "00020101021129370016A000000677010111011300...",
-    "size": 300,
-    "format": "base64"
+    "username": "swift_panther",
+    "theme": "animals",
+    "format": "adjective_noun",
+    "length": 13,
+    "components": {
+      "adjective": "swift",
+      "noun": "panther"
+    },
+    "settings": {
+      "separator": "_",
+      "case_style": "lowercase",
+      "numbers": false
+    }
   },
-  "message": "PromptPay QR code generated successfully",
+  "message": "Username generated successfully",
   "timestamp": "2025-09-09T12:00:00Z"
 }
                     </div>
                 </div>
 
-                <h3>Success Response (Data Format)</h3>
                 <div class="response-box">
+                    <h4>Multiple Usernames Response</h4>
                     <div class="code-block">
 {
   "success": true,
   "data": {
-    "emv_qr_data": "00020101021129370016A00000067701011101130081234567803021.02540TH63041234",
-    "promptpay_id": "0812345678",
-    "amount": null,
-    "currency": "THB",
-    "size": 300,
-    "format": "data"
+    "usernames": [
+      {
+        "username": "MysticDragon99",
+        "theme": "fantasy",
+        "length": 13,
+        "components": {
+          "adjective": "mystic",
+          "noun": "dragon"
+        }
+      },
+      {
+        "username": "AncientWizard42",
+        "theme": "fantasy",
+        "length": 15,
+        "components": {
+          "adjective": "ancient",
+          "noun": "wizard"
+        }
+      }
+    ],
+    "count": 2,
+    "settings": {
+      "theme": "fantasy",
+      "format": "adjective_noun",
+      "separator": "",
+      "case_style": "title",
+      "numbers": true
+    }
   },
-  "message": "PromptPay QR data generated successfully",
+  "message": "Usernames generated successfully",
   "timestamp": "2025-09-09T12:00:00Z"
 }
                     </div>
@@ -507,90 +573,76 @@ curl -X POST "https://api.lorwongam.com/promptpay-qr-generator/api/" \
                     <div class="code-block">
 {
   "success": false,
-  "error": "Invalid PromptPay ID format",
-  "code": "INVALID_ID",
+  "error": "Invalid theme specified. Must be one of: animals, colors, nature, tech, space, fantasy, random",
+  "code": "INVALID_THEME",
   "timestamp": "2025-09-09T12:00:00Z"
 }
                     </div>
                 </div>
             </div>
 
-            <!-- EMV QR Code Structure -->
+            <!-- Format Options -->
             <div class="section">
-                <h2>🔧 EMV QR Code Structure</h2>
-                <p>The generated QR codes follow the EMV® QR Code Specification for Payment Systems. The data format includes:</p>
-                
+                <h2>🎯 Format Options</h2>
                 <table class="parameter-table">
                     <thead>
                         <tr>
-                            <th>Field</th>
-                            <th>Description</th>
-                            <th>Example Value</th>
+                            <th>Format</th>
+                            <th>Structure</th>
+                            <th>Example</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td>Payload Format Indicator</td>
-                            <td>Version of the QR code format</td>
-                            <td>01</td>
+                            <td><code>adjective_noun</code></td>
+                            <td>Adjective + Noun</td>
+                            <td>swift_panther</td>
                         </tr>
                         <tr>
-                            <td>Point of Initiation Method</td>
-                            <td>Static or dynamic QR code</td>
-                            <td>11 (Static), 12 (Dynamic)</td>
+                            <td><code>noun_adjective</code></td>
+                            <td>Noun + Adjective</td>
+                            <td>panther_swift</td>
                         </tr>
                         <tr>
-                            <td>Merchant Account Information</td>
-                            <td>PromptPay identification data</td>
-                            <td>Contains PromptPay ID</td>
-                        </tr>
-                        <tr>
-                            <td>Transaction Amount</td>
-                            <td>Payment amount (if specified)</td>
-                            <td>100.50</td>
-                        </tr>
-                        <tr>
-                            <td>Transaction Currency</td>
-                            <td>ISO 4217 currency code</td>
-                            <td>764 (THB)</td>
-                        </tr>
-                        <tr>
-                            <td>Country Code</td>
-                            <td>ISO 3166-1 country code</td>
-                            <td>TH</td>
-                        </tr>
-                        <tr>
-                            <td>CRC</td>
-                            <td>Checksum for data integrity</td>
-                            <td>4-digit checksum</td>
+                            <td><code>noun_only</code></td>
+                            <td>Noun only</td>
+                            <td>panther</td>
                         </tr>
                     </tbody>
                 </table>
-            </div>
 
-            <!-- Usage Guidelines -->
-            <div class="section">
-                <h2>📋 Usage Guidelines</h2>
-                
-                <div class="warning-box">
-                    <strong>Important:</strong> Always validate PromptPay IDs before generating QR codes. Invalid IDs may result in failed payments.
-                </div>
-
-                <h3>Best Practices</h3>
-                <ul style="color: #555; font-size: 1.1em; line-height: 1.8; margin-left: 20px;">
-                    <li><strong>ID Validation:</strong> Ensure mobile numbers and tax IDs are valid Thai formats</li>
-                    <li><strong>Amount Precision:</strong> Use up to 2 decimal places for amounts</li>
-                    <li><strong>QR Code Size:</strong> Use appropriate sizes for display medium (300px for web, 500px+ for print)</li>
-                    <li><strong>Error Handling:</strong> Always check the response for errors before displaying QR codes</li>
-                    <li><strong>Testing:</strong> Test QR codes with actual PromptPay apps before production use</li>
-                </ul>
-
-                <h3>Mobile Number Formats</h3>
-                <ul style="color: #555; font-size: 1.1em; line-height: 1.8; margin-left: 20px;">
-                    <li>Thai mobile numbers start with 06, 08, or 09</li>
-                    <li>Can include +66 country code or start with 0</li>
-                    <li>Total length: 10 digits (with 0) or 11 digits (with +66)</li>
-                </ul>
+                <h3>Case Style Options</h3>
+                <table class="parameter-table">
+                    <thead>
+                        <tr>
+                            <th>Style</th>
+                            <th>Description</th>
+                            <th>Example</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>lowercase</code></td>
+                            <td>All lowercase</td>
+                            <td>swift_panther</td>
+                        </tr>
+                        <tr>
+                            <td><code>uppercase</code></td>
+                            <td>All uppercase</td>
+                            <td>SWIFT_PANTHER</td>
+                        </tr>
+                        <tr>
+                            <td><code>title</code></td>
+                            <td>First letter of each word capitalized</td>
+                            <td>Swift_Panther</td>
+                        </tr>
+                        <tr>
+                            <td><code>camel</code></td>
+                            <td>CamelCase (no separators)</td>
+                            <td>SwiftPanther</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
 
             <!-- Error Codes -->
@@ -605,57 +657,27 @@ curl -X POST "https://api.lorwongam.com/promptpay-qr-generator/api/" \
                     </thead>
                     <tbody>
                         <tr>
-                            <td><code>INVALID_ID</code></td>
-                            <td>PromptPay ID format is invalid</td>
+                            <td><code>INVALID_THEME</code></td>
+                            <td>Theme parameter is not valid</td>
                         </tr>
                         <tr>
-                            <td><code>INVALID_AMOUNT</code></td>
-                            <td>Amount is negative or exceeds maximum limit</td>
+                            <td><code>INVALID_FORMAT</code></td>
+                            <td>Format parameter is not valid</td>
                         </tr>
                         <tr>
-                            <td><code>INVALID_SIZE</code></td>
-                            <td>QR code size is outside valid range (50-1000px)</td>
+                            <td><code>INVALID_CASE_STYLE</code></td>
+                            <td>Case style parameter is not valid</td>
                         </tr>
                         <tr>
-                            <td><code>QR_GENERATION_ERROR</code></td>
-                            <td>Error occurred during QR code generation</td>
+                            <td><code>INVALID_COUNT</code></td>
+                            <td>Count is outside the valid range (1-20)</td>
                         </tr>
                         <tr>
-                            <td><code>MISSING_PARAMETER</code></td>
-                            <td>Required parameter is missing</td>
+                            <td><code>GENERATION_ERROR</code></td>
+                            <td>Error occurred during username generation</td>
                         </tr>
                     </tbody>
                 </table>
-            </div>
-
-            <!-- Integration Examples -->
-            <div class="section">
-                <h2>🔗 Integration Examples</h2>
-
-                <h3>HTML Image Display</h3>
-                <div class="code-block">
-&lt;img src="data:image/png;base64,{base64_data}" alt="PromptPay QR Code" /&gt;
-                </div>
-
-                <h3>JavaScript Integration</h3>
-                <div class="code-block">
-fetch('https://api.lorwongam.com/promptpay-qr-generator/api/', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  body: JSON.stringify({
-    id: '0812345678',
-    amount: 100.50
-  })
-})
-.then(response => response.json())
-.then(data => {
-  if (data.success) {
-    document.getElementById('qr-image').src = data.data.qr_code;
-  }
-});
-                </div>
             </div>
 
             <!-- Rate Limits -->
@@ -667,9 +689,9 @@ fetch('https://api.lorwongam.com/promptpay-qr-generator/api/', {
             <!-- Try It Out -->
             <div class="try-it">
                 <h3>🎯 Ready to Try?</h3>
-                <p>Test the PromptPay QR Generator API with our interactive web interface or start integrating it into your application.</p>
-                <a href="../" class="btn">Try Web Interface</a>
-                <a href="api/" class="btn btn-secondary">Test API Endpoint</a>
+                <p>Test the Username Generator API with our interactive web interface or start integrating it into your application.</p>
+                <a href="../index.php" class="btn">Try Web Interface</a>
+                <a href="/api/username-generator/" class="btn btn-secondary">Test API Endpoint</a>
             </div>
         </div>
     </div>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Health Calculator API Documentation</title>
+    <title>Password Generator API Documentation</title>
     <style>
         * {
             margin: 0;
@@ -248,6 +248,17 @@
             opacity: 0.9;
         }
 
+        .security-badge {
+            display: inline-block;
+            background: #28a745;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: bold;
+            margin: 5px;
+        }
+
         @media (max-width: 768px) {
             .header h1 {
                 font-size: 2em;
@@ -267,16 +278,16 @@
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <h1>🏥 Health Calculator API</h1>
-            <p>Comprehensive health calculations with BMI, BMR, Daily Intake, and Water Intake</p>
+            <h1>🔐 Password Generator API</h1>
+            <p>Generate cryptographically secure passwords with customizable complexity</p>
         </div>
 
         <!-- Navigation -->
         <div class="nav">
             <div class="breadcrumb">
-                <a href="../">← Back to Main</a>
+                <a href="../index.php">← Back to Main</a>
                 <span>/</span>
-                <a href="./">Health Calculator</a>
+                <a href="../password-generator.php">Password Generator</a>
                 <span>/</span>
                 <span>API Documentation</span>
             </div>
@@ -287,25 +298,31 @@
             <!-- Overview -->
             <div class="section">
                 <h2>📖 Overview</h2>
-                <p>The Health Calculator API provides comprehensive health-related calculations including BMI (Body Mass Index), BMR (Basal Metabolic Rate), Daily Caloric Intake, and Water Intake requirements. All calculations are based on scientifically proven formulas and provide detailed recommendations.</p>
+                <p>The Password Generator API creates cryptographically secure passwords with customizable complexity options. Built with security best practices, it provides reliable password generation for applications requiring strong authentication.</p>
                 
                 <div class="features-grid">
                     <div class="feature-card">
-                        <h4>🧮 BMI Calculator</h4>
-                        <p>Calculate Body Mass Index with WHO standard categories and health recommendations</p>
+                        <h4>🔒 Cryptographically Secure</h4>
+                        <p>Uses PHP's secure random_bytes() function for true randomness</p>
                     </div>
                     <div class="feature-card">
-                        <h4>🔥 BMR Calculator</h4>
-                        <p>Basal Metabolic Rate calculation using the accurate Mifflin-St Jeor equation</p>
+                        <h4>⚙️ Customizable Character Sets</h4>
+                        <p>Control uppercase, lowercase, numbers, and special characters</p>
                     </div>
                     <div class="feature-card">
-                        <h4>🍽️ Daily Intake Calculator</h4>
-                        <p>Personalized caloric needs with detailed macronutrient breakdown</p>
+                        <h4>📊 Password Strength Analysis</h4>
+                        <p>Automatic strength scoring and detailed feedback</p>
                     </div>
                     <div class="feature-card">
-                        <h4>💧 Water Intake Calculator</h4>
-                        <p>Daily water requirements based on multiple health and environmental factors</p>
+                        <h4>📏 Flexible Length</h4>
+                        <p>Generate passwords from 4 to 128 characters long</p>
                     </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 20px;">
+                    <span class="security-badge">🛡️ Cryptographically Secure</span>
+                    <span class="security-badge">🎯 Zero Logging</span>
+                    <span class="security-badge">⚡ High Performance</span>
                 </div>
             </div>
 
@@ -313,7 +330,7 @@
             <div class="section">
                 <h2>🌐 Base URL</h2>
                 <div class="code-block">
-https://api.lorwongam.com/health-calculator/api/
+https://api.lorwongam.com/password-generator/api/
                 </div>
             </div>
 
@@ -327,14 +344,14 @@ https://api.lorwongam.com/health-calculator/api/
             <div class="section">
                 <h2>📡 API Endpoints</h2>
 
-                <!-- Unified Endpoint -->
+                <!-- Generate Password Endpoint -->
                 <div class="endpoint">
                     <h3>
                         <span class="method post">POST</span>
                         <span class="url">/</span>
-                        Unified Health Calculator
+                        Generate Password
                     </h3>
-                    <p>Calculate BMI, BMR, Daily Intake, or Water Intake based on the calculation type specified.</p>
+                    <p>Generate a cryptographically secure password with customizable options.</p>
 
                     <h4>Request Parameters</h4>
                     <table class="parameter-table">
@@ -343,105 +360,101 @@ https://api.lorwongam.com/health-calculator/api/
                                 <th>Parameter</th>
                                 <th>Type</th>
                                 <th>Required</th>
+                                <th>Default</th>
                                 <th>Description</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td><code>type</code></td>
-                                <td>string</td>
-                                <td><span class="required">Required</span></td>
-                                <td>Calculation type: "bmi", "bmr", "daily-intake", or "water-intake"</td>
-                            </tr>
-                            <tr>
-                                <td><code>weight</code></td>
-                                <td>number</td>
-                                <td><span class="required">Required</span></td>
-                                <td>Weight in kilograms</td>
-                            </tr>
-                            <tr>
-                                <td><code>height</code></td>
-                                <td>number</td>
-                                <td><span class="required">Required</span></td>
-                                <td>Height in centimeters or meters</td>
-                            </tr>
-                            <tr>
-                                <td><code>age</code></td>
-                                <td>number</td>
-                                <td><span class="optional">Optional*</span></td>
-                                <td>Age in years (required for BMR, Daily Intake, Water Intake)</td>
-                            </tr>
-                            <tr>
-                                <td><code>gender</code></td>
-                                <td>string</td>
-                                <td><span class="optional">Optional*</span></td>
-                                <td>"male" or "female" (required for BMR, Daily Intake, Water Intake)</td>
-                            </tr>
-                            <tr>
-                                <td><code>activity</code></td>
-                                <td>string</td>
+                                <td><code>length</code></td>
+                                <td>integer</td>
                                 <td><span class="optional">Optional</span></td>
-                                <td>Activity level: "sedentary", "light", "moderate", "active", "extra"</td>
+                                <td>12</td>
+                                <td>Password length (4-128 characters)</td>
                             </tr>
                             <tr>
-                                <td><code>goal</code></td>
-                                <td>string</td>
+                                <td><code>uppercase</code></td>
+                                <td>boolean</td>
                                 <td><span class="optional">Optional</span></td>
-                                <td>For Daily Intake: "maintain", "lose", "lose-fast", "gain", "gain-fast"</td>
+                                <td>true</td>
+                                <td>Include uppercase letters (A-Z)</td>
                             </tr>
                             <tr>
-                                <td><code>climate</code></td>
-                                <td>string</td>
+                                <td><code>lowercase</code></td>
+                                <td>boolean</td>
                                 <td><span class="optional">Optional</span></td>
-                                <td>For Water Intake: "cold", "temperate", "hot", "very-hot"</td>
+                                <td>true</td>
+                                <td>Include lowercase letters (a-z)</td>
                             </tr>
                             <tr>
-                                <td><code>health_condition</code></td>
-                                <td>string</td>
+                                <td><code>numbers</code></td>
+                                <td>boolean</td>
                                 <td><span class="optional">Optional</span></td>
-                                <td>For Water Intake: "pregnant", "breastfeeding", "fever", "vomiting", "diarrhea"</td>
+                                <td>true</td>
+                                <td>Include numbers (0-9)</td>
+                            </tr>
+                            <tr>
+                                <td><code>symbols</code></td>
+                                <td>boolean</td>
+                                <td><span class="optional">Optional</span></td>
+                                <td>false</td>
+                                <td>Include special characters (!@#$%^&*)</td>
+                            </tr>
+                            <tr>
+                                <td><code>exclude_similar</code></td>
+                                <td>boolean</td>
+                                <td><span class="optional">Optional</span></td>
+                                <td>false</td>
+                                <td>Exclude similar characters (0,O,l,1,i,I)</td>
+                            </tr>
+                            <tr>
+                                <td><code>count</code></td>
+                                <td>integer</td>
+                                <td><span class="optional">Optional</span></td>
+                                <td>1</td>
+                                <td>Number of passwords to generate (1-10)</td>
                             </tr>
                         </tbody>
                     </table>
 
-                    <h4>Example Request - BMI Calculation</h4>
+                    <h4>Example Request - Basic Password</h4>
                     <div class="code-block">
-curl -X POST "https://api.lorwongam.com/health-calculator/api/" \
+curl -X POST "https://api.lorwongam.com/password-generator/api/" \
   -H "Content-Type: application/json" \
   -d '{
-    "type": "bmi",
-    "weight": 70,
-    "height": 175
+    "length": 16,
+    "uppercase": true,
+    "lowercase": true,
+    "numbers": true,
+    "symbols": false
   }'
                     </div>
 
-                    <h4>Example Request - Daily Intake Calculation</h4>
+                    <h4>Example Request - High Security Password</h4>
                     <div class="code-block">
-curl -X POST "https://api.lorwongam.com/health-calculator/api/" \
+curl -X POST "https://api.lorwongam.com/password-generator/api/" \
   -H "Content-Type: application/json" \
   -d '{
-    "type": "daily-intake",
-    "weight": 70,
-    "height": 175,
-    "age": 30,
-    "gender": "male",
-    "activity": "moderate",
-    "goal": "maintain"
+    "length": 24,
+    "uppercase": true,
+    "lowercase": true,
+    "numbers": true,
+    "symbols": true,
+    "exclude_similar": true
   }'
                     </div>
 
-                    <h4>Example Request - Water Intake Calculation</h4>
+                    <h4>Example Request - Multiple Passwords</h4>
                     <div class="code-block">
-curl -X POST "https://api.lorwongam.com/health-calculator/api/" \
+curl -X POST "https://api.lorwongam.com/password-generator/api/" \
   -H "Content-Type: application/json" \
   -d '{
-    "type": "water-intake",
-    "weight": 70,
-    "height": 175,
-    "age": 30,
-    "gender": "male",
-    "activity": "moderate",
-    "climate": "temperate"
+    "length": 12,
+    "uppercase": true,
+    "lowercase": true,
+    "numbers": true,
+    "symbols": true,
+    "count": 5
   }'
                     </div>
                 </div>
@@ -453,50 +466,66 @@ curl -X POST "https://api.lorwongam.com/health-calculator/api/" \
 
                 <h3>Success Response</h3>
                 <div class="response-box">
-                    <h4>BMI Response Example</h4>
+                    <h4>Single Password Response</h4>
                     <div class="code-block">
 {
   "success": true,
   "data": {
-    "bmi": 22.86,
-    "category": "Normal weight",
-    "advice": "Great! Maintain your current lifestyle with a balanced diet and regular exercise."
+    "password": "Kx7mN9pQw2Yv8zR3",
+    "length": 16,
+    "strength": {
+      "score": 4,
+      "level": "Very Strong",
+      "feedback": "Excellent password with good character variety"
+    },
+    "character_sets": {
+      "uppercase": true,
+      "lowercase": true,
+      "numbers": true,
+      "symbols": false
+    },
+    "entropy": 95.42
   },
-  "message": "BMI calculated successfully",
+  "message": "Password generated successfully",
   "timestamp": "2025-09-09T12:00:00Z"
 }
                     </div>
                 </div>
 
                 <div class="response-box">
-                    <h4>Daily Intake Response Example</h4>
+                    <h4>Multiple Passwords Response</h4>
                     <div class="code-block">
 {
   "success": true,
   "data": {
-    "bmr": 1705,
-    "maintenanceCalories": 2643,
-    "targetCalories": 2643,
-    "macronutrients": {
-      "protein": {
-        "grams": 112,
-        "calories": 448,
-        "percentage": 17
+    "passwords": [
+      {
+        "password": "Kx7mN9pQw2Yv",
+        "strength": {
+          "score": 4,
+          "level": "Very Strong"
+        }
       },
-      "fat": {
-        "grams": 73,
-        "calories": 661,
-        "percentage": 25
-      },
-      "carbs": {
-        "grams": 384,
-        "calories": 1534,
-        "percentage": 58
+      {
+        "password": "Zf5bH8nMv3Qp",
+        "strength": {
+          "score": 4,
+          "level": "Very Strong"
+        }
       }
-    },
-    "advice": "Based on your moderate activity level and maintenance goal..."
+    ],
+    "count": 2,
+    "settings": {
+      "length": 12,
+      "character_sets": {
+        "uppercase": true,
+        "lowercase": true,
+        "numbers": true,
+        "symbols": false
+      }
+    }
   },
-  "message": "Daily intake calculated successfully",
+  "message": "Passwords generated successfully",
   "timestamp": "2025-09-09T12:00:00Z"
 }
                     </div>
@@ -507,12 +536,55 @@ curl -X POST "https://api.lorwongam.com/health-calculator/api/" \
                     <div class="code-block">
 {
   "success": false,
-  "error": "Missing required parameter: weight",
-  "code": "MISSING_PARAMETER",
+  "error": "Invalid password length. Must be between 4 and 128 characters",
+  "code": "INVALID_LENGTH",
   "timestamp": "2025-09-09T12:00:00Z"
 }
                     </div>
                 </div>
+            </div>
+
+            <!-- Password Strength -->
+            <div class="section">
+                <h2>💪 Password Strength Analysis</h2>
+                <p>Each generated password includes automatic strength analysis based on length, character variety, and entropy.</p>
+
+                <table class="parameter-table">
+                    <thead>
+                        <tr>
+                            <th>Score</th>
+                            <th>Level</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>Very Weak</td>
+                            <td>Short length, single character type</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>Weak</td>
+                            <td>Short length, limited character variety</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>Moderate</td>
+                            <td>Adequate length, good character variety</td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>Strong</td>
+                            <td>Good length, multiple character types</td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td>Very Strong</td>
+                            <td>Long length, all character types, high entropy</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
 
             <!-- Error Codes -->
@@ -527,23 +599,35 @@ curl -X POST "https://api.lorwongam.com/health-calculator/api/" \
                     </thead>
                     <tbody>
                         <tr>
-                            <td><code>MISSING_PARAMETER</code></td>
-                            <td>Required parameter is missing</td>
+                            <td><code>INVALID_LENGTH</code></td>
+                            <td>Password length is outside the valid range (4-128)</td>
                         </tr>
                         <tr>
-                            <td><code>INVALID_TYPE</code></td>
-                            <td>Invalid calculation type specified</td>
+                            <td><code>NO_CHARACTER_SETS</code></td>
+                            <td>At least one character set must be enabled</td>
                         </tr>
                         <tr>
-                            <td><code>INVALID_VALUE</code></td>
-                            <td>Parameter value is invalid or out of range</td>
+                            <td><code>INVALID_COUNT</code></td>
+                            <td>Password count is outside the valid range (1-10)</td>
                         </tr>
                         <tr>
-                            <td><code>CALCULATION_ERROR</code></td>
-                            <td>Error occurred during calculation</td>
+                            <td><code>GENERATION_ERROR</code></td>
+                            <td>Error occurred during password generation</td>
                         </tr>
                     </tbody>
                 </table>
+            </div>
+
+            <!-- Security Notes -->
+            <div class="section">
+                <h2>🛡️ Security Features</h2>
+                <ul style="color: #555; font-size: 1.1em; line-height: 1.8;">
+                    <li><strong>Cryptographically Secure:</strong> Uses PHP's <code>random_bytes()</code> for true randomness</li>
+                    <li><strong>No Logging:</strong> Generated passwords are not stored or logged anywhere</li>
+                    <li><strong>HTTPS Only:</strong> All communications are encrypted</li>
+                    <li><strong>High Entropy:</strong> Calculated entropy values help assess true password strength</li>
+                    <li><strong>Similar Character Exclusion:</strong> Option to exclude visually similar characters</li>
+                </ul>
             </div>
 
             <!-- Rate Limits -->
@@ -555,9 +639,9 @@ curl -X POST "https://api.lorwongam.com/health-calculator/api/" \
             <!-- Try It Out -->
             <div class="try-it">
                 <h3>🎯 Ready to Try?</h3>
-                <p>Test the Health Calculator API with our interactive web interface or start integrating it into your application.</p>
-                <a href="../" class="btn">Try Web Interface</a>
-                <a href="api/" class="btn btn-secondary">Test API Endpoint</a>
+                <p>Test the Password Generator API with our interactive web interface or start integrating it into your application.</p>
+                <a href="../index.php" class="btn">Try Web Interface</a>
+                <a href="/api/password-generator/" class="btn btn-secondary">Test API Endpoint</a>
             </div>
         </div>
     </div>
