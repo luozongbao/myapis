@@ -1,9 +1,18 @@
+<?php
+// Generate dynamic base URL based on current server
+function getBaseUrl($toolName) {
+    $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
+    $host = $_SERVER['HTTP_HOST'];
+    return $protocol . '://' . $host . '/api/' . $toolName . '/';
+}
+$baseUrl = getBaseUrl('promptpay-qr-generator');
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Health Calculator API Documentation</title>
+    <title>PromptPay QR Generator API Documentation</title>
     <style>
         * {
             margin: 0;
@@ -248,6 +257,24 @@
             opacity: 0.9;
         }
 
+        .warning-box {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            color: #856404;
+        }
+
+        .info-box {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            color: #0c5460;
+        }
+
         @media (max-width: 768px) {
             .header h1 {
                 font-size: 2em;
@@ -267,16 +294,16 @@
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <h1>🏥 Health Calculator API</h1>
-            <p>Comprehensive health calculations with BMI, BMR, Daily Intake, and Water Intake</p>
+            <h1>💳 PromptPay QR Generator API</h1>
+            <p>Generate EMV-compliant PromptPay QR codes for Thai payment system</p>
         </div>
 
         <!-- Navigation -->
         <div class="nav">
             <div class="breadcrumb">
-                <a href="../">← Back to Main</a>
+                <a href="../index.php">← Back to Main</a>
                 <span>/</span>
-                <a href="./">Health Calculator</a>
+                <a href="../promptpay-qr-generator.php">PromptPay QR Generator</a>
                 <span>/</span>
                 <span>API Documentation</span>
             </div>
@@ -287,25 +314,29 @@
             <!-- Overview -->
             <div class="section">
                 <h2>📖 Overview</h2>
-                <p>The Health Calculator API provides comprehensive health-related calculations including BMI (Body Mass Index), BMR (Basal Metabolic Rate), Daily Caloric Intake, and Water Intake requirements. All calculations are based on scientifically proven formulas and provide detailed recommendations.</p>
+                <p>The PromptPay QR Generator API creates EMV-compliant QR codes for Thailand's PromptPay payment system. Generate QR codes for mobile numbers, tax IDs, or e-Wallet IDs with optional payment amounts.</p>
                 
                 <div class="features-grid">
                     <div class="feature-card">
-                        <h4>🧮 BMI Calculator</h4>
-                        <p>Calculate Body Mass Index with WHO standard categories and health recommendations</p>
+                        <h4>📱 Multiple ID Types</h4>
+                        <p>Support for mobile numbers, tax IDs, and e-Wallet IDs</p>
                     </div>
                     <div class="feature-card">
-                        <h4>🔥 BMR Calculator</h4>
-                        <p>Basal Metabolic Rate calculation using the accurate Mifflin-St Jeor equation</p>
+                        <h4>💰 Optional Amounts</h4>
+                        <p>Generate QR codes with or without predefined payment amounts</p>
                     </div>
                     <div class="feature-card">
-                        <h4>🍽️ Daily Intake Calculator</h4>
-                        <p>Personalized caloric needs with detailed macronutrient breakdown</p>
+                        <h4>🔧 EMV Compliant</h4>
+                        <p>Follows EMV QR Code specification for payment systems</p>
                     </div>
                     <div class="feature-card">
-                        <h4>💧 Water Intake Calculator</h4>
-                        <p>Daily water requirements based on multiple health and environmental factors</p>
+                        <h4>🖼️ Multiple Formats</h4>
+                        <p>Base64 image output and raw QR code data</p>
                     </div>
+                </div>
+
+                <div class="info-box">
+                    <strong>About PromptPay:</strong> PromptPay is Thailand's national e-payment system that allows real-time money transfers using mobile numbers or tax identification numbers.
                 </div>
             </div>
 
@@ -313,7 +344,7 @@
             <div class="section">
                 <h2>🌐 Base URL</h2>
                 <div class="code-block">
-https://api.lorwongam.com/health-calculator/api/
+<?php echo $baseUrl; ?>
                 </div>
             </div>
 
@@ -327,14 +358,14 @@ https://api.lorwongam.com/health-calculator/api/
             <div class="section">
                 <h2>📡 API Endpoints</h2>
 
-                <!-- Unified Endpoint -->
+                <!-- Generate QR Code Endpoint -->
                 <div class="endpoint">
                     <h3>
                         <span class="method post">POST</span>
                         <span class="url">/</span>
-                        Unified Health Calculator
+                        Generate PromptPay QR Code
                     </h3>
-                    <p>Calculate BMI, BMR, Daily Intake, or Water Intake based on the calculation type specified.</p>
+                    <p>Generate a PromptPay QR code for the specified recipient and optional amount.</p>
 
                     <h4>Request Parameters</h4>
                     <table class="parameter-table">
@@ -348,100 +379,97 @@ https://api.lorwongam.com/health-calculator/api/
                         </thead>
                         <tbody>
                             <tr>
-                                <td><code>type</code></td>
+                                <td><code>target</code></td>
                                 <td>string</td>
                                 <td><span class="required">Required</span></td>
-                                <td>Calculation type: "bmi", "bmr", "daily-intake", or "water-intake"</td>
+                                <td>PromptPay target (phone number, tax ID, or e-wallet ID)</td>
                             </tr>
                             <tr>
-                                <td><code>weight</code></td>
+                                <td><code>amount</code></td>
                                 <td>number</td>
-                                <td><span class="required">Required</span></td>
-                                <td>Weight in kilograms</td>
+                                <td><span class="optional">Optional</span></td>
+                                <td>Payment amount in Thai Baht (THB)</td>
                             </tr>
                             <tr>
-                                <td><code>height</code></td>
-                                <td>number</td>
-                                <td><span class="required">Required</span></td>
-                                <td>Height in centimeters or meters</td>
+                                <td><code>size</code></td>
+                                <td>integer</td>
+                                <td><span class="optional">Optional</span></td>
+                                <td>QR code size in pixels (50-1000, default: 300)</td>
                             </tr>
                             <tr>
-                                <td><code>age</code></td>
-                                <td>number</td>
-                                <td><span class="optional">Optional*</span></td>
-                                <td>Age in years (required for BMR, Daily Intake, Water Intake)</td>
-                            </tr>
-                            <tr>
-                                <td><code>gender</code></td>
-                                <td>string</td>
-                                <td><span class="optional">Optional*</span></td>
-                                <td>"male" or "female" (required for BMR, Daily Intake, Water Intake)</td>
-                            </tr>
-                            <tr>
-                                <td><code>activity</code></td>
+                                <td><code>format</code></td>
                                 <td>string</td>
                                 <td><span class="optional">Optional</span></td>
-                                <td>Activity level: "sedentary", "light", "moderate", "active", "extra"</td>
+                                <td>Output format: "image", "json", "base64" (default: "image")</td>
                             </tr>
-                            <tr>
-                                <td><code>goal</code></td>
+                                <td><code>format</code></td>
                                 <td>string</td>
                                 <td><span class="optional">Optional</span></td>
-                                <td>For Daily Intake: "maintain", "lose", "lose-fast", "gain", "gain-fast"</td>
-                            </tr>
-                            <tr>
-                                <td><code>climate</code></td>
-                                <td>string</td>
-                                <td><span class="optional">Optional</span></td>
-                                <td>For Water Intake: "cold", "temperate", "hot", "very-hot"</td>
-                            </tr>
-                            <tr>
-                                <td><code>health_condition</code></td>
-                                <td>string</td>
-                                <td><span class="optional">Optional</span></td>
-                                <td>For Water Intake: "pregnant", "breastfeeding", "fever", "vomiting", "diarrhea"</td>
+                                <td>Output format: "base64" or "data" (default: "base64")</td>
                             </tr>
                         </tbody>
                     </table>
 
-                    <h4>Example Request - BMI Calculation</h4>
+                    <h4>ID Format Guidelines</h4>
+                    <table class="parameter-table">
+                        <thead>
+                            <tr>
+                                <th>ID Type</th>
+                                <th>Format</th>
+                                <th>Example</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Mobile Number</td>
+                                <td>+66XXXXXXXXX or 0XXXXXXXXX</td>
+                                <td>+66812345678 or 0812345678</td>
+                            </tr>
+                            <tr>
+                                <td>Tax ID</td>
+                                <td>13-digit number</td>
+                                <td>1234567890123</td>
+                            </tr>
+                            <tr>
+                                <td>e-Wallet ID</td>
+                                <td>15-digit number</td>
+                                <td>123456789012345</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h4>Example Request - Mobile Number with Amount</h4>
                     <div class="code-block">
-curl -X POST "https://api.lorwongam.com/health-calculator/api/" \
+curl -X POST "<?php echo $baseUrl; ?>" \
   -H "Content-Type: application/json" \
   -d '{
-    "type": "bmi",
-    "weight": 70,
-    "height": 175
+    "target": "0812345678",
+    "amount": 100.50,
+    "size": 300,
+    "format": "json"
   }'
                     </div>
 
-                    <h4>Example Request - Daily Intake Calculation</h4>
+                    <h4>Example Request - Tax ID without Amount</h4>
                     <div class="code-block">
-curl -X POST "https://api.lorwongam.com/health-calculator/api/" \
+curl -X POST "<?php echo $baseUrl; ?>" \
   -H "Content-Type: application/json" \
   -d '{
-    "type": "daily-intake",
-    "weight": 70,
-    "height": 175,
-    "age": 30,
-    "gender": "male",
-    "activity": "moderate",
-    "goal": "maintain"
+    "target": "1234567890123",
+    "size": 400,
+    "format": "json"
   }'
                     </div>
 
-                    <h4>Example Request - Water Intake Calculation</h4>
+                    <h4>Example Request - e-Wallet ID with Large Amount</h4>
                     <div class="code-block">
-curl -X POST "https://api.lorwongam.com/health-calculator/api/" \
+curl -X POST "<?php echo $baseUrl; ?>" \
   -H "Content-Type: application/json" \
   -d '{
-    "type": "water-intake",
-    "weight": 70,
-    "height": 175,
-    "age": 30,
-    "gender": "male",
-    "activity": "moderate",
-    "climate": "temperate"
+    "target": "123456789012345",
+    "amount": 2500,
+    "size": 500,
+    "format": "base64"
   }'
                     </div>
                 </div>
@@ -451,52 +479,40 @@ curl -X POST "https://api.lorwongam.com/health-calculator/api/" \
             <div class="section">
                 <h2>📊 Response Format</h2>
 
-                <h3>Success Response</h3>
+                <h3>Success Response (Base64 Format)</h3>
                 <div class="response-box">
-                    <h4>BMI Response Example</h4>
                     <div class="code-block">
 {
   "success": true,
   "data": {
-    "bmi": 22.86,
-    "category": "Normal weight",
-    "advice": "Great! Maintain your current lifestyle with a balanced diet and regular exercise."
+    "qr_code": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA...",
+    "promptpay_id": "0812345678",
+    "amount": 100.50,
+    "currency": "THB",
+    "emv_qr_data": "00020101021129370016A000000677010111011300...",
+    "size": 300,
+    "format": "base64"
   },
-  "message": "BMI calculated successfully",
+  "message": "PromptPay QR code generated successfully",
   "timestamp": "2025-09-09T12:00:00Z"
 }
                     </div>
                 </div>
 
+                <h3>Success Response (Data Format)</h3>
                 <div class="response-box">
-                    <h4>Daily Intake Response Example</h4>
                     <div class="code-block">
 {
   "success": true,
   "data": {
-    "bmr": 1705,
-    "maintenanceCalories": 2643,
-    "targetCalories": 2643,
-    "macronutrients": {
-      "protein": {
-        "grams": 112,
-        "calories": 448,
-        "percentage": 17
-      },
-      "fat": {
-        "grams": 73,
-        "calories": 661,
-        "percentage": 25
-      },
-      "carbs": {
-        "grams": 384,
-        "calories": 1534,
-        "percentage": 58
-      }
-    },
-    "advice": "Based on your moderate activity level and maintenance goal..."
+    "emv_qr_data": "00020101021129370016A00000067701011101130081234567803021.02540TH63041234",
+    "promptpay_id": "0812345678",
+    "amount": null,
+    "currency": "THB",
+    "size": 300,
+    "format": "data"
   },
-  "message": "Daily intake calculated successfully",
+  "message": "PromptPay QR data generated successfully",
   "timestamp": "2025-09-09T12:00:00Z"
 }
                     </div>
@@ -507,12 +523,90 @@ curl -X POST "https://api.lorwongam.com/health-calculator/api/" \
                     <div class="code-block">
 {
   "success": false,
-  "error": "Missing required parameter: weight",
-  "code": "MISSING_PARAMETER",
+  "error": "Invalid PromptPay ID format",
+  "code": "INVALID_ID",
   "timestamp": "2025-09-09T12:00:00Z"
 }
                     </div>
                 </div>
+            </div>
+
+            <!-- EMV QR Code Structure -->
+            <div class="section">
+                <h2>🔧 EMV QR Code Structure</h2>
+                <p>The generated QR codes follow the EMV® QR Code Specification for Payment Systems. The data format includes:</p>
+                
+                <table class="parameter-table">
+                    <thead>
+                        <tr>
+                            <th>Field</th>
+                            <th>Description</th>
+                            <th>Example Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Payload Format Indicator</td>
+                            <td>Version of the QR code format</td>
+                            <td>01</td>
+                        </tr>
+                        <tr>
+                            <td>Point of Initiation Method</td>
+                            <td>Static or dynamic QR code</td>
+                            <td>11 (Static), 12 (Dynamic)</td>
+                        </tr>
+                        <tr>
+                            <td>Merchant Account Information</td>
+                            <td>PromptPay identification data</td>
+                            <td>Contains PromptPay ID</td>
+                        </tr>
+                        <tr>
+                            <td>Transaction Amount</td>
+                            <td>Payment amount (if specified)</td>
+                            <td>100.50</td>
+                        </tr>
+                        <tr>
+                            <td>Transaction Currency</td>
+                            <td>ISO 4217 currency code</td>
+                            <td>764 (THB)</td>
+                        </tr>
+                        <tr>
+                            <td>Country Code</td>
+                            <td>ISO 3166-1 country code</td>
+                            <td>TH</td>
+                        </tr>
+                        <tr>
+                            <td>CRC</td>
+                            <td>Checksum for data integrity</td>
+                            <td>4-digit checksum</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Usage Guidelines -->
+            <div class="section">
+                <h2>📋 Usage Guidelines</h2>
+                
+                <div class="warning-box">
+                    <strong>Important:</strong> Always validate PromptPay IDs before generating QR codes. Invalid IDs may result in failed payments.
+                </div>
+
+                <h3>Best Practices</h3>
+                <ul style="color: #555; font-size: 1.1em; line-height: 1.8; margin-left: 20px;">
+                    <li><strong>ID Validation:</strong> Ensure mobile numbers and tax IDs are valid Thai formats</li>
+                    <li><strong>Amount Precision:</strong> Use up to 2 decimal places for amounts</li>
+                    <li><strong>QR Code Size:</strong> Use appropriate sizes for display medium (300px for web, 500px+ for print)</li>
+                    <li><strong>Error Handling:</strong> Always check the response for errors before displaying QR codes</li>
+                    <li><strong>Testing:</strong> Test QR codes with actual PromptPay apps before production use</li>
+                </ul>
+
+                <h3>Mobile Number Formats</h3>
+                <ul style="color: #555; font-size: 1.1em; line-height: 1.8; margin-left: 20px;">
+                    <li>Thai mobile numbers start with 06, 08, or 09</li>
+                    <li>Can include +66 country code or start with 0</li>
+                    <li>Total length: 10 digits (with 0) or 11 digits (with +66)</li>
+                </ul>
             </div>
 
             <!-- Error Codes -->
@@ -527,23 +621,57 @@ curl -X POST "https://api.lorwongam.com/health-calculator/api/" \
                     </thead>
                     <tbody>
                         <tr>
+                            <td><code>INVALID_ID</code></td>
+                            <td>PromptPay ID format is invalid</td>
+                        </tr>
+                        <tr>
+                            <td><code>INVALID_AMOUNT</code></td>
+                            <td>Amount is negative or exceeds maximum limit</td>
+                        </tr>
+                        <tr>
+                            <td><code>INVALID_SIZE</code></td>
+                            <td>QR code size is outside valid range (50-1000px)</td>
+                        </tr>
+                        <tr>
+                            <td><code>QR_GENERATION_ERROR</code></td>
+                            <td>Error occurred during QR code generation</td>
+                        </tr>
+                        <tr>
                             <td><code>MISSING_PARAMETER</code></td>
                             <td>Required parameter is missing</td>
                         </tr>
-                        <tr>
-                            <td><code>INVALID_TYPE</code></td>
-                            <td>Invalid calculation type specified</td>
-                        </tr>
-                        <tr>
-                            <td><code>INVALID_VALUE</code></td>
-                            <td>Parameter value is invalid or out of range</td>
-                        </tr>
-                        <tr>
-                            <td><code>CALCULATION_ERROR</code></td>
-                            <td>Error occurred during calculation</td>
-                        </tr>
                     </tbody>
                 </table>
+            </div>
+
+            <!-- Integration Examples -->
+            <div class="section">
+                <h2>🔗 Integration Examples</h2>
+
+                <h3>HTML Image Display</h3>
+                <div class="code-block">
+&lt;img src="data:image/png;base64,{base64_data}" alt="PromptPay QR Code" /&gt;
+                </div>
+
+                <h3>JavaScript Integration</h3>
+                <div class="code-block">
+fetch('<?php echo $baseUrl; ?>', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    id: '0812345678',
+    amount: 100.50
+  })
+})
+.then(response => response.json())
+.then(data => {
+  if (data.success) {
+    document.getElementById('qr-image').src = data.data.qr_code;
+  }
+});
+                </div>
             </div>
 
             <!-- Rate Limits -->
@@ -555,9 +683,9 @@ curl -X POST "https://api.lorwongam.com/health-calculator/api/" \
             <!-- Try It Out -->
             <div class="try-it">
                 <h3>🎯 Ready to Try?</h3>
-                <p>Test the Health Calculator API with our interactive web interface or start integrating it into your application.</p>
-                <a href="../" class="btn">Try Web Interface</a>
-                <a href="api/" class="btn btn-secondary">Test API Endpoint</a>
+                <p>Test the PromptPay QR Generator API with our interactive web interface or start integrating it into your application.</p>
+                <a href="../index.php" class="btn">Try Web Interface</a>
+                <a href="/api/promptpay-qr-generator/" class="btn btn-secondary">Test API Endpoint</a>
             </div>
         </div>
     </div>

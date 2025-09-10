@@ -1,9 +1,18 @@
+<?php
+// Generate dynamic base URL based on current server
+function getBaseUrl($toolName) {
+    $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
+    $host = $_SERVER['HTTP_HOST'];
+    return $protocol . '://' . $host . '/api/' . $toolName . '/';
+}
+$baseUrl = getBaseUrl('fortune-teller');
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Password Generator API Documentation</title>
+    <title>Fortune Teller API Documentation</title>
     <style>
         * {
             margin: 0;
@@ -248,15 +257,54 @@
             opacity: 0.9;
         }
 
-        .security-badge {
-            display: inline-block;
-            background: #28a745;
-            color: white;
-            padding: 6px 12px;
-            border-radius: 15px;
+        .lang-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .lang-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border: 2px solid #e9ecef;
+        }
+
+        .lang-item h5 {
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .lang-item p {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .category-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border-left: 4px solid #667eea;
+        }
+
+        .category-item h6 {
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .category-item p {
+            color: #666;
             font-size: 0.8em;
-            font-weight: bold;
-            margin: 5px;
         }
 
         @media (max-width: 768px) {
@@ -278,16 +326,16 @@
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <h1>🔐 Password Generator API</h1>
-            <p>Generate cryptographically secure passwords with customizable complexity</p>
+            <h1>🔮 Fortune Teller API</h1>
+            <p>Get multilingual fortune predictions covering all aspects of life</p>
         </div>
 
         <!-- Navigation -->
         <div class="nav">
             <div class="breadcrumb">
-                <a href="../">← Back to Main</a>
+                <a href="../index.php">← Back to Main</a>
                 <span>/</span>
-                <a href="./">Password Generator</a>
+                <a href="../fortune-teller.php">Fortune Teller</a>
                 <span>/</span>
                 <span>API Documentation</span>
             </div>
@@ -298,31 +346,71 @@
             <!-- Overview -->
             <div class="section">
                 <h2>📖 Overview</h2>
-                <p>The Password Generator API creates cryptographically secure passwords with customizable complexity options. Built with security best practices, it provides reliable password generation for applications requiring strong authentication.</p>
+                <p>The Fortune Teller API provides random fortune predictions in multiple languages. With 52 unique fortunes covering various life aspects, it's perfect for entertainment apps, daily motivation services, or cultural applications.</p>
                 
                 <div class="features-grid">
                     <div class="feature-card">
-                        <h4>🔒 Cryptographically Secure</h4>
-                        <p>Uses PHP's secure random_bytes() function for true randomness</p>
+                        <h4>🌍 Multilingual Support</h4>
+                        <p>Thai, Chinese (Simplified), and English language options</p>
                     </div>
                     <div class="feature-card">
-                        <h4>⚙️ Customizable Character Sets</h4>
-                        <p>Control uppercase, lowercase, numbers, and special characters</p>
+                        <h4>🎯 52 Unique Fortunes</h4>
+                        <p>Carefully curated predictions covering all aspects of life</p>
                     </div>
                     <div class="feature-card">
-                        <h4>📊 Password Strength Analysis</h4>
-                        <p>Automatic strength scoring and detailed feedback</p>
+                        <h4>📚 5 Life Categories</h4>
+                        <p>Love, Career, Health, Finance, and General life advice</p>
                     </div>
                     <div class="feature-card">
-                        <h4>📏 Flexible Length</h4>
-                        <p>Generate passwords from 4 to 128 characters long</p>
+                        <h4>🎲 Random Selection</h4>
+                        <p>Cryptographically secure random fortune selection</p>
                     </div>
                 </div>
+            </div>
 
-                <div style="text-align: center; margin-top: 20px;">
-                    <span class="security-badge">🛡️ Cryptographically Secure</span>
-                    <span class="security-badge">🎯 Zero Logging</span>
-                    <span class="security-badge">⚡ High Performance</span>
+            <!-- Languages -->
+            <div class="section">
+                <h2>🌍 Supported Languages</h2>
+                <div class="lang-grid">
+                    <div class="lang-item">
+                        <h5>🇹🇭 Thai</h5>
+                        <p>ภาษาไทย (th)</p>
+                    </div>
+                    <div class="lang-item">
+                        <h5>🇨🇳 Chinese</h5>
+                        <p>简体中文 (zh)</p>
+                    </div>
+                    <div class="lang-item">
+                        <h5>🇺🇸 English</h5>
+                        <p>English (en)</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Categories -->
+            <div class="section">
+                <h2>📋 Fortune Categories</h2>
+                <div class="categories-grid">
+                    <div class="category-item">
+                        <h6>💕 Love & Relationships</h6>
+                        <p>Romance, relationships, marriage</p>
+                    </div>
+                    <div class="category-item">
+                        <h6>💼 Career & Work</h6>
+                        <p>Job prospects, business success</p>
+                    </div>
+                    <div class="category-item">
+                        <h6>🏥 Health & Wellness</h6>
+                        <p>Physical and mental health</p>
+                    </div>
+                    <div class="category-item">
+                        <h6>💰 Finance & Wealth</h6>
+                        <p>Money, investments, prosperity</p>
+                    </div>
+                    <div class="category-item">
+                        <h6>🌟 General Life</h6>
+                        <p>Overall luck and life guidance</p>
+                    </div>
                 </div>
             </div>
 
@@ -330,7 +418,7 @@
             <div class="section">
                 <h2>🌐 Base URL</h2>
                 <div class="code-block">
-https://api.lorwongam.com/password-generator/api/
+<?php echo $baseUrl; ?>
                 </div>
             </div>
 
@@ -344,14 +432,37 @@ https://api.lorwongam.com/password-generator/api/
             <div class="section">
                 <h2>📡 API Endpoints</h2>
 
-                <!-- Generate Password Endpoint -->
+                <!-- Get Fortune Endpoint -->
+                <div class="endpoint">
+                    <h3>
+                        <span class="method get">GET</span>
+                        <span class="url">/</span>
+                        Get Random Fortune
+                    </h3>
+                    <p>Retrieve a random fortune prediction in the specified language.</p>
+
+                    <h4>Parameters</h4>
+                    <p>This endpoint doesn't require any parameters. It returns a random fortune from the collection of 52 fortunes, with predictions in all three languages (Thai, Chinese, and English).</p>
+
+                    <h4>Example Request - Get Random Fortune</h4>
+                    <div class="code-block">
+curl "<?php echo $baseUrl; ?>"
+                    </div>
+
+                    <h4>Example Request - POST Method</h4>
+                    <div class="code-block">
+curl -X POST "<?php echo $baseUrl; ?>"
+                    </div>
+                </div>
+
+                <!-- POST Method Alternative -->
                 <div class="endpoint">
                     <h3>
                         <span class="method post">POST</span>
                         <span class="url">/</span>
-                        Generate Password
+                        Get Random Fortune (Alternative)
                     </h3>
-                    <p>Generate a cryptographically secure password with customizable options.</p>
+                    <p>Alternative POST method for getting fortune predictions with JSON request body.</p>
 
                     <h4>Request Parameters</h4>
                     <table class="parameter-table">
@@ -366,95 +477,28 @@ https://api.lorwongam.com/password-generator/api/
                         </thead>
                         <tbody>
                             <tr>
-                                <td><code>length</code></td>
+                                <td><code>lang</code></td>
+                                <td>string</td>
+                                <td><span class="optional">Optional</span></td>
+                                <td>"en"</td>
+                                <td>Language code: "th", "zh", or "en"</td>
+                            </tr>
+                            <tr>
+                                <td><code>id</code></td>
                                 <td>integer</td>
                                 <td><span class="optional">Optional</span></td>
-                                <td>12</td>
-                                <td>Password length (4-128 characters)</td>
-                            </tr>
-                            <tr>
-                                <td><code>uppercase</code></td>
-                                <td>boolean</td>
-                                <td><span class="optional">Optional</span></td>
-                                <td>true</td>
-                                <td>Include uppercase letters (A-Z)</td>
-                            </tr>
-                            <tr>
-                                <td><code>lowercase</code></td>
-                                <td>boolean</td>
-                                <td><span class="optional">Optional</span></td>
-                                <td>true</td>
-                                <td>Include lowercase letters (a-z)</td>
-                            </tr>
-                            <tr>
-                                <td><code>numbers</code></td>
-                                <td>boolean</td>
-                                <td><span class="optional">Optional</span></td>
-                                <td>true</td>
-                                <td>Include numbers (0-9)</td>
-                            </tr>
-                            <tr>
-                                <td><code>symbols</code></td>
-                                <td>boolean</td>
-                                <td><span class="optional">Optional</span></td>
-                                <td>false</td>
-                                <td>Include special characters (!@#$%^&*)</td>
-                            </tr>
-                            <tr>
-                                <td><code>exclude_similar</code></td>
-                                <td>boolean</td>
-                                <td><span class="optional">Optional</span></td>
-                                <td>false</td>
-                                <td>Exclude similar characters (0,O,l,1,i,I)</td>
-                            </tr>
-                            <tr>
-                                <td><code>count</code></td>
-                                <td>integer</td>
-                                <td><span class="optional">Optional</span></td>
-                                <td>1</td>
-                                <td>Number of passwords to generate (1-10)</td>
+                                <td>random</td>
+                                <td>Specific fortune ID (1-52)</td>
                             </tr>
                         </tbody>
                     </table>
 
-                    <h4>Example Request - Basic Password</h4>
+                    <h4>Example POST Request</h4>
                     <div class="code-block">
-curl -X POST "https://api.lorwongam.com/password-generator/api/" \
+curl -X POST "<?php echo $baseUrl; ?>" \
   -H "Content-Type: application/json" \
   -d '{
-    "length": 16,
-    "uppercase": true,
-    "lowercase": true,
-    "numbers": true,
-    "symbols": false
-  }'
-                    </div>
-
-                    <h4>Example Request - High Security Password</h4>
-                    <div class="code-block">
-curl -X POST "https://api.lorwongam.com/password-generator/api/" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "length": 24,
-    "uppercase": true,
-    "lowercase": true,
-    "numbers": true,
-    "symbols": true,
-    "exclude_similar": true
-  }'
-                    </div>
-
-                    <h4>Example Request - Multiple Passwords</h4>
-                    <div class="code-block">
-curl -X POST "https://api.lorwongam.com/password-generator/api/" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "length": 12,
-    "uppercase": true,
-    "lowercase": true,
-    "numbers": true,
-    "symbols": true,
-    "count": 5
+    "lang": "th"
   }'
                     </div>
                 </div>
@@ -466,66 +510,54 @@ curl -X POST "https://api.lorwongam.com/password-generator/api/" \
 
                 <h3>Success Response</h3>
                 <div class="response-box">
-                    <h4>Single Password Response</h4>
+                    <h4>English Fortune Example</h4>
                     <div class="code-block">
 {
   "success": true,
   "data": {
-    "password": "Kx7mN9pQw2Yv8zR3",
-    "length": 16,
-    "strength": {
-      "score": 4,
-      "level": "Very Strong",
-      "feedback": "Excellent password with good character variety"
-    },
-    "character_sets": {
-      "uppercase": true,
-      "lowercase": true,
-      "numbers": true,
-      "symbols": false
-    },
-    "entropy": 95.42
+    "id": 7,
+    "fortune": "Today brings unexpected opportunities. Trust your instincts when making important decisions, as they will guide you toward success.",
+    "category": "general",
+    "language": "en",
+    "language_name": "English"
   },
-  "message": "Password generated successfully",
+  "message": "Fortune retrieved successfully",
   "timestamp": "2025-09-09T12:00:00Z"
 }
                     </div>
                 </div>
 
                 <div class="response-box">
-                    <h4>Multiple Passwords Response</h4>
+                    <h4>Thai Fortune Example</h4>
                     <div class="code-block">
 {
   "success": true,
   "data": {
-    "passwords": [
-      {
-        "password": "Kx7mN9pQw2Yv",
-        "strength": {
-          "score": 4,
-          "level": "Very Strong"
-        }
-      },
-      {
-        "password": "Zf5bH8nMv3Qp",
-        "strength": {
-          "score": 4,
-          "level": "Very Strong"
-        }
-      }
-    ],
-    "count": 2,
-    "settings": {
-      "length": 12,
-      "character_sets": {
-        "uppercase": true,
-        "lowercase": true,
-        "numbers": true,
-        "symbols": false
-      }
-    }
+    "id": 15,
+    "fortune": "ความรักที่แท้จริงกำลังจะมาถึง อดทนรอคอยและเปิดใจให้กับคนใหม่ที่เข้ามาในชีวิต",
+    "category": "love",
+    "language": "th",
+    "language_name": "Thai"
   },
-  "message": "Passwords generated successfully",
+  "message": "Fortune retrieved successfully",
+  "timestamp": "2025-09-09T12:00:00Z"
+}
+                    </div>
+                </div>
+
+                <div class="response-box">
+                    <h4>Chinese Fortune Example</h4>
+                    <div class="code-block">
+{
+  "success": true,
+  "data": {
+    "id": 23,
+    "fortune": "事业运势渐入佳境，与同事合作将带来意想不到的成果，把握机会展现自己的才华。",
+    "category": "career",
+    "language": "zh",
+    "language_name": "Chinese"
+  },
+  "message": "Fortune retrieved successfully",
   "timestamp": "2025-09-09T12:00:00Z"
 }
                     </div>
@@ -536,52 +568,50 @@ curl -X POST "https://api.lorwongam.com/password-generator/api/" \
                     <div class="code-block">
 {
   "success": false,
-  "error": "Invalid password length. Must be between 4 and 128 characters",
-  "code": "INVALID_LENGTH",
+  "error": "Invalid language code. Supported languages: th, zh, en",
+  "code": "INVALID_LANGUAGE",
   "timestamp": "2025-09-09T12:00:00Z"
 }
                     </div>
                 </div>
             </div>
 
-            <!-- Password Strength -->
+            <!-- Fortune Categories -->
             <div class="section">
-                <h2>💪 Password Strength Analysis</h2>
-                <p>Each generated password includes automatic strength analysis based on length, character variety, and entropy.</p>
-
+                <h2>🎯 Fortune Categories</h2>
                 <table class="parameter-table">
                     <thead>
                         <tr>
-                            <th>Score</th>
-                            <th>Level</th>
+                            <th>Category</th>
                             <th>Description</th>
+                            <th>Example Topics</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td>1</td>
-                            <td>Very Weak</td>
-                            <td>Short length, single character type</td>
+                            <td><code>love</code></td>
+                            <td>Love and relationships</td>
+                            <td>Romance, marriage, soulmates, heartbreak recovery</td>
                         </tr>
                         <tr>
-                            <td>2</td>
-                            <td>Weak</td>
-                            <td>Short length, limited character variety</td>
+                            <td><code>career</code></td>
+                            <td>Career and professional life</td>
+                            <td>Job opportunities, promotions, business ventures</td>
                         </tr>
                         <tr>
-                            <td>3</td>
-                            <td>Moderate</td>
-                            <td>Adequate length, good character variety</td>
+                            <td><code>health</code></td>
+                            <td>Health and wellness</td>
+                            <td>Physical health, mental wellness, lifestyle changes</td>
                         </tr>
                         <tr>
-                            <td>4</td>
-                            <td>Strong</td>
-                            <td>Good length, multiple character types</td>
+                            <td><code>finance</code></td>
+                            <td>Money and financial matters</td>
+                            <td>Investments, savings, financial planning, prosperity</td>
                         </tr>
                         <tr>
-                            <td>5</td>
-                            <td>Very Strong</td>
-                            <td>Long length, all character types, high entropy</td>
+                            <td><code>general</code></td>
+                            <td>General life guidance</td>
+                            <td>Overall luck, life decisions, personal growth</td>
                         </tr>
                     </tbody>
                 </table>
@@ -599,35 +629,63 @@ curl -X POST "https://api.lorwongam.com/password-generator/api/" \
                     </thead>
                     <tbody>
                         <tr>
-                            <td><code>INVALID_LENGTH</code></td>
-                            <td>Password length is outside the valid range (4-128)</td>
+                            <td><code>INVALID_LANGUAGE</code></td>
+                            <td>Language code is not supported</td>
                         </tr>
                         <tr>
-                            <td><code>NO_CHARACTER_SETS</code></td>
-                            <td>At least one character set must be enabled</td>
+                            <td><code>INVALID_ID</code></td>
+                            <td>Fortune ID is outside the valid range (1-52)</td>
                         </tr>
                         <tr>
-                            <td><code>INVALID_COUNT</code></td>
-                            <td>Password count is outside the valid range (1-10)</td>
+                            <td><code>FORTUNE_NOT_FOUND</code></td>
+                            <td>Specified fortune ID does not exist</td>
                         </tr>
                         <tr>
-                            <td><code>GENERATION_ERROR</code></td>
-                            <td>Error occurred during password generation</td>
+                            <td><code>FILE_ERROR</code></td>
+                            <td>Error reading fortune data files</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
 
-            <!-- Security Notes -->
+            <!-- Integration Examples -->
             <div class="section">
-                <h2>🛡️ Security Features</h2>
-                <ul style="color: #555; font-size: 1.1em; line-height: 1.8;">
-                    <li><strong>Cryptographically Secure:</strong> Uses PHP's <code>random_bytes()</code> for true randomness</li>
-                    <li><strong>No Logging:</strong> Generated passwords are not stored or logged anywhere</li>
-                    <li><strong>HTTPS Only:</strong> All communications are encrypted</li>
-                    <li><strong>High Entropy:</strong> Calculated entropy values help assess true password strength</li>
-                    <li><strong>Similar Character Exclusion:</strong> Option to exclude visually similar characters</li>
-                </ul>
+                <h2>🔗 Integration Examples</h2>
+
+                <h3>JavaScript/AJAX</h3>
+                <div class="code-block">
+fetch('<?php echo $baseUrl; ?>?lang=en')
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      console.log('Fortune:', data.data.fortune);
+      console.log('Category:', data.data.category);
+    }
+  });
+                </div>
+
+                <h3>PHP</h3>
+                <div class="code-block">
+$response = file_get_contents('<?php echo $baseUrl; ?>?lang=th');
+$data = json_decode($response, true);
+
+if ($data['success']) {
+    echo "Fortune: " . $data['data']['fortune'];
+    echo "Category: " . $data['data']['category'];
+}
+                </div>
+
+                <h3>Python</h3>
+                <div class="code-block">
+import requests
+
+response = requests.get('<?php echo $baseUrl; ?>?lang=zh')
+data = response.json()
+
+if data['success']:
+    print(f"Fortune: {data['data']['fortune']}")
+    print(f"Category: {data['data']['category']}")
+                </div>
             </div>
 
             <!-- Rate Limits -->
@@ -636,12 +694,23 @@ curl -X POST "https://api.lorwongam.com/password-generator/api/" \
                 <p>Currently, there are no rate limits imposed on this API. However, please use it responsibly and avoid excessive requests that might impact service availability for other users.</p>
             </div>
 
+            <!-- Cultural Notes -->
+            <div class="section">
+                <h2>🏛️ Cultural Considerations</h2>
+                <ul style="color: #555; font-size: 1.1em; line-height: 1.8; margin-left: 20px;">
+                    <li><strong>Respectful Content:</strong> All fortunes are designed to be positive and respectful across cultures</li>
+                    <li><strong>Cultural Sensitivity:</strong> Translations maintain cultural context appropriate for each language</li>
+                    <li><strong>Entertainment Purpose:</strong> This API is designed for entertainment and should not be used for serious life decisions</li>
+                    <li><strong>Diverse Perspectives:</strong> Fortunes cover universal human experiences across different cultures</li>
+                </ul>
+            </div>
+
             <!-- Try It Out -->
             <div class="try-it">
                 <h3>🎯 Ready to Try?</h3>
-                <p>Test the Password Generator API with our interactive web interface or start integrating it into your application.</p>
-                <a href="../" class="btn">Try Web Interface</a>
-                <a href="api/" class="btn btn-secondary">Test API Endpoint</a>
+                <p>Test the Fortune Teller API with our interactive web interface or start integrating it into your application.</p>
+                <a href="../index.php" class="btn">Try Web Interface</a>
+                <a href="/api/fortune-teller/" class="btn btn-secondary">Test API Endpoint</a>
             </div>
         </div>
     </div>

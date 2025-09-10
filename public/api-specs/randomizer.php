@@ -1,9 +1,18 @@
+<?php
+// Generate dynamic base URL based on current server
+function getBaseUrl($toolName) {
+    $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
+    $host = $_SERVER['HTTP_HOST'];
+    return $protocol . '://' . $host . '/api/' . $toolName . '/';
+}
+$baseUrl = getBaseUrl('randomizer');
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Username Generator API Documentation</title>
+    <title>Random Generator API Documentation</title>
     <style>
         * {
             margin: 0;
@@ -248,14 +257,14 @@
             opacity: 0.9;
         }
 
-        .theme-list {
+        .types-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 15px;
             margin: 20px 0;
         }
 
-        .theme-item {
+        .type-item {
             background: #f8f9fa;
             padding: 15px;
             border-radius: 8px;
@@ -263,14 +272,25 @@
             border: 2px solid #e9ecef;
         }
 
-        .theme-item h5 {
+        .type-item h5 {
             color: #333;
             margin-bottom: 8px;
         }
 
-        .theme-item p {
+        .type-item p {
             color: #666;
             font-size: 0.9em;
+        }
+
+        .security-badge {
+            display: inline-block;
+            background: #28a745;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: bold;
+            margin: 5px;
         }
 
         @media (max-width: 768px) {
@@ -292,16 +312,16 @@
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <h1>👤 Username Generator API</h1>
-            <p>Create unique usernames using themed word combinations</p>
+            <h1>🎲 Random Generator API</h1>
+            <p>Generate random numbers, dice rolls, coin flips, and card draws</p>
         </div>
 
         <!-- Navigation -->
         <div class="nav">
             <div class="breadcrumb">
-                <a href="../">← Back to Main</a>
+                <a href="../index.php">← Back to Main</a>
                 <span>/</span>
-                <a href="./">Username Generator</a>
+                <a href="../randomizer.php">Random Generator</a>
                 <span>/</span>
                 <span>API Documentation</span>
             </div>
@@ -312,55 +332,53 @@
             <!-- Overview -->
             <div class="section">
                 <h2>📖 Overview</h2>
-                <p>The Username Generator API creates unique usernames by combining words from various themed categories. Perfect for user registration systems, game character names, or any application requiring creative username suggestions.</p>
+                <p>The Random Generator API provides cryptographically secure random generation for various use cases including numbers, dice rolls, coin flips, and card draws. Perfect for games, statistical sampling, or any application requiring reliable randomness.</p>
                 
                 <div class="features-grid">
                     <div class="feature-card">
-                        <h4>🎭 6 Themed Categories</h4>
-                        <p>Animals, Colors, Nature, Tech, Space, and Fantasy themed word sets</p>
+                        <h4>🔢 Number Generation</h4>
+                        <p>Generate random integers and floats within specified ranges</p>
                     </div>
                     <div class="feature-card">
-                        <h4>🔄 Cross-Theme Combinations</h4>
-                        <p>Mix words from different themes for creative combinations</p>
+                        <h4>🎲 Dice Rolling</h4>
+                        <p>Simulate rolling various dice types (D4, D6, D8, D10, D12, D20, D100)</p>
                     </div>
                     <div class="feature-card">
-                        <h4>📚 Rich Word Database</h4>
-                        <p>100+ general adjectives plus hundreds of themed words</p>
+                        <h4>🪙 Coin Flipping</h4>
+                        <p>Generate random coin flips with customizable options</p>
                     </div>
                     <div class="feature-card">
-                        <h4>📊 Bulk Generation</h4>
-                        <p>Generate multiple username suggestions in a single request</p>
+                        <h4>🃏 Card Drawing</h4>
+                        <p>Draw random playing cards from a standard 52-card deck</p>
                     </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 20px;">
+                    <span class="security-badge">🔒 Cryptographically Secure</span>
+                    <span class="security-badge">⚡ High Performance</span>
+                    <span class="security-badge">🎯 Multiple Types</span>
                 </div>
             </div>
 
-            <!-- Themes -->
+            <!-- Generation Types -->
             <div class="section">
-                <h2>🎨 Available Themes</h2>
-                <div class="theme-list">
-                    <div class="theme-item">
-                        <h5>🐾 Animals</h5>
-                        <p>Wildlife and domestic animals</p>
+                <h2>🎯 Generation Types</h2>
+                <div class="types-grid">
+                    <div class="type-item">
+                        <h5>🔢 Numbers</h5>
+                        <p>Integers and decimals</p>
                     </div>
-                    <div class="theme-item">
-                        <h5>🌈 Colors</h5>
-                        <p>Colors and color variations</p>
+                    <div class="type-item">
+                        <h5>🎲 Dice</h5>
+                        <p>D4, D6, D8, D10, D12, D20, D100</p>
                     </div>
-                    <div class="theme-item">
-                        <h5>🌿 Nature</h5>
-                        <p>Natural elements and phenomena</p>
+                    <div class="type-item">
+                        <h5>🪙 Coins</h5>
+                        <p>Heads or Tails</p>
                     </div>
-                    <div class="theme-item">
-                        <h5>💻 Technology</h5>
-                        <p>Tech terms and digital concepts</p>
-                    </div>
-                    <div class="theme-item">
-                        <h5>🚀 Space</h5>
-                        <p>Celestial bodies and space terms</p>
-                    </div>
-                    <div class="theme-item">
-                        <h5>🧙 Fantasy</h5>
-                        <p>Mythical creatures and magical elements</p>
+                    <div class="type-item">
+                        <h5>🃏 Cards</h5>
+                        <p>52-card deck</p>
                     </div>
                 </div>
             </div>
@@ -369,7 +387,7 @@
             <div class="section">
                 <h2>🌐 Base URL</h2>
                 <div class="code-block">
-https://api.lorwongam.com/username-generator/api/
+<?php echo $baseUrl; ?>
                 </div>
             </div>
 
@@ -383,14 +401,14 @@ https://api.lorwongam.com/username-generator/api/
             <div class="section">
                 <h2>📡 API Endpoints</h2>
 
-                <!-- Generate Username Endpoint -->
+                <!-- Unified Generator Endpoint -->
                 <div class="endpoint">
                     <h3>
                         <span class="method post">POST</span>
                         <span class="url">/</span>
-                        Generate Username
+                        Generate Random Values
                     </h3>
-                    <p>Generate unique usernames based on specified themes and options.</p>
+                    <p>Generate random values based on the specified type and parameters.</p>
 
                     <h4>Request Parameters</h4>
                     <table class="parameter-table">
@@ -399,98 +417,116 @@ https://api.lorwongam.com/username-generator/api/
                                 <th>Parameter</th>
                                 <th>Type</th>
                                 <th>Required</th>
-                                <th>Default</th>
                                 <th>Description</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td><code>theme</code></td>
+                                <td><code>type</code></td>
                                 <td>string</td>
-                                <td><span class="optional">Optional</span></td>
-                                <td>"random"</td>
-                                <td>Theme: "animals", "colors", "nature", "tech", "space", "fantasy", "random"</td>
+                                <td><span class="required">Required</span></td>
+                                <td>Generation type: "number", "dice", "coin", "card", "all"</td>
                             </tr>
                             <tr>
-                                <td><code>format</code></td>
-                                <td>string</td>
-                                <td><span class="optional">Optional</span></td>
-                                <td>"adjective_noun"</td>
-                                <td>Format: "adjective_noun", "noun_adjective", "noun_only"</td>
+                                <td><code>min</code></td>
+                                <td>integer</td>
+                                <td><span class="optional">Optional*</span></td>
+                                <td>Minimum value (for number type, default: 1)</td>
                             </tr>
                             <tr>
-                                <td><code>separator</code></td>
-                                <td>string</td>
-                                <td><span class="optional">Optional</span></td>
-                                <td>"_"</td>
-                                <td>Word separator: "_", "-", "", "." (empty for no separator)</td>
+                                <td><code>max</code></td>
+                                <td>integer</td>
+                                <td><span class="optional">Optional*</span></td>
+                                <td>Maximum value (for number type, default: 100)</td>
                             </tr>
                             <tr>
-                                <td><code>numbers</code></td>
-                                <td>boolean</td>
-                                <td><span class="optional">Optional</span></td>
-                                <td>false</td>
-                                <td>Append random numbers to username</td>
-                            </tr>
-                            <tr>
-                                <td><code>case_style</code></td>
-                                <td>string</td>
-                                <td><span class="optional">Optional</span></td>
-                                <td>"lowercase"</td>
-                                <td>Case style: "lowercase", "uppercase", "title", "camel"</td>
+                                <td><code>sides</code></td>
+                                <td>integer</td>
+                                <td><span class="optional">Optional*</span></td>
+                                <td>Number of sides on dice (for dice type, 2-100, default: 6)</td>
                             </tr>
                             <tr>
                                 <td><code>count</code></td>
                                 <td>integer</td>
                                 <td><span class="optional">Optional</span></td>
-                                <td>1</td>
-                                <td>Number of usernames to generate (1-20)</td>
+                                <td>Number of items to generate (dice: 1-10, coin: 1-10, card: 1-52, default: 1)</td>
                             </tr>
                             <tr>
-                                <td><code>max_length</code></td>
+                                <td><code>with_jokers</code></td>
+                                <td>boolean</td>
+                                <td><span class="optional">Optional</span></td>
+                                <td>Include jokers in card deck (for card type, default: false)</td>
+                            </tr>
+                            <tr>
+                                <td><code>coin_count</code></td>
                                 <td>integer</td>
                                 <td><span class="optional">Optional</span></td>
-                                <td>null</td>
-                                <td>Maximum username length (excludes numbers)</td>
+                                <td>Number of coins to flip (1-10)</td>
+                            </tr>
+                            <tr>
+                                <td><code>card_count</code></td>
+                                <td>integer</td>
+                                <td><span class="optional">Optional</span></td>
+                                <td>Number of cards to draw (1-52)</td>
+                            </tr>
+                            <tr>
+                                <td><code>count</code></td>
+                                <td>integer</td>
+                                <td><span class="optional">Optional</span></td>
+                                <td>Number of results to generate (1-100)</td>
                             </tr>
                         </tbody>
                     </table>
 
-                    <h4>Example Request - Simple Username</h4>
+                    <h4>Example Request - Random Number</h4>
                     <div class="code-block">
-curl -X POST "https://api.lorwongam.com/username-generator/api/" \
+curl -X POST "<?php echo $baseUrl; ?>" \
   -H "Content-Type: application/json" \
   -d '{
-    "theme": "animals",
-    "format": "adjective_noun",
-    "separator": "_"
+    "type": "number",
+    "min": 1,
+    "max": 100
   }'
                     </div>
 
-                    <h4>Example Request - Gaming Username</h4>
+                    <h4>Example Request - Dice Roll</h4>
                     <div class="code-block">
-curl -X POST "https://api.lorwongam.com/username-generator/api/" \
+curl -X POST "<?php echo $baseUrl; ?>" \
   -H "Content-Type: application/json" \
   -d '{
-    "theme": "fantasy",
-    "format": "adjective_noun",
-    "separator": "",
-    "numbers": true,
-    "case_style": "title",
+    "type": "dice",
+    "sides": 20,
+    "count": 3
+  }'
+                    </div>
+
+                    <h4>Example Request - Coin Flip</h4>
+                    <div class="code-block">
+curl -X POST "<?php echo $baseUrl; ?>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "type": "coin",
     "count": 5
   }'
                     </div>
 
-                    <h4>Example Request - Professional Username</h4>
+                    <h4>Example Request - Card Draw</h4>
                     <div class="code-block">
-curl -X POST "https://api.lorwongam.com/username-generator/api/" \
+curl -X POST "<?php echo $baseUrl; ?>" \
   -H "Content-Type: application/json" \
   -d '{
-    "theme": "tech",
-    "format": "noun_adjective",
-    "separator": "-",
-    "case_style": "lowercase",
-    "max_length": 15
+    "type": "card",
+    "count": 5,
+    "with_jokers": true
+  }'
+                    </div>
+
+                    <h4>Example Request - Generate All Types</h4>
+                    <div class="code-block">
+curl -X POST "<?php echo $baseUrl; ?>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "type": "all"
   }'
                     </div>
                 </div>
@@ -500,69 +536,123 @@ curl -X POST "https://api.lorwongam.com/username-generator/api/" \
             <div class="section">
                 <h2>📊 Response Format</h2>
 
-                <h3>Success Response</h3>
+                <h3>Success Response Examples</h3>
+                
                 <div class="response-box">
-                    <h4>Single Username Response</h4>
+                    <h4>Random Numbers Response</h4>
                     <div class="code-block">
 {
   "success": true,
   "data": {
-    "username": "swift_panther",
-    "theme": "animals",
-    "format": "adjective_noun",
-    "length": 13,
-    "components": {
-      "adjective": "swift",
-      "noun": "panther"
-    },
+    "type": "number",
+    "results": [42, 17, 89, 3, 76],
+    "count": 5,
     "settings": {
-      "separator": "_",
-      "case_style": "lowercase",
-      "numbers": false
+      "min": 1,
+      "max": 100,
+      "decimal_places": 0
     }
   },
-  "message": "Username generated successfully",
+  "message": "Random numbers generated successfully",
   "timestamp": "2025-09-09T12:00:00Z"
 }
                     </div>
                 </div>
 
                 <div class="response-box">
-                    <h4>Multiple Usernames Response</h4>
+                    <h4>Dice Roll Response</h4>
                     <div class="code-block">
 {
   "success": true,
   "data": {
-    "usernames": [
+    "type": "dice",
+    "results": [
       {
-        "username": "MysticDragon99",
-        "theme": "fantasy",
-        "length": 13,
-        "components": {
-          "adjective": "mystic",
-          "noun": "dragon"
-        }
+        "die": 1,
+        "value": 18,
+        "dice_type": "d20"
       },
       {
-        "username": "AncientWizard42",
-        "theme": "fantasy",
-        "length": 15,
-        "components": {
-          "adjective": "ancient",
-          "noun": "wizard"
-        }
+        "die": 2,
+        "value": 7,
+        "dice_type": "d20"
+      },
+      {
+        "die": 3,
+        "value": 20,
+        "dice_type": "d20"
       }
     ],
-    "count": 2,
-    "settings": {
-      "theme": "fantasy",
-      "format": "adjective_noun",
-      "separator": "",
-      "case_style": "title",
-      "numbers": true
-    }
+    "total": 45,
+    "dice_count": 3,
+    "dice_type": "d20"
   },
-  "message": "Usernames generated successfully",
+  "message": "Dice rolled successfully",
+  "timestamp": "2025-09-09T12:00:00Z"
+}
+                    </div>
+                </div>
+
+                <div class="response-box">
+                    <h4>Coin Flip Response</h4>
+                    <div class="code-block">
+{
+  "success": true,
+  "data": {
+    "type": "coin",
+    "results": [
+      {
+        "coin": 1,
+        "result": "heads"
+      },
+      {
+        "coin": 2,
+        "result": "tails"
+      },
+      {
+        "coin": 3,
+        "result": "heads"
+      }
+    ],
+    "summary": {
+      "heads": 2,
+      "tails": 1
+    },
+    "coin_count": 3
+  },
+  "message": "Coins flipped successfully",
+  "timestamp": "2025-09-09T12:00:00Z"
+}
+                    </div>
+                </div>
+
+                <div class="response-box">
+                    <h4>Card Draw Response</h4>
+                    <div class="code-block">
+{
+  "success": true,
+  "data": {
+    "type": "card",
+    "results": [
+      {
+        "card": 1,
+        "rank": "King",
+        "suit": "Hearts",
+        "value": "K♥",
+        "unicode": "🂾"
+      },
+      {
+        "card": 2,
+        "rank": "7",
+        "suit": "Spades",
+        "value": "7♠",
+        "unicode": "🂧"
+      }
+    ],
+    "card_count": 2,
+    "remaining_cards": 50
+  },
+  "message": "Cards drawn successfully",
   "timestamp": "2025-09-09T12:00:00Z"
 }
                     </div>
@@ -573,76 +663,95 @@ curl -X POST "https://api.lorwongam.com/username-generator/api/" \
                     <div class="code-block">
 {
   "success": false,
-  "error": "Invalid theme specified. Must be one of: animals, colors, nature, tech, space, fantasy, random",
-  "code": "INVALID_THEME",
+  "error": "Invalid generation type. Must be one of: number, dice, coin, card",
+  "code": "INVALID_TYPE",
   "timestamp": "2025-09-09T12:00:00Z"
 }
                     </div>
                 </div>
             </div>
 
-            <!-- Format Options -->
+            <!-- Dice Types -->
             <div class="section">
-                <h2>🎯 Format Options</h2>
+                <h2>🎲 Dice Types</h2>
                 <table class="parameter-table">
                     <thead>
                         <tr>
-                            <th>Format</th>
-                            <th>Structure</th>
-                            <th>Example</th>
+                            <th>Dice Type</th>
+                            <th>Sides</th>
+                            <th>Range</th>
+                            <th>Common Use</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td><code>adjective_noun</code></td>
-                            <td>Adjective + Noun</td>
-                            <td>swift_panther</td>
+                            <td><code>d4</code></td>
+                            <td>4</td>
+                            <td>1-4</td>
+                            <td>Damage dice in RPGs</td>
                         </tr>
                         <tr>
-                            <td><code>noun_adjective</code></td>
-                            <td>Noun + Adjective</td>
-                            <td>panther_swift</td>
+                            <td><code>d6</code></td>
+                            <td>6</td>
+                            <td>1-6</td>
+                            <td>Standard board game die</td>
                         </tr>
                         <tr>
-                            <td><code>noun_only</code></td>
-                            <td>Noun only</td>
-                            <td>panther</td>
+                            <td><code>d8</code></td>
+                            <td>8</td>
+                            <td>1-8</td>
+                            <td>RPG weapon damage</td>
+                        </tr>
+                        <tr>
+                            <td><code>d10</code></td>
+                            <td>10</td>
+                            <td>1-10</td>
+                            <td>Percentile systems</td>
+                        </tr>
+                        <tr>
+                            <td><code>d12</code></td>
+                            <td>12</td>
+                            <td>1-12</td>
+                            <td>Heavy weapon damage</td>
+                        </tr>
+                        <tr>
+                            <td><code>d20</code></td>
+                            <td>20</td>
+                            <td>1-20</td>
+                            <td>D&D ability checks</td>
+                        </tr>
+                        <tr>
+                            <td><code>d100</code></td>
+                            <td>100</td>
+                            <td>1-100</td>
+                            <td>Percentage rolls</td>
                         </tr>
                     </tbody>
                 </table>
+            </div>
 
-                <h3>Case Style Options</h3>
-                <table class="parameter-table">
-                    <thead>
-                        <tr>
-                            <th>Style</th>
-                            <th>Description</th>
-                            <th>Example</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><code>lowercase</code></td>
-                            <td>All lowercase</td>
-                            <td>swift_panther</td>
-                        </tr>
-                        <tr>
-                            <td><code>uppercase</code></td>
-                            <td>All uppercase</td>
-                            <td>SWIFT_PANTHER</td>
-                        </tr>
-                        <tr>
-                            <td><code>title</code></td>
-                            <td>First letter of each word capitalized</td>
-                            <td>Swift_Panther</td>
-                        </tr>
-                        <tr>
-                            <td><code>camel</code></td>
-                            <td>CamelCase (no separators)</td>
-                            <td>SwiftPanther</td>
-                        </tr>
-                    </tbody>
-                </table>
+            <!-- Card Information -->
+            <div class="section">
+                <h2>🃏 Playing Card Information</h2>
+                <p>The card drawing feature uses a standard 52-card deck with the following specifications:</p>
+                
+                <h3>Suits</h3>
+                <ul style="color: #555; font-size: 1.1em; line-height: 1.8; margin-left: 20px;">
+                    <li><strong>Hearts (♥):</strong> Red suit</li>
+                    <li><strong>Diamonds (♦):</strong> Red suit</li>
+                    <li><strong>Clubs (♣):</strong> Black suit</li>
+                    <li><strong>Spades (♠):</strong> Black suit</li>
+                </ul>
+
+                <h3>Ranks</h3>
+                <ul style="color: #555; font-size: 1.1em; line-height: 1.8; margin-left: 20px;">
+                    <li><strong>Number Cards:</strong> 2, 3, 4, 5, 6, 7, 8, 9, 10</li>
+                    <li><strong>Face Cards:</strong> Jack (J), Queen (Q), King (K)</li>
+                    <li><strong>Ace:</strong> A (can be high or low depending on game rules)</li>
+                </ul>
+
+                <h3>Unicode Support</h3>
+                <p>Each card includes Unicode playing card symbols for easy display in applications.</p>
             </div>
 
             <!-- Error Codes -->
@@ -657,27 +766,54 @@ curl -X POST "https://api.lorwongam.com/username-generator/api/" \
                     </thead>
                     <tbody>
                         <tr>
-                            <td><code>INVALID_THEME</code></td>
-                            <td>Theme parameter is not valid</td>
+                            <td><code>INVALID_TYPE</code></td>
+                            <td>Generation type is not supported</td>
                         </tr>
                         <tr>
-                            <td><code>INVALID_FORMAT</code></td>
-                            <td>Format parameter is not valid</td>
+                            <td><code>INVALID_RANGE</code></td>
+                            <td>Min/Max values are invalid or min > max</td>
                         </tr>
                         <tr>
-                            <td><code>INVALID_CASE_STYLE</code></td>
-                            <td>Case style parameter is not valid</td>
+                            <td><code>INVALID_DICE_TYPE</code></td>
+                            <td>Dice type is not supported</td>
                         </tr>
                         <tr>
                             <td><code>INVALID_COUNT</code></td>
-                            <td>Count is outside the valid range (1-20)</td>
+                            <td>Count parameter is outside valid range</td>
+                        </tr>
+                        <tr>
+                            <td><code>INVALID_DECIMAL_PLACES</code></td>
+                            <td>Decimal places is outside valid range (0-10)</td>
                         </tr>
                         <tr>
                             <td><code>GENERATION_ERROR</code></td>
-                            <td>Error occurred during username generation</td>
+                            <td>Error occurred during random generation</td>
                         </tr>
                     </tbody>
                 </table>
+            </div>
+
+            <!-- Use Cases -->
+            <div class="section">
+                <h2>🎯 Common Use Cases</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <h4>🎮 Gaming Applications</h4>
+                        <p>Dice rolls, card games, random events, loot generation</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>📊 Statistical Sampling</h4>
+                        <p>Random sampling, A/B testing, survey randomization</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>🎰 Casino & Gambling</h4>
+                        <p>Fair randomization for gambling applications</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>🧪 Research & Testing</h4>
+                        <p>Random data generation, simulation, testing scenarios</p>
+                    </div>
+                </div>
             </div>
 
             <!-- Rate Limits -->
@@ -689,9 +825,9 @@ curl -X POST "https://api.lorwongam.com/username-generator/api/" \
             <!-- Try It Out -->
             <div class="try-it">
                 <h3>🎯 Ready to Try?</h3>
-                <p>Test the Username Generator API with our interactive web interface or start integrating it into your application.</p>
-                <a href="../" class="btn">Try Web Interface</a>
-                <a href="api/" class="btn btn-secondary">Test API Endpoint</a>
+                <p>Test the Random Generator API with our interactive web interface or start integrating it into your application.</p>
+                <a href="../index.php" class="btn">Try Web Interface</a>
+                <a href="/api/randomizer/" class="btn btn-secondary">Test API Endpoint</a>
             </div>
         </div>
     </div>
