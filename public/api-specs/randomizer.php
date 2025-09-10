@@ -416,37 +416,37 @@ https://api.lorwongam.com/randomizer/api/
                                 <td><code>type</code></td>
                                 <td>string</td>
                                 <td><span class="required">Required</span></td>
-                                <td>Generation type: "number", "dice", "coin", or "card"</td>
+                                <td>Generation type: "number", "dice", "coin", "card", "all"</td>
                             </tr>
                             <tr>
                                 <td><code>min</code></td>
-                                <td>number</td>
+                                <td>integer</td>
                                 <td><span class="optional">Optional*</span></td>
-                                <td>Minimum value (for number type)</td>
+                                <td>Minimum value (for number type, default: 1)</td>
                             </tr>
                             <tr>
                                 <td><code>max</code></td>
-                                <td>number</td>
+                                <td>integer</td>
                                 <td><span class="optional">Optional*</span></td>
-                                <td>Maximum value (for number type)</td>
+                                <td>Maximum value (for number type, default: 100)</td>
                             </tr>
                             <tr>
-                                <td><code>decimal_places</code></td>
+                                <td><code>sides</code></td>
+                                <td>integer</td>
+                                <td><span class="optional">Optional*</span></td>
+                                <td>Number of sides on dice (for dice type, 2-100, default: 6)</td>
+                            </tr>
+                            <tr>
+                                <td><code>count</code></td>
                                 <td>integer</td>
                                 <td><span class="optional">Optional</span></td>
-                                <td>Decimal places for floating-point numbers (0-10)</td>
+                                <td>Number of items to generate (dice: 1-10, coin: 1-10, card: 1-52, default: 1)</td>
                             </tr>
                             <tr>
-                                <td><code>dice_type</code></td>
-                                <td>string</td>
-                                <td><span class="optional">Optional*</span></td>
-                                <td>Dice type: "d4", "d6", "d8", "d10", "d12", "d20", "d100"</td>
-                            </tr>
-                            <tr>
-                                <td><code>dice_count</code></td>
-                                <td>integer</td>
+                                <td><code>with_jokers</code></td>
+                                <td>boolean</td>
                                 <td><span class="optional">Optional</span></td>
-                                <td>Number of dice to roll (1-10)</td>
+                                <td>Include jokers in card deck (for card type, default: false)</td>
                             </tr>
                             <tr>
                                 <td><code>coin_count</code></td>
@@ -476,8 +476,7 @@ curl -X POST "https://api.lorwongam.com/randomizer/api/" \
   -d '{
     "type": "number",
     "min": 1,
-    "max": 100,
-    "count": 5
+    "max": 100
   }'
                     </div>
 
@@ -487,8 +486,8 @@ curl -X POST "https://api.lorwongam.com/randomizer/api/" \
   -H "Content-Type: application/json" \
   -d '{
     "type": "dice",
-    "dice_type": "d20",
-    "dice_count": 3
+    "sides": 20,
+    "count": 3
   }'
                     </div>
 
@@ -498,7 +497,7 @@ curl -X POST "https://api.lorwongam.com/randomizer/api/" \
   -H "Content-Type: application/json" \
   -d '{
     "type": "coin",
-    "coin_count": 5
+    "count": 5
   }'
                     </div>
 
@@ -508,20 +507,17 @@ curl -X POST "https://api.lorwongam.com/randomizer/api/" \
   -H "Content-Type: application/json" \
   -d '{
     "type": "card",
-    "card_count": 5
+    "count": 5,
+    "with_jokers": true
   }'
                     </div>
 
-                    <h4>Example Request - Floating Point Numbers</h4>
+                    <h4>Example Request - Generate All Types</h4>
                     <div class="code-block">
 curl -X POST "https://api.lorwongam.com/randomizer/api/" \
   -H "Content-Type: application/json" \
   -d '{
-    "type": "number",
-    "min": 0,
-    "max": 1,
-    "decimal_places": 3,
-    "count": 10
+    "type": "all"
   }'
                     </div>
                 </div>

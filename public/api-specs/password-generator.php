@@ -366,53 +366,81 @@ https://api.lorwongam.com/password-generator/api/
                         </thead>
                         <tbody>
                             <tr>
-                                <td><code>length</code></td>
+                                <td><code>min_length</code></td>
                                 <td>integer</td>
                                 <td><span class="optional">Optional</span></td>
-                                <td>12</td>
-                                <td>Password length (4-128 characters)</td>
+                                <td>8</td>
+                                <td>Minimum password length (1-128 characters)</td>
                             </tr>
                             <tr>
-                                <td><code>uppercase</code></td>
+                                <td><code>max_length</code></td>
+                                <td>integer</td>
+                                <td><span class="optional">Optional</span></td>
+                                <td>16</td>
+                                <td>Maximum password length (1-128 characters)</td>
+                            </tr>
+                            <tr>
+                                <td><code>count</code></td>
+                                <td>integer</td>
+                                <td><span class="optional">Optional</span></td>
+                                <td>5</td>
+                                <td>Number of passwords to generate (1-100)</td>
+                            </tr>
+                            <tr>
+                                <td><code>include_uppercase</code></td>
                                 <td>boolean</td>
                                 <td><span class="optional">Optional</span></td>
                                 <td>true</td>
                                 <td>Include uppercase letters (A-Z)</td>
                             </tr>
                             <tr>
-                                <td><code>lowercase</code></td>
+                                <td><code>include_lowercase</code></td>
                                 <td>boolean</td>
                                 <td><span class="optional">Optional</span></td>
                                 <td>true</td>
                                 <td>Include lowercase letters (a-z)</td>
                             </tr>
                             <tr>
-                                <td><code>numbers</code></td>
+                                <td><code>include_numbers</code></td>
                                 <td>boolean</td>
                                 <td><span class="optional">Optional</span></td>
                                 <td>true</td>
                                 <td>Include numbers (0-9)</td>
                             </tr>
                             <tr>
-                                <td><code>symbols</code></td>
+                                <td><code>include_symbols</code></td>
                                 <td>boolean</td>
                                 <td><span class="optional">Optional</span></td>
                                 <td>false</td>
                                 <td>Include special characters (!@#$%^&*)</td>
                             </tr>
                             <tr>
-                                <td><code>exclude_similar</code></td>
+                                <td><code>exclude_ambiguous</code></td>
                                 <td>boolean</td>
                                 <td><span class="optional">Optional</span></td>
                                 <td>false</td>
-                                <td>Exclude similar characters (0,O,l,1,i,I)</td>
+                                <td>Exclude ambiguous characters (0,O,l,1,i,I)</td>
                             </tr>
                             <tr>
-                                <td><code>count</code></td>
-                                <td>integer</td>
+                                <td><code>no_repeated_chars</code></td>
+                                <td>boolean</td>
                                 <td><span class="optional">Optional</span></td>
-                                <td>1</td>
-                                <td>Number of passwords to generate (1-10)</td>
+                                <td>false</td>
+                                <td>Prevent repeated characters in password</td>
+                            </tr>
+                            <tr>
+                                <td><code>must_include_each_type</code></td>
+                                <td>boolean</td>
+                                <td><span class="optional">Optional</span></td>
+                                <td>true</td>
+                                <td>Ensure at least one character from each selected type</td>
+                            </tr>
+                            <tr>
+                                <td><code>custom_symbols</code></td>
+                                <td>string</td>
+                                <td><span class="optional">Optional</span></td>
+                                <td>""</td>
+                                <td>Custom symbol set to use instead of default</td>
                             </tr>
                         </tbody>
                     </table>
@@ -422,11 +450,12 @@ https://api.lorwongam.com/password-generator/api/
 curl -X POST "https://api.lorwongam.com/password-generator/api/" \
   -H "Content-Type: application/json" \
   -d '{
-    "length": 16,
-    "uppercase": true,
-    "lowercase": true,
-    "numbers": true,
-    "symbols": false
+    "min_length": 12,
+    "max_length": 16,
+    "include_uppercase": true,
+    "include_lowercase": true,
+    "include_numbers": true,
+    "include_symbols": false
   }'
                     </div>
 
@@ -435,12 +464,14 @@ curl -X POST "https://api.lorwongam.com/password-generator/api/" \
 curl -X POST "https://api.lorwongam.com/password-generator/api/" \
   -H "Content-Type: application/json" \
   -d '{
-    "length": 24,
-    "uppercase": true,
-    "lowercase": true,
-    "numbers": true,
-    "symbols": true,
-    "exclude_similar": true
+    "min_length": 24,
+    "max_length": 24,
+    "include_uppercase": true,
+    "include_lowercase": true,
+    "include_numbers": true,
+    "include_symbols": true,
+    "exclude_ambiguous": true,
+    "must_include_each_type": true
   }'
                     </div>
 
@@ -449,11 +480,12 @@ curl -X POST "https://api.lorwongam.com/password-generator/api/" \
 curl -X POST "https://api.lorwongam.com/password-generator/api/" \
   -H "Content-Type: application/json" \
   -d '{
-    "length": 12,
-    "uppercase": true,
-    "lowercase": true,
-    "numbers": true,
-    "symbols": true,
+    "min_length": 12,
+    "max_length": 12,
+    "include_uppercase": true,
+    "include_lowercase": true,
+    "include_numbers": true,
+    "include_symbols": true,
     "count": 5
   }'
                     </div>

@@ -432,53 +432,17 @@ https://api.lorwongam.com/fortune-teller/api/
                     </h3>
                     <p>Retrieve a random fortune prediction in the specified language.</p>
 
-                    <h4>Query Parameters</h4>
-                    <table class="parameter-table">
-                        <thead>
-                            <tr>
-                                <th>Parameter</th>
-                                <th>Type</th>
-                                <th>Required</th>
-                                <th>Default</th>
-                                <th>Description</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><code>lang</code></td>
-                                <td>string</td>
-                                <td><span class="optional">Optional</span></td>
-                                <td>"en"</td>
-                                <td>Language code: "th", "zh", or "en"</td>
-                            </tr>
-                            <tr>
-                                <td><code>id</code></td>
-                                <td>integer</td>
-                                <td><span class="optional">Optional</span></td>
-                                <td>random</td>
-                                <td>Specific fortune ID (1-52) for testing purposes</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <h4>Parameters</h4>
+                    <p>This endpoint doesn't require any parameters. It returns a random fortune from the collection of 52 fortunes, with predictions in all three languages (Thai, Chinese, and English).</p>
 
-                    <h4>Example Request - Random English Fortune</h4>
+                    <h4>Example Request - Get Random Fortune</h4>
                     <div class="code-block">
 curl "https://api.lorwongam.com/fortune-teller/api/"
                     </div>
 
-                    <h4>Example Request - Thai Fortune</h4>
+                    <h4>Example Request - POST Method</h4>
                     <div class="code-block">
-curl "https://api.lorwongam.com/fortune-teller/api/?lang=th"
-                    </div>
-
-                    <h4>Example Request - Chinese Fortune</h4>
-                    <div class="code-block">
-curl "https://api.lorwongam.com/fortune-teller/api/?lang=zh"
-                    </div>
-
-                    <h4>Example Request - Specific Fortune</h4>
-                    <div class="code-block">
-curl "https://api.lorwongam.com/fortune-teller/api/?lang=en&id=7"
+curl -X POST "https://api.lorwongam.com/fortune-teller/api/"
                     </div>
                 </div>
 

@@ -370,10 +370,10 @@ https://api.lorwongam.com/promptpay-qr-generator/api/
                         </thead>
                         <tbody>
                             <tr>
-                                <td><code>id</code></td>
+                                <td><code>target</code></td>
                                 <td>string</td>
                                 <td><span class="required">Required</span></td>
-                                <td>PromptPay ID (mobile number, tax ID, or e-Wallet ID)</td>
+                                <td>PromptPay target (phone number, tax ID, or e-wallet ID)</td>
                             </tr>
                             <tr>
                                 <td><code>amount</code></td>
@@ -385,9 +385,14 @@ https://api.lorwongam.com/promptpay-qr-generator/api/
                                 <td><code>size</code></td>
                                 <td>integer</td>
                                 <td><span class="optional">Optional</span></td>
-                                <td>QR code size in pixels (default: 300, max: 1000)</td>
+                                <td>QR code size in pixels (50-1000, default: 300)</td>
                             </tr>
                             <tr>
+                                <td><code>format</code></td>
+                                <td>string</td>
+                                <td><span class="optional">Optional</span></td>
+                                <td>Output format: "image", "json", "base64" (default: "image")</td>
+                            </tr>
                                 <td><code>format</code></td>
                                 <td>string</td>
                                 <td><span class="optional">Optional</span></td>
@@ -429,9 +434,10 @@ https://api.lorwongam.com/promptpay-qr-generator/api/
 curl -X POST "https://api.lorwongam.com/promptpay-qr-generator/api/" \
   -H "Content-Type: application/json" \
   -d '{
-    "id": "0812345678",
+    "target": "0812345678",
     "amount": 100.50,
-    "size": 300
+    "size": 300,
+    "format": "json"
   }'
                     </div>
 
@@ -440,8 +446,9 @@ curl -X POST "https://api.lorwongam.com/promptpay-qr-generator/api/" \
 curl -X POST "https://api.lorwongam.com/promptpay-qr-generator/api/" \
   -H "Content-Type: application/json" \
   -d '{
-    "id": "1234567890123",
-    "size": 400
+    "target": "1234567890123",
+    "size": 400,
+    "format": "json"
   }'
                     </div>
 
@@ -450,10 +457,10 @@ curl -X POST "https://api.lorwongam.com/promptpay-qr-generator/api/" \
 curl -X POST "https://api.lorwongam.com/promptpay-qr-generator/api/" \
   -H "Content-Type: application/json" \
   -d '{
-    "id": "123456789012345",
+    "target": "123456789012345",
     "amount": 2500,
     "size": 500,
-    "format": "data"
+    "format": "base64"
   }'
                     </div>
                 </div>

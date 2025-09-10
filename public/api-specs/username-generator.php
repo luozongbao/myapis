@@ -408,46 +408,86 @@ https://api.lorwongam.com/username-generator/api/
                                 <td><code>theme</code></td>
                                 <td>string</td>
                                 <td><span class="optional">Optional</span></td>
-                                <td>"random"</td>
-                                <td>Theme: "animals", "colors", "nature", "tech", "space", "fantasy", "random"</td>
+                                <td>"gaming"</td>
+                                <td>Theme: "gaming", "professional", "fun", "nature", "tech", "space", "devops"</td>
                             </tr>
                             <tr>
-                                <td><code>format</code></td>
+                                <td><code>use_case</code></td>
                                 <td>string</td>
                                 <td><span class="optional">Optional</span></td>
-                                <td>"adjective_noun"</td>
-                                <td>Format: "adjective_noun", "noun_adjective", "noun_only"</td>
+                                <td>"gaming"</td>
+                                <td>Use case context</td>
                             </tr>
                             <tr>
-                                <td><code>separator</code></td>
-                                <td>string</td>
+                                <td><code>min_length</code></td>
+                                <td>integer</td>
                                 <td><span class="optional">Optional</span></td>
-                                <td>"_"</td>
-                                <td>Word separator: "_", "-", "", "." (empty for no separator)</td>
+                                <td>6</td>
+                                <td>Minimum username length (3-50)</td>
                             </tr>
                             <tr>
-                                <td><code>numbers</code></td>
-                                <td>boolean</td>
+                                <td><code>max_length</code></td>
+                                <td>integer</td>
                                 <td><span class="optional">Optional</span></td>
-                                <td>false</td>
-                                <td>Append random numbers to username</td>
-                            </tr>
-                            <tr>
-                                <td><code>case_style</code></td>
-                                <td>string</td>
-                                <td><span class="optional">Optional</span></td>
-                                <td>"lowercase"</td>
-                                <td>Case style: "lowercase", "uppercase", "title", "camel"</td>
+                                <td>20</td>
+                                <td>Maximum username length (3-50)</td>
                             </tr>
                             <tr>
                                 <td><code>count</code></td>
                                 <td>integer</td>
                                 <td><span class="optional">Optional</span></td>
-                                <td>1</td>
-                                <td>Number of usernames to generate (1-20)</td>
+                                <td>10</td>
+                                <td>Number of usernames to generate (1-50)</td>
                             </tr>
                             <tr>
-                                <td><code>max_length</code></td>
+                                <td><code>include_numbers</code></td>
+                                <td>boolean</td>
+                                <td><span class="optional">Optional</span></td>
+                                <td>false</td>
+                                <td>Add random numbers to usernames</td>
+                            </tr>
+                            <tr>
+                                <td><code>include_symbols</code></td>
+                                <td>boolean</td>
+                                <td><span class="optional">Optional</span></td>
+                                <td>false</td>
+                                <td>Add symbols like _, -, .</td>
+                            </tr>
+                            <tr>
+                                <td><code>capitalize</code></td>
+                                <td>boolean</td>
+                                <td><span class="optional">Optional</span></td>
+                                <td>true</td>
+                                <td>Capitalize words</td>
+                            </tr>
+                            <tr>
+                                <td><code>avoid_repetition</code></td>
+                                <td>boolean</td>
+                                <td><span class="optional">Optional</span></td>
+                                <td>true</td>
+                                <td>Avoid duplicate word combinations</td>
+                            </tr>
+                            <tr>
+                                <td><code>use_all_adjectives</code></td>
+                                <td>boolean</td>
+                                <td><span class="optional">Optional</span></td>
+                                <td>false</td>
+                                <td>Use adjectives from all themes</td>
+                            </tr>
+                            <tr>
+                                <td><code>use_general_adjectives</code></td>
+                                <td>boolean</td>
+                                <td><span class="optional">Optional</span></td>
+                                <td>false</td>
+                                <td>Add general adjectives (colors, shapes, sizes, etc.)</td>
+                            </tr>
+                            <tr>
+                                <td><code>custom_words</code></td>
+                                <td>string</td>
+                                <td><span class="optional">Optional</span></td>
+                                <td>""</td>
+                                <td>Comma-separated custom words</td>
+                            </tr>
                                 <td>integer</td>
                                 <td><span class="optional">Optional</span></td>
                                 <td>null</td>
@@ -461,9 +501,10 @@ https://api.lorwongam.com/username-generator/api/
 curl -X POST "https://api.lorwongam.com/username-generator/api/" \
   -H "Content-Type: application/json" \
   -d '{
-    "theme": "animals",
-    "format": "adjective_noun",
-    "separator": "_"
+    "theme": "nature",
+    "min_length": 8,
+    "max_length": 15,
+    "count": 5
   }'
                     </div>
 
@@ -472,11 +513,11 @@ curl -X POST "https://api.lorwongam.com/username-generator/api/" \
 curl -X POST "https://api.lorwongam.com/username-generator/api/" \
   -H "Content-Type: application/json" \
   -d '{
-    "theme": "fantasy",
-    "format": "adjective_noun",
-    "separator": "",
-    "numbers": true,
-    "case_style": "title",
+    "theme": "gaming",
+    "min_length": 10,
+    "max_length": 18,
+    "include_numbers": true,
+    "capitalize": true,
     "count": 5
   }'
                     </div>
@@ -486,11 +527,12 @@ curl -X POST "https://api.lorwongam.com/username-generator/api/" \
 curl -X POST "https://api.lorwongam.com/username-generator/api/" \
   -H "Content-Type: application/json" \
   -d '{
-    "theme": "tech",
-    "format": "noun_adjective",
-    "separator": "-",
-    "case_style": "lowercase",
-    "max_length": 15
+    "theme": "professional",
+    "min_length": 8,
+    "max_length": 15,
+    "capitalize": true,
+    "avoid_repetition": true,
+    "use_general_adjectives": true
   }'
                     </div>
                 </div>
