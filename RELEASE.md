@@ -1,13 +1,86 @@
 # 📋 MyAPIs Release Notes
 
-## Current Release: Version 1.3.1
+## Current Release: Version 2.0.0
 
-**Release Date**: September 9, 2025  
+**Release Date**: September 10, 2025  
 **Status**: Stable Release  
 
 ---
 
-## 📚 Version 1.3.1 - API Documentation Enhancement
+## � Version 2.0.0 - Major Architecture Restructuring
+*Released: September 10, 2025*
+
+### 🌟 Major Changes
+
+#### 🏗️ Complete Project Restructuring
+- **New Architecture**: Reorganized from individual tool folders to clean `public/` and `api/` separation
+- **Clean URLs**: Beautiful, organized URL structure with `/public/` for interfaces and `/api/` for endpoints
+- **Enhanced Navigation**: Streamlined access to tools, APIs, and documentation
+- **Better Organization**: Logical separation of concerns for easier maintenance and deployment
+
+#### �📚 Dynamic API Documentation System
+- **Server-Agnostic URLs**: Documentation automatically adapts to any server domain using PHP `$_SERVER` variables
+- **Centralized Documentation**: All API specs moved to `public/api-specs/` directory
+- **Interactive Examples**: Working code samples that use the current server's URL
+- **No More Hardcoded URLs**: Eliminated hardcoded domain references throughout the project
+
+#### 🔧 API Accuracy Corrections
+- **Parameter Verification**: All API documentation parameters verified against actual implementations
+- **Corrected Examples**: Fixed numerous parameter name mismatches and incorrect examples
+- **Consistent Responses**: Standardized response formats across all tools
+- **Updated Endpoints**: All API endpoints updated to new `/api/tool-name/` format
+
+### 🐛 Bug Fixes
+
+#### 🌐 Web Interface Corrections
+- **Fixed API Calls**: Updated all JavaScript fetch() calls to use correct API endpoints
+- **Navigation Fixes**: Corrected all internal links to work with new structure
+- **Username Generator**: Fixed API endpoint calls and response handling
+- **PromptPay QR Generator**: Resolved API communication issues
+- **Random Generator**: Fixed randomization API calls
+- **Fortune Teller**: Resolved prediction file path issues
+
+#### 🔗 File Path Corrections
+- **Fortune Teller API**: Fixed predictions directory path from `/../predictions/` to `/predictions/`
+- **Asset Links**: Updated all asset references to work with new structure
+- **Documentation Links**: Corrected all cross-references between tools and docs
+
+### 📁 New File Structure
+```
+myapis/
+├── public/                   # User-facing interfaces
+│   ├── index.php            # Main landing page
+│   ├── *.php                # Individual tool interfaces
+│   └── api-specs/           # API documentation
+├── api/                     # Backend API implementations
+│   └── */index.php          # Individual API endpoints
+├── README.md                # Updated project documentation
+└── RELEASE.md               # This file
+```
+
+### 🔄 Breaking Changes
+- **URL Structure**: All URLs changed from `/tool-name/` to `/public/tool-name.php`
+- **API Endpoints**: All APIs moved from `/tool-name/api/` to `/api/tool-name/`
+- **Documentation**: API docs moved from `/tool-name/spec.php` to `/public/api-specs/tool-name.php`
+- **Navigation**: All internal links updated to reflect new structure
+
+### ✅ Verification & Testing
+- **API Testing**: All endpoints verified with curl and browser testing
+- **Web Interface Testing**: All tools tested for functionality and user experience
+- **Documentation Accuracy**: All examples and parameters verified against actual code
+- **Cross-Browser Testing**: Verified compatibility across modern browsers
+- **Mobile Testing**: Ensured responsive design works on all devices
+
+### 🛠️ Technical Improvements
+- **Cleaner Architecture**: Better separation of concerns between frontend and backend
+- **Easier Deployment**: Simplified deployment with clear public/api structure
+- **Better Maintainability**: More organized codebase for easier updates
+- **Enhanced Security**: Improved input validation and error handling
+- **Performance**: Optimized file structure for better loading times
+
+---
+
+## 💧 Version 1.3.1 - API Documentation Enhancement
 *Released: September 9, 2025*
 
 ### 🌟 New Features
@@ -177,25 +250,22 @@
 
 | Tool | Method | Endpoint | Description |
 |------|--------|----------|-------------|
-| Health Calculator | POST | `/health-calculator/api/` | Calculate BMI, BMR, and Daily Intake |
-| Password Generator | POST | `/password-generator/api/` | Generate secure passwords |
-| Username Generator | POST | `/username-generator/api/` | Create unique usernames |
-| PromptPay QR | POST | `/promptpay-qr-generator/api/` | Generate PromptPay QR codes |
-| Fortune Teller | GET | `/fortune-teller/api/` | Get random fortune prediction |
-| Random Generator | POST | `/randomizer/api/` | Generate random numbers/objects |
+| Health Calculator | POST | `/api/health-calculator/` | Calculate BMI, BMR, Daily Intake, and Water Intake |
+| Password Generator | POST | `/api/password-generator/` | Generate secure passwords |
+| Username Generator | POST | `/api/username-generator/` | Create unique usernames |
+| PromptPay QR | POST | `/api/promptpay-qr-generator/` | Generate PromptPay QR codes |
+| Fortune Teller | GET | `/api/fortune-teller/` | Get random fortune prediction |
+| Random Generator | POST | `/api/randomizer/` | Generate random numbers/objects |
 
 ### 📁 File Structure
 ```
 myapis/
-├── 📄 index.php (Main landing page)
-├── 📝 README.md (Project documentation)
-├── 📋 RELEASE.md (This file)
-├── 📁 health-calculator/ (Health calculation tool)
-├── 📁 password-generator/ (Password generation tool)
-├── 📁 username-generator/ (Username generation tool)
-├── 📁 promptpay-qr-generator/ (QR code generation tool)
-├── 📁 fortune-teller/ (Fortune prediction tool)
-└── 📁 randomizer/ (Random generation tool)
+├── 📄 public/index.php (Main landing page)
+├── � public/*.php (Tool web interfaces)  
+├── 📁 public/api-specs/ (API documentation)
+├── 📁 api/*/ (API implementations)
+├── � README.md (Project documentation)
+└── � RELEASE.md (This file)
 ```
 
 ### 🧪 Testing
@@ -253,11 +323,14 @@ myapis/
 git clone https://github.com/luozongbao/myapis.git
 cd myapis
 php -S localhost:8000
+# Access at http://localhost:8000/public/
 ```
 
 #### Production
 - Deploy to web server document root
-- Configure virtual host/server block
+- Configure virtual host/server block to point to the project root (not public folder)
+- Access web interfaces via `/public/` path
+- API endpoints available at `/api/` path
 - Set appropriate file permissions (644 for files, 755 for directories)
 - Enable PHP and required extensions
 
