@@ -12,7 +12,11 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', Tahoma, G                <div class="tool-actions">
+                    <a href="promptpay-qr-generator.php" class="btn btn-primary">Try Tool</a>
+                    <a href="/api/promptpay-qr-generator/" class="btn btn-secondary">API</a>
+                    <a href="api-specs/promptpay-qr-generator.php" class="btn btn-secondary">API Docs</a>
+                </div>, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
@@ -309,9 +313,9 @@
                     <li>Comprehensive REST API with JSON responses</li>
                 </ul>
                 <div class="tool-actions">
-                    <a href="health-calculator/" class="btn btn-primary">Try Tool</a>
-                    <a href="health-calculator/api/" class="btn btn-secondary">API</a>
-                    <a href="health-calculator/spec.php" class="btn btn-secondary">API Docs</a>
+                    <a href="health-calculator.php" class="btn btn-primary">Try Tool</a>
+                    <a href="/api/health-calculator/" class="btn btn-secondary">API</a>
+                    <a href="api-specs/health-calculator.php" class="btn btn-secondary">API Docs</a>
                 </div>
             </div>
 
@@ -331,9 +335,9 @@
                     <li>Mobile-responsive interface</li>
                 </ul>
                 <div class="tool-actions">
-                    <a href="password-generator/" class="btn btn-primary">Try Tool</a>
-                    <a href="password-generator/api/" class="btn btn-secondary">API</a>
-                    <a href="password-generator/spec.php" class="btn btn-secondary">API Docs</a>
+                    <a href="password-generator.php" class="btn btn-primary">Try Tool</a>
+                    <a href="/api/password-generator/" class="btn btn-secondary">API</a>
+                    <a href="api-specs/password-generator.php" class="btn btn-secondary">API Docs</a>
                 </div>
             </div>
 
@@ -353,9 +357,9 @@
                     <li>JSON API for integration</li>
                 </ul>
                 <div class="tool-actions">
-                    <a href="username-generator/" class="btn btn-primary">Try Tool</a>
-                    <a href="username-generator/api/" class="btn btn-secondary">API</a>
-                    <a href="username-generator/spec.php" class="btn btn-secondary">API Docs</a>
+                    <a href="username-generator.php" class="btn btn-primary">Try Tool</a>
+                    <a href="/api/username-generator/" class="btn btn-secondary">API</a>
+                    <a href="api-specs/username-generator.php" class="btn btn-secondary">API Docs</a>
                 </div>
             </div>
 
@@ -375,9 +379,9 @@
                     <li>Real-time QR code preview</li>
                 </ul>
                 <div class="tool-actions">
-                    <a href="promptpay-qr-generator/" class="btn btn-primary">Try Tool</a>
-                    <a href="promptpay-qr-generator/api/" class="btn btn-secondary">API</a>
-                    <a href="promptpay-qr-generator/spec.php" class="btn btn-secondary">API Docs</a>
+                    <a href="promptpay-qr-generator.php" class="btn btn-primary">Try Tool</a>
+                    <a href="/api/promptpay-qr-generator/" class="btn btn-secondary">API</a>
+                    <a href="promptpay-qr-generator-specs.php" class="btn btn-secondary">API Docs</a>
                 </div>
             </div>
 
@@ -397,9 +401,9 @@
                     <li>Share-friendly prediction format</li>
                 </ul>
                 <div class="tool-actions">
-                    <a href="fortune-teller/" class="btn btn-primary">Try Tool</a>
-                    <a href="fortune-teller/api/" class="btn btn-secondary">API</a>
-                    <a href="fortune-teller/spec.php" class="btn btn-secondary">API Docs</a>
+                    <a href="fortune-teller.php" class="btn btn-primary">Try Tool</a>
+                    <a href="/api/fortune-teller/" class="btn btn-secondary">API</a>
+                    <a href="api-specs/fortune-teller.php" class="btn btn-secondary">API Docs</a>
                 </div>
             </div>
 
@@ -419,9 +423,9 @@
                     <li>Multiple operations in single session</li>
                 </ul>
                 <div class="tool-actions">
-                    <a href="randomizer/" class="btn btn-primary">Try Tool</a>
-                    <a href="randomizer/api/" class="btn btn-secondary">API</a>
-                    <a href="randomizer/spec.php" class="btn btn-secondary">API Docs</a>
+                    <a href="randomizer.php" class="btn btn-primary">Try Tool</a>
+                    <a href="/api/randomizer/" class="btn btn-secondary">API</a>
+                    <a href="api-specs/randomizer.php" class="btn btn-secondary">API Docs</a>
                 </div>
             </div>
         </div>

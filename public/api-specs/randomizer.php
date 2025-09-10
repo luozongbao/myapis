@@ -310,9 +310,9 @@
         <!-- Navigation -->
         <div class="nav">
             <div class="breadcrumb">
-                <a href="../">← Back to Main</a>
+                <a href="../index.php">← Back to Main</a>
                 <span>/</span>
-                <a href="./">Random Generator</a>
+                <a href="../randomizer.php">Random Generator</a>
                 <span>/</span>
                 <span>API Documentation</span>
             </div>
@@ -821,8 +821,8 @@ curl -X POST "https://api.lorwongam.com/randomizer/api/" \
             <div class="try-it">
                 <h3>🎯 Ready to Try?</h3>
                 <p>Test the Random Generator API with our interactive web interface or start integrating it into your application.</p>
-                <a href="../" class="btn">Try Web Interface</a>
-                <a href="api/" class="btn btn-secondary">Test API Endpoint</a>
+                <a href="../index.php" class="btn">Try Web Interface</a>
+                <a href="/api/randomizer/" class="btn btn-secondary">Test API Endpoint</a>
             </div>
         </div>
     </div>

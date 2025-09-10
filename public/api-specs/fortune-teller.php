@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Username Generator API Documentation</title>
+    <title>Fortune Teller API Documentation</title>
     <style>
         * {
             margin: 0;
@@ -248,14 +248,14 @@
             opacity: 0.9;
         }
 
-        .theme-list {
+        .lang-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 15px;
             margin: 20px 0;
         }
 
-        .theme-item {
+        .lang-item {
             background: #f8f9fa;
             padding: 15px;
             border-radius: 8px;
@@ -263,14 +263,39 @@
             border: 2px solid #e9ecef;
         }
 
-        .theme-item h5 {
+        .lang-item h5 {
             color: #333;
             margin-bottom: 8px;
         }
 
-        .theme-item p {
+        .lang-item p {
             color: #666;
             font-size: 0.9em;
+        }
+
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .category-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border-left: 4px solid #667eea;
+        }
+
+        .category-item h6 {
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .category-item p {
+            color: #666;
+            font-size: 0.8em;
         }
 
         @media (max-width: 768px) {
@@ -292,16 +317,16 @@
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <h1>👤 Username Generator API</h1>
-            <p>Create unique usernames using themed word combinations</p>
+            <h1>🔮 Fortune Teller API</h1>
+            <p>Get multilingual fortune predictions covering all aspects of life</p>
         </div>
 
         <!-- Navigation -->
         <div class="nav">
             <div class="breadcrumb">
-                <a href="../">← Back to Main</a>
+                <a href="../index.php">← Back to Main</a>
                 <span>/</span>
-                <a href="./">Username Generator</a>
+                <a href="../fortune-teller.php">Fortune Teller</a>
                 <span>/</span>
                 <span>API Documentation</span>
             </div>
@@ -312,55 +337,70 @@
             <!-- Overview -->
             <div class="section">
                 <h2>📖 Overview</h2>
-                <p>The Username Generator API creates unique usernames by combining words from various themed categories. Perfect for user registration systems, game character names, or any application requiring creative username suggestions.</p>
+                <p>The Fortune Teller API provides random fortune predictions in multiple languages. With 52 unique fortunes covering various life aspects, it's perfect for entertainment apps, daily motivation services, or cultural applications.</p>
                 
                 <div class="features-grid">
                     <div class="feature-card">
-                        <h4>🎭 6 Themed Categories</h4>
-                        <p>Animals, Colors, Nature, Tech, Space, and Fantasy themed word sets</p>
+                        <h4>🌍 Multilingual Support</h4>
+                        <p>Thai, Chinese (Simplified), and English language options</p>
                     </div>
                     <div class="feature-card">
-                        <h4>🔄 Cross-Theme Combinations</h4>
-                        <p>Mix words from different themes for creative combinations</p>
+                        <h4>🎯 52 Unique Fortunes</h4>
+                        <p>Carefully curated predictions covering all aspects of life</p>
                     </div>
                     <div class="feature-card">
-                        <h4>📚 Rich Word Database</h4>
-                        <p>100+ general adjectives plus hundreds of themed words</p>
+                        <h4>📚 5 Life Categories</h4>
+                        <p>Love, Career, Health, Finance, and General life advice</p>
                     </div>
                     <div class="feature-card">
-                        <h4>📊 Bulk Generation</h4>
-                        <p>Generate multiple username suggestions in a single request</p>
+                        <h4>🎲 Random Selection</h4>
+                        <p>Cryptographically secure random fortune selection</p>
                     </div>
                 </div>
             </div>
 
-            <!-- Themes -->
+            <!-- Languages -->
             <div class="section">
-                <h2>🎨 Available Themes</h2>
-                <div class="theme-list">
-                    <div class="theme-item">
-                        <h5>🐾 Animals</h5>
-                        <p>Wildlife and domestic animals</p>
+                <h2>🌍 Supported Languages</h2>
+                <div class="lang-grid">
+                    <div class="lang-item">
+                        <h5>🇹🇭 Thai</h5>
+                        <p>ภาษาไทย (th)</p>
                     </div>
-                    <div class="theme-item">
-                        <h5>🌈 Colors</h5>
-                        <p>Colors and color variations</p>
+                    <div class="lang-item">
+                        <h5>🇨🇳 Chinese</h5>
+                        <p>简体中文 (zh)</p>
                     </div>
-                    <div class="theme-item">
-                        <h5>🌿 Nature</h5>
-                        <p>Natural elements and phenomena</p>
+                    <div class="lang-item">
+                        <h5>🇺🇸 English</h5>
+                        <p>English (en)</p>
                     </div>
-                    <div class="theme-item">
-                        <h5>💻 Technology</h5>
-                        <p>Tech terms and digital concepts</p>
+                </div>
+            </div>
+
+            <!-- Categories -->
+            <div class="section">
+                <h2>📋 Fortune Categories</h2>
+                <div class="categories-grid">
+                    <div class="category-item">
+                        <h6>💕 Love & Relationships</h6>
+                        <p>Romance, relationships, marriage</p>
                     </div>
-                    <div class="theme-item">
-                        <h5>🚀 Space</h5>
-                        <p>Celestial bodies and space terms</p>
+                    <div class="category-item">
+                        <h6>💼 Career & Work</h6>
+                        <p>Job prospects, business success</p>
                     </div>
-                    <div class="theme-item">
-                        <h5>🧙 Fantasy</h5>
-                        <p>Mythical creatures and magical elements</p>
+                    <div class="category-item">
+                        <h6>🏥 Health & Wellness</h6>
+                        <p>Physical and mental health</p>
+                    </div>
+                    <div class="category-item">
+                        <h6>💰 Finance & Wealth</h6>
+                        <p>Money, investments, prosperity</p>
+                    </div>
+                    <div class="category-item">
+                        <h6>🌟 General Life</h6>
+                        <p>Overall luck and life guidance</p>
                     </div>
                 </div>
             </div>
@@ -369,7 +409,7 @@
             <div class="section">
                 <h2>🌐 Base URL</h2>
                 <div class="code-block">
-https://api.lorwongam.com/username-generator/api/
+https://api.lorwongam.com/fortune-teller/api/
                 </div>
             </div>
 
@@ -383,14 +423,73 @@ https://api.lorwongam.com/username-generator/api/
             <div class="section">
                 <h2>📡 API Endpoints</h2>
 
-                <!-- Generate Username Endpoint -->
+                <!-- Get Fortune Endpoint -->
+                <div class="endpoint">
+                    <h3>
+                        <span class="method get">GET</span>
+                        <span class="url">/</span>
+                        Get Random Fortune
+                    </h3>
+                    <p>Retrieve a random fortune prediction in the specified language.</p>
+
+                    <h4>Query Parameters</h4>
+                    <table class="parameter-table">
+                        <thead>
+                            <tr>
+                                <th>Parameter</th>
+                                <th>Type</th>
+                                <th>Required</th>
+                                <th>Default</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>lang</code></td>
+                                <td>string</td>
+                                <td><span class="optional">Optional</span></td>
+                                <td>"en"</td>
+                                <td>Language code: "th", "zh", or "en"</td>
+                            </tr>
+                            <tr>
+                                <td><code>id</code></td>
+                                <td>integer</td>
+                                <td><span class="optional">Optional</span></td>
+                                <td>random</td>
+                                <td>Specific fortune ID (1-52) for testing purposes</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h4>Example Request - Random English Fortune</h4>
+                    <div class="code-block">
+curl "https://api.lorwongam.com/fortune-teller/api/"
+                    </div>
+
+                    <h4>Example Request - Thai Fortune</h4>
+                    <div class="code-block">
+curl "https://api.lorwongam.com/fortune-teller/api/?lang=th"
+                    </div>
+
+                    <h4>Example Request - Chinese Fortune</h4>
+                    <div class="code-block">
+curl "https://api.lorwongam.com/fortune-teller/api/?lang=zh"
+                    </div>
+
+                    <h4>Example Request - Specific Fortune</h4>
+                    <div class="code-block">
+curl "https://api.lorwongam.com/fortune-teller/api/?lang=en&id=7"
+                    </div>
+                </div>
+
+                <!-- POST Method Alternative -->
                 <div class="endpoint">
                     <h3>
                         <span class="method post">POST</span>
                         <span class="url">/</span>
-                        Generate Username
+                        Get Random Fortune (Alternative)
                     </h3>
-                    <p>Generate unique usernames based on specified themes and options.</p>
+                    <p>Alternative POST method for getting fortune predictions with JSON request body.</p>
 
                     <h4>Request Parameters</h4>
                     <table class="parameter-table">
@@ -405,92 +504,28 @@ https://api.lorwongam.com/username-generator/api/
                         </thead>
                         <tbody>
                             <tr>
-                                <td><code>theme</code></td>
+                                <td><code>lang</code></td>
                                 <td>string</td>
                                 <td><span class="optional">Optional</span></td>
-                                <td>"random"</td>
-                                <td>Theme: "animals", "colors", "nature", "tech", "space", "fantasy", "random"</td>
+                                <td>"en"</td>
+                                <td>Language code: "th", "zh", or "en"</td>
                             </tr>
                             <tr>
-                                <td><code>format</code></td>
-                                <td>string</td>
-                                <td><span class="optional">Optional</span></td>
-                                <td>"adjective_noun"</td>
-                                <td>Format: "adjective_noun", "noun_adjective", "noun_only"</td>
-                            </tr>
-                            <tr>
-                                <td><code>separator</code></td>
-                                <td>string</td>
-                                <td><span class="optional">Optional</span></td>
-                                <td>"_"</td>
-                                <td>Word separator: "_", "-", "", "." (empty for no separator)</td>
-                            </tr>
-                            <tr>
-                                <td><code>numbers</code></td>
-                                <td>boolean</td>
-                                <td><span class="optional">Optional</span></td>
-                                <td>false</td>
-                                <td>Append random numbers to username</td>
-                            </tr>
-                            <tr>
-                                <td><code>case_style</code></td>
-                                <td>string</td>
-                                <td><span class="optional">Optional</span></td>
-                                <td>"lowercase"</td>
-                                <td>Case style: "lowercase", "uppercase", "title", "camel"</td>
-                            </tr>
-                            <tr>
-                                <td><code>count</code></td>
+                                <td><code>id</code></td>
                                 <td>integer</td>
                                 <td><span class="optional">Optional</span></td>
-                                <td>1</td>
-                                <td>Number of usernames to generate (1-20)</td>
-                            </tr>
-                            <tr>
-                                <td><code>max_length</code></td>
-                                <td>integer</td>
-                                <td><span class="optional">Optional</span></td>
-                                <td>null</td>
-                                <td>Maximum username length (excludes numbers)</td>
+                                <td>random</td>
+                                <td>Specific fortune ID (1-52)</td>
                             </tr>
                         </tbody>
                     </table>
 
-                    <h4>Example Request - Simple Username</h4>
+                    <h4>Example POST Request</h4>
                     <div class="code-block">
-curl -X POST "https://api.lorwongam.com/username-generator/api/" \
+curl -X POST "https://api.lorwongam.com/fortune-teller/api/" \
   -H "Content-Type: application/json" \
   -d '{
-    "theme": "animals",
-    "format": "adjective_noun",
-    "separator": "_"
-  }'
-                    </div>
-
-                    <h4>Example Request - Gaming Username</h4>
-                    <div class="code-block">
-curl -X POST "https://api.lorwongam.com/username-generator/api/" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "theme": "fantasy",
-    "format": "adjective_noun",
-    "separator": "",
-    "numbers": true,
-    "case_style": "title",
-    "count": 5
-  }'
-                    </div>
-
-                    <h4>Example Request - Professional Username</h4>
-                    <div class="code-block">
-curl -X POST "https://api.lorwongam.com/username-generator/api/" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "theme": "tech",
-    "format": "noun_adjective",
-    "separator": "-",
-    "case_style": "lowercase",
-    "max_length": 15
+    "lang": "th"
   }'
                     </div>
                 </div>
@@ -502,67 +537,54 @@ curl -X POST "https://api.lorwongam.com/username-generator/api/" \
 
                 <h3>Success Response</h3>
                 <div class="response-box">
-                    <h4>Single Username Response</h4>
+                    <h4>English Fortune Example</h4>
                     <div class="code-block">
 {
   "success": true,
   "data": {
-    "username": "swift_panther",
-    "theme": "animals",
-    "format": "adjective_noun",
-    "length": 13,
-    "components": {
-      "adjective": "swift",
-      "noun": "panther"
-    },
-    "settings": {
-      "separator": "_",
-      "case_style": "lowercase",
-      "numbers": false
-    }
+    "id": 7,
+    "fortune": "Today brings unexpected opportunities. Trust your instincts when making important decisions, as they will guide you toward success.",
+    "category": "general",
+    "language": "en",
+    "language_name": "English"
   },
-  "message": "Username generated successfully",
+  "message": "Fortune retrieved successfully",
   "timestamp": "2025-09-09T12:00:00Z"
 }
                     </div>
                 </div>
 
                 <div class="response-box">
-                    <h4>Multiple Usernames Response</h4>
+                    <h4>Thai Fortune Example</h4>
                     <div class="code-block">
 {
   "success": true,
   "data": {
-    "usernames": [
-      {
-        "username": "MysticDragon99",
-        "theme": "fantasy",
-        "length": 13,
-        "components": {
-          "adjective": "mystic",
-          "noun": "dragon"
-        }
-      },
-      {
-        "username": "AncientWizard42",
-        "theme": "fantasy",
-        "length": 15,
-        "components": {
-          "adjective": "ancient",
-          "noun": "wizard"
-        }
-      }
-    ],
-    "count": 2,
-    "settings": {
-      "theme": "fantasy",
-      "format": "adjective_noun",
-      "separator": "",
-      "case_style": "title",
-      "numbers": true
-    }
+    "id": 15,
+    "fortune": "ความรักที่แท้จริงกำลังจะมาถึง อดทนรอคอยและเปิดใจให้กับคนใหม่ที่เข้ามาในชีวิต",
+    "category": "love",
+    "language": "th",
+    "language_name": "Thai"
   },
-  "message": "Usernames generated successfully",
+  "message": "Fortune retrieved successfully",
+  "timestamp": "2025-09-09T12:00:00Z"
+}
+                    </div>
+                </div>
+
+                <div class="response-box">
+                    <h4>Chinese Fortune Example</h4>
+                    <div class="code-block">
+{
+  "success": true,
+  "data": {
+    "id": 23,
+    "fortune": "事业运势渐入佳境，与同事合作将带来意想不到的成果，把握机会展现自己的才华。",
+    "category": "career",
+    "language": "zh",
+    "language_name": "Chinese"
+  },
+  "message": "Fortune retrieved successfully",
   "timestamp": "2025-09-09T12:00:00Z"
 }
                     </div>
@@ -573,73 +595,50 @@ curl -X POST "https://api.lorwongam.com/username-generator/api/" \
                     <div class="code-block">
 {
   "success": false,
-  "error": "Invalid theme specified. Must be one of: animals, colors, nature, tech, space, fantasy, random",
-  "code": "INVALID_THEME",
+  "error": "Invalid language code. Supported languages: th, zh, en",
+  "code": "INVALID_LANGUAGE",
   "timestamp": "2025-09-09T12:00:00Z"
 }
                     </div>
                 </div>
             </div>
 
-            <!-- Format Options -->
+            <!-- Fortune Categories -->
             <div class="section">
-                <h2>🎯 Format Options</h2>
+                <h2>🎯 Fortune Categories</h2>
                 <table class="parameter-table">
                     <thead>
                         <tr>
-                            <th>Format</th>
-                            <th>Structure</th>
-                            <th>Example</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><code>adjective_noun</code></td>
-                            <td>Adjective + Noun</td>
-                            <td>swift_panther</td>
-                        </tr>
-                        <tr>
-                            <td><code>noun_adjective</code></td>
-                            <td>Noun + Adjective</td>
-                            <td>panther_swift</td>
-                        </tr>
-                        <tr>
-                            <td><code>noun_only</code></td>
-                            <td>Noun only</td>
-                            <td>panther</td>
-                        </tr>
-                    </tbody>
-                </table>
-
-                <h3>Case Style Options</h3>
-                <table class="parameter-table">
-                    <thead>
-                        <tr>
-                            <th>Style</th>
+                            <th>Category</th>
                             <th>Description</th>
-                            <th>Example</th>
+                            <th>Example Topics</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td><code>lowercase</code></td>
-                            <td>All lowercase</td>
-                            <td>swift_panther</td>
+                            <td><code>love</code></td>
+                            <td>Love and relationships</td>
+                            <td>Romance, marriage, soulmates, heartbreak recovery</td>
                         </tr>
                         <tr>
-                            <td><code>uppercase</code></td>
-                            <td>All uppercase</td>
-                            <td>SWIFT_PANTHER</td>
+                            <td><code>career</code></td>
+                            <td>Career and professional life</td>
+                            <td>Job opportunities, promotions, business ventures</td>
                         </tr>
                         <tr>
-                            <td><code>title</code></td>
-                            <td>First letter of each word capitalized</td>
-                            <td>Swift_Panther</td>
+                            <td><code>health</code></td>
+                            <td>Health and wellness</td>
+                            <td>Physical health, mental wellness, lifestyle changes</td>
                         </tr>
                         <tr>
-                            <td><code>camel</code></td>
-                            <td>CamelCase (no separators)</td>
-                            <td>SwiftPanther</td>
+                            <td><code>finance</code></td>
+                            <td>Money and financial matters</td>
+                            <td>Investments, savings, financial planning, prosperity</td>
+                        </tr>
+                        <tr>
+                            <td><code>general</code></td>
+                            <td>General life guidance</td>
+                            <td>Overall luck, life decisions, personal growth</td>
                         </tr>
                     </tbody>
                 </table>
@@ -657,27 +656,63 @@ curl -X POST "https://api.lorwongam.com/username-generator/api/" \
                     </thead>
                     <tbody>
                         <tr>
-                            <td><code>INVALID_THEME</code></td>
-                            <td>Theme parameter is not valid</td>
+                            <td><code>INVALID_LANGUAGE</code></td>
+                            <td>Language code is not supported</td>
                         </tr>
                         <tr>
-                            <td><code>INVALID_FORMAT</code></td>
-                            <td>Format parameter is not valid</td>
+                            <td><code>INVALID_ID</code></td>
+                            <td>Fortune ID is outside the valid range (1-52)</td>
                         </tr>
                         <tr>
-                            <td><code>INVALID_CASE_STYLE</code></td>
-                            <td>Case style parameter is not valid</td>
+                            <td><code>FORTUNE_NOT_FOUND</code></td>
+                            <td>Specified fortune ID does not exist</td>
                         </tr>
                         <tr>
-                            <td><code>INVALID_COUNT</code></td>
-                            <td>Count is outside the valid range (1-20)</td>
-                        </tr>
-                        <tr>
-                            <td><code>GENERATION_ERROR</code></td>
-                            <td>Error occurred during username generation</td>
+                            <td><code>FILE_ERROR</code></td>
+                            <td>Error reading fortune data files</td>
                         </tr>
                     </tbody>
                 </table>
+            </div>
+
+            <!-- Integration Examples -->
+            <div class="section">
+                <h2>🔗 Integration Examples</h2>
+
+                <h3>JavaScript/AJAX</h3>
+                <div class="code-block">
+fetch('https://api.lorwongam.com/fortune-teller/api/?lang=en')
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      console.log('Fortune:', data.data.fortune);
+      console.log('Category:', data.data.category);
+    }
+  });
+                </div>
+
+                <h3>PHP</h3>
+                <div class="code-block">
+$response = file_get_contents('https://api.lorwongam.com/fortune-teller/api/?lang=th');
+$data = json_decode($response, true);
+
+if ($data['success']) {
+    echo "Fortune: " . $data['data']['fortune'];
+    echo "Category: " . $data['data']['category'];
+}
+                </div>
+
+                <h3>Python</h3>
+                <div class="code-block">
+import requests
+
+response = requests.get('https://api.lorwongam.com/fortune-teller/api/?lang=zh')
+data = response.json()
+
+if data['success']:
+    print(f"Fortune: {data['data']['fortune']}")
+    print(f"Category: {data['data']['category']}")
+                </div>
             </div>
 
             <!-- Rate Limits -->
@@ -686,12 +721,23 @@ curl -X POST "https://api.lorwongam.com/username-generator/api/" \
                 <p>Currently, there are no rate limits imposed on this API. However, please use it responsibly and avoid excessive requests that might impact service availability for other users.</p>
             </div>
 
+            <!-- Cultural Notes -->
+            <div class="section">
+                <h2>🏛️ Cultural Considerations</h2>
+                <ul style="color: #555; font-size: 1.1em; line-height: 1.8; margin-left: 20px;">
+                    <li><strong>Respectful Content:</strong> All fortunes are designed to be positive and respectful across cultures</li>
+                    <li><strong>Cultural Sensitivity:</strong> Translations maintain cultural context appropriate for each language</li>
+                    <li><strong>Entertainment Purpose:</strong> This API is designed for entertainment and should not be used for serious life decisions</li>
+                    <li><strong>Diverse Perspectives:</strong> Fortunes cover universal human experiences across different cultures</li>
+                </ul>
+            </div>
+
             <!-- Try It Out -->
             <div class="try-it">
                 <h3>🎯 Ready to Try?</h3>
-                <p>Test the Username Generator API with our interactive web interface or start integrating it into your application.</p>
-                <a href="../" class="btn">Try Web Interface</a>
-                <a href="api/" class="btn btn-secondary">Test API Endpoint</a>
+                <p>Test the Fortune Teller API with our interactive web interface or start integrating it into your application.</p>
+                <a href="../index.php" class="btn">Try Web Interface</a>
+                <a href="/api/fortune-teller/" class="btn btn-secondary">Test API Endpoint</a>
             </div>
         </div>
     </div>
