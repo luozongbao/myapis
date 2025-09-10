@@ -1,3 +1,12 @@
+<?php
+// Generate dynamic base URL based on current server
+function getBaseUrl($toolName) {
+    $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
+    $host = $_SERVER['HTTP_HOST'];
+    return $protocol . '://' . $host . '/api/' . $toolName . '/';
+}
+$baseUrl = getBaseUrl('password-generator');
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -330,7 +339,7 @@
             <div class="section">
                 <h2>🌐 Base URL</h2>
                 <div class="code-block">
-https://api.lorwongam.com/password-generator/api/
+<?php echo $baseUrl; ?>
                 </div>
             </div>
 
@@ -447,7 +456,7 @@ https://api.lorwongam.com/password-generator/api/
 
                     <h4>Example Request - Basic Password</h4>
                     <div class="code-block">
-curl -X POST "https://api.lorwongam.com/password-generator/api/" \
+curl -X POST "<?php echo $baseUrl; ?>" \
   -H "Content-Type: application/json" \
   -d '{
     "min_length": 12,
@@ -461,7 +470,7 @@ curl -X POST "https://api.lorwongam.com/password-generator/api/" \
 
                     <h4>Example Request - High Security Password</h4>
                     <div class="code-block">
-curl -X POST "https://api.lorwongam.com/password-generator/api/" \
+curl -X POST "<?php echo $baseUrl; ?>" \
   -H "Content-Type: application/json" \
   -d '{
     "min_length": 24,
@@ -477,7 +486,7 @@ curl -X POST "https://api.lorwongam.com/password-generator/api/" \
 
                     <h4>Example Request - Multiple Passwords</h4>
                     <div class="code-block">
-curl -X POST "https://api.lorwongam.com/password-generator/api/" \
+curl -X POST "<?php echo $baseUrl; ?>" \
   -H "Content-Type: application/json" \
   -d '{
     "min_length": 12,

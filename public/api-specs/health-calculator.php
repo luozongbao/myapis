@@ -1,3 +1,12 @@
+<?php
+// Generate dynamic base URL based on current server
+function getBaseUrl($toolName) {
+    $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
+    $host = $_SERVER['HTTP_HOST'];
+    return $protocol . '://' . $host . '/api/' . $toolName . '/';
+}
+$baseUrl = getBaseUrl('health-calculator');
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -315,7 +324,7 @@
             <div class="section">
                 <h2>🌐 Base URL</h2>
                 <div class="code-block">
-https://api.lorwongam.com/health-calculator/api/
+<?php echo $baseUrl; ?>
                 </div>
             </div>
 
@@ -414,7 +423,7 @@ https://api.lorwongam.com/health-calculator/api/
 
                     <h4>Example Request - BMI Calculation</h4>
                     <div class="code-block">
-curl -X POST "https://api.lorwongam.com/health-calculator/api/" \
+curl -X POST "<?php echo $baseUrl; ?>" \
   -H "Content-Type: application/json" \
   -d '{
     "calculator": "bmi",
@@ -425,7 +434,7 @@ curl -X POST "https://api.lorwongam.com/health-calculator/api/" \
 
                     <h4>Example Request - Daily Intake Calculation</h4>
                     <div class="code-block">
-curl -X POST "https://api.lorwongam.com/health-calculator/api/" \
+curl -X POST "<?php echo $baseUrl; ?>" \
   -H "Content-Type: application/json" \
   -d '{
     "calculator": "intake",
@@ -440,7 +449,7 @@ curl -X POST "https://api.lorwongam.com/health-calculator/api/" \
 
                     <h4>Example Request - Water Intake Calculation</h4>
                     <div class="code-block">
-curl -X POST "https://api.lorwongam.com/health-calculator/api/" \
+curl -X POST "<?php echo $baseUrl; ?>" \
   -H "Content-Type: application/json" \
   -d '{
     "calculator": "water",

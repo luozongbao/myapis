@@ -11,7 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 // Function to read a fortune from JSON file
 function getFortune($fortuneId) {
-    $filePath = __DIR__ . '/../predictions/' . $fortuneId . '.json';
+    $filePath = __DIR__ . '/predictions/' . $fortuneId . '.json';
     
     if (!file_exists($filePath)) {
         return null;

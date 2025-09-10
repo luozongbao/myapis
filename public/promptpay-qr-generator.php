@@ -27,9 +27,7 @@ if ($_POST) {
         // Call our API endpoint
         $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
         $host = $_SERVER['HTTP_HOST'];
-        $currentDir = dirname($_SERVER['SCRIPT_NAME']); // Use SCRIPT_NAME instead of REQUEST_URI
-        if ($currentDir === '/') $currentDir = '';
-        $apiUrl = $protocol . '://' . $host . $currentDir . '/api/?format=json';
+        $apiUrl = $protocol . '://' . $host . '/api/promptpay-qr-generator/?format=json';
         
         $postData = [
             'target' => $target,

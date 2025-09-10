@@ -605,7 +605,7 @@
                 }
                 
                 // Make API call
-                const response = await fetch(`api/index.php?${params.toString()}`);
+                const response = await fetch(`/api/randomizer/?${params.toString()}`);
                 const data = await response.json();
                 
                 if (data.success) {

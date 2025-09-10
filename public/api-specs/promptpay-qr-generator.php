@@ -1,3 +1,12 @@
+<?php
+// Generate dynamic base URL based on current server
+function getBaseUrl($toolName) {
+    $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
+    $host = $_SERVER['HTTP_HOST'];
+    return $protocol . '://' . $host . '/api/' . $toolName . '/';
+}
+$baseUrl = getBaseUrl('promptpay-qr-generator');
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -335,7 +344,7 @@
             <div class="section">
                 <h2>🌐 Base URL</h2>
                 <div class="code-block">
-https://api.lorwongam.com/promptpay-qr-generator/api/
+<?php echo $baseUrl; ?>
                 </div>
             </div>
 
@@ -431,7 +440,7 @@ https://api.lorwongam.com/promptpay-qr-generator/api/
 
                     <h4>Example Request - Mobile Number with Amount</h4>
                     <div class="code-block">
-curl -X POST "https://api.lorwongam.com/promptpay-qr-generator/api/" \
+curl -X POST "<?php echo $baseUrl; ?>" \
   -H "Content-Type: application/json" \
   -d '{
     "target": "0812345678",
@@ -443,7 +452,7 @@ curl -X POST "https://api.lorwongam.com/promptpay-qr-generator/api/" \
 
                     <h4>Example Request - Tax ID without Amount</h4>
                     <div class="code-block">
-curl -X POST "https://api.lorwongam.com/promptpay-qr-generator/api/" \
+curl -X POST "<?php echo $baseUrl; ?>" \
   -H "Content-Type: application/json" \
   -d '{
     "target": "1234567890123",
@@ -454,7 +463,7 @@ curl -X POST "https://api.lorwongam.com/promptpay-qr-generator/api/" \
 
                     <h4>Example Request - e-Wallet ID with Large Amount</h4>
                     <div class="code-block">
-curl -X POST "https://api.lorwongam.com/promptpay-qr-generator/api/" \
+curl -X POST "<?php echo $baseUrl; ?>" \
   -H "Content-Type: application/json" \
   -d '{
     "target": "123456789012345",
@@ -646,7 +655,7 @@ curl -X POST "https://api.lorwongam.com/promptpay-qr-generator/api/" \
 
                 <h3>JavaScript Integration</h3>
                 <div class="code-block">
-fetch('https://api.lorwongam.com/promptpay-qr-generator/api/', {
+fetch('<?php echo $baseUrl; ?>', {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',

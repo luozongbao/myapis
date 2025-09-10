@@ -1,3 +1,12 @@
+<?php
+// Generate dynamic base URL based on current server
+function getBaseUrl($toolName) {
+    $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
+    $host = $_SERVER['HTTP_HOST'];
+    return $protocol . '://' . $host . '/api/' . $toolName . '/';
+}
+$baseUrl = getBaseUrl('randomizer');
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -378,7 +387,7 @@
             <div class="section">
                 <h2>🌐 Base URL</h2>
                 <div class="code-block">
-https://api.lorwongam.com/randomizer/api/
+<?php echo $baseUrl; ?>
                 </div>
             </div>
 
@@ -471,7 +480,7 @@ https://api.lorwongam.com/randomizer/api/
 
                     <h4>Example Request - Random Number</h4>
                     <div class="code-block">
-curl -X POST "https://api.lorwongam.com/randomizer/api/" \
+curl -X POST "<?php echo $baseUrl; ?>" \
   -H "Content-Type: application/json" \
   -d '{
     "type": "number",
@@ -482,7 +491,7 @@ curl -X POST "https://api.lorwongam.com/randomizer/api/" \
 
                     <h4>Example Request - Dice Roll</h4>
                     <div class="code-block">
-curl -X POST "https://api.lorwongam.com/randomizer/api/" \
+curl -X POST "<?php echo $baseUrl; ?>" \
   -H "Content-Type: application/json" \
   -d '{
     "type": "dice",
@@ -493,7 +502,7 @@ curl -X POST "https://api.lorwongam.com/randomizer/api/" \
 
                     <h4>Example Request - Coin Flip</h4>
                     <div class="code-block">
-curl -X POST "https://api.lorwongam.com/randomizer/api/" \
+curl -X POST "<?php echo $baseUrl; ?>" \
   -H "Content-Type: application/json" \
   -d '{
     "type": "coin",
@@ -503,7 +512,7 @@ curl -X POST "https://api.lorwongam.com/randomizer/api/" \
 
                     <h4>Example Request - Card Draw</h4>
                     <div class="code-block">
-curl -X POST "https://api.lorwongam.com/randomizer/api/" \
+curl -X POST "<?php echo $baseUrl; ?>" \
   -H "Content-Type: application/json" \
   -d '{
     "type": "card",
@@ -514,7 +523,7 @@ curl -X POST "https://api.lorwongam.com/randomizer/api/" \
 
                     <h4>Example Request - Generate All Types</h4>
                     <div class="code-block">
-curl -X POST "https://api.lorwongam.com/randomizer/api/" \
+curl -X POST "<?php echo $baseUrl; ?>" \
   -H "Content-Type: application/json" \
   -d '{
     "type": "all"

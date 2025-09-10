@@ -376,7 +376,7 @@
             }
 
             try {
-                const response = await fetch('api/');
+                const response = await fetch('/api/fortune-teller/');
                 const data = await response.json();
 
                 if (data.success) {
