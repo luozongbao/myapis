@@ -5,7 +5,7 @@ A powerful and customizable username generator with multiple themes, configurabl
 ## 🚀 Features
 
 ### 🎯 Username Generation API
-- **Multiple themes**: Gaming, Professional, Fun, Nature, Tech, Space, and DevOps
+- **Multiple themes**: Gaming, Professional, Fun, Nature, Tech, Space, DevOps, and Things
 - **Word combination approach**: Combines adjectives and nouns for meaningful usernames
 - **Customizable length**: Min/max character constraints
 - **Multiple options**: Numbers, symbols, capitalization control
@@ -42,6 +42,7 @@ A powerful and customizable username generator with multiple themes, configurabl
 | **Tech** | Technology and programming themed | Digital, Cyber, Algorithm, Cloud |
 | **Space** | Cosmic and space exploration themed | Stellar, Galaxy, Nebula, Voyager |
 | **DevOps** | Linux commands, cybersecurity, DevOps tools | Secure, Encrypted, Docker, Kubectl, Nmap, Ansible |
+| **Things** | House ware, kitchen ware | Fork, Spoon, Table, Sofa, Knife|
 
 ## 🔧 Usage
 

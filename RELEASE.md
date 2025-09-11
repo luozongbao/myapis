@@ -1,13 +1,13 @@
 # 📋 MyAPIs Release Notes
 
-## Current Release: Version 2.0.0
+## Current Release: Version 2.0.1
 
 **Release Date**: September 10, 2025  
 **Status**: Stable Release  
 
 ---
 
-## � Version 2.0.0 - Major Architecture Restructuring
+## � Version 2.0.1 - Major Architecture Restructuring
 *Released: September 10, 2025*
 
 ### 🌟 Major Changes
