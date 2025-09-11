@@ -41,7 +41,7 @@
   - **Elements and Chemistry**: Chemistry and periodic elements (Hydrogen, Carbon, Molecular, Crystal, Plasma)
   - **Things**: Everyday objects and items (Fork, Table, Chair, Lamp, Knife)
   - **Body and Health**: Health and anatomy themed (Heart, Brain, Strong, Healthy, Muscle)
-  - **Nature**: Lanscape fruites and animals (Mountain, Grape, Fox, Wolf, Banana)
+  - **Nature**: Landscape fruits and animals (Mountain, Grape, Fox, Wolf, Banana)
   - **Space and Time**: Usernames inspired by concepts of space and time (Metric, Meter, Hour, Space, Time, Centi)
 
 #### 🔧 Enhanced API Capabilities
