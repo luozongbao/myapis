@@ -230,7 +230,7 @@ class UsernameGenerator {
             } else {
                 foreach ($options['themes'] as $theme) {
                     if (!array_key_exists($theme, $this->themes)) {
-                        $errors[] = 'Invalid theme selected: ' . $theme;
+                        $errors[] = 'Invalid theme selected: ' . htmlspecialchars($theme, ENT_QUOTES, 'UTF-8');
                     }
                 }
             }
