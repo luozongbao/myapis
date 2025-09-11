@@ -14,41 +14,41 @@ class UsernameGenerator {
     
     // Word lists for different themes
     private $themes = [
-        'gaming' => [
-            'adjectives' => ['Epic', 'Legendary', 'Shadow', 'Dark', 'Fire', 'Ice', 'Storm', 'Lightning', 'Mystic', 'Cyber', 'Neon', 'Plasma', 'Toxic', 'Savage', 'Elite', 'Pro', 'Mega', 'Ultra', 'Super', 'Alpha', 'Beta', 'Omega', 'Prime', 'Stealth', 'Phantom', 'Ghost', 'Demon', 'Angel', 'Dragon', 'Phoenix', 'Burned'],
-            'nouns' => ['Warrior', 'Hunter', 'Assassin', 'Mage', 'Ninja', 'Samurai', 'Knight', 'Wizard', 'Ranger', 'Sniper', 'Fighter', 'Striker', 'Destroyer', 'Guardian', 'Champion', 'Hero', 'Legend', 'Master', 'Lord', 'King', 'Emperor', 'Slayer', 'Reaper', 'Beast', 'Archer', 'Wolf', 'Tiger', 'Eagle', 'Hawk', 'Viper', 'Scorpion', 'Ghost', 'Shadow', 'Blade', 'Arrow', 'Bolt', 'Fury', 'Rage', 'Storm', 'Flame', 'Frost', 'Ice', 'Thunder', 'Lightning', 'Venom', 'Toxic', 'Devil', 'God', 'Titan', 'Giant', 'Colossus', 'Juggernaut', 'Berserker', 'Paladin', 'Druid', 'Shaman', 'Monk', 'Pirate', 'Viking', 'Samurai', 'Ronin', 'Spy', 'Agent', 'Soldier', 'Marine', 'Captain', 'Commander', 'General']
+        'Fantasy' => [
+            'adjectives' => ['Epic', 'Evil', 'Legendary', 'Shadow', 'Dark', 'Fire', 'Ice', 'Storm', 'Lightning', 'Mystic', 'Cyber', 'Neon', 'Plasma', 'Toxic', 'Savage', 'Elite', 'Pro', 'Mega', 'Ultra', 'Super', 'Alpha', 'Beta', 'Omega', 'Prime', 'Stealth', 'Phantom', 'Ghost', 'Burned', 'Ordinary'],
+            'nouns' => ['Warrior', 'Hunter', 'Assassin', 'Mage', 'Ninja', 'Samurai', 'Knight', 'Wizard', 'Ranger', 'Sniper', 'Fighter', 'Striker', 'Destroyer', 'Guardian', 'Champion', 'Hero', 'Legend', 'Master', 'Lord', 'King', 'Emperor', 'Slayer', 'Reaper', 'Beast', 'Archer', 'Ghost', 'Shadow', 'Blade', 'Arrow', 'Bolt', 'Fury', 'Rage', 'Storm', 'Flame', 'Frost', 'Ice', 'Thunder', 'Lightning', 'Venom', 'Toxic', 'Devil', 'God', 'Titan', 'Giant', 'Colossus', 'Juggernaut', 'Berserker', 'Paladin', 'Druid', 'Shaman', 'Monk', 'Pirate', 'Viking', 'Samurai', 'Ronin', 'Spy', 'Agent', 'Soldier', 'Marine', 'Captain', 'Commander', 'General', 'Unicorn', 'Pegasus', 'Griffin', 'Hydra', 'Cerberus', 'Chimera', 'Minotaur', 'Cyclops', 'Sphinx', 'Golem', 'Elemental', 'Wraith', 'Banshee', 'Lich', 'Necromancer', 'Sorcerer', 'Enchanter', 'Alchemist', 'Seer', 'Oracle', 'Prophet', 'Sage', 'Mystic', 'Visionary', 'Dreamer', 'Wanderer', 'Nomad', 'Rogue', 'Thief', 'Bandit', 'Outlaw', 'Mercenary', 'Gladiator', 'Duelist', 'Swashbuckler', 'Corsair', 'Buccaneer', 'Privateer', 'Adventurer', 'Explorer', 'Pioneer', 'Pathfinder', 'Trailblazer', 'Voyager', 'Seeker', 'Chaser', 'Runner', 'Sprinter', 'Jumper', 'Leaper', 'Climber', 'Diver', 'Swimmer', 'Sailor', 'Navigator', 'Pilot', 'Driver', 'Rider', 'Jockey', 'Demon', 'Angel', 'Dragon', 'Phoenix']
         ],
-        'professional' => [
+        'Professional' => [
             'adjectives' => ['General', 'Smart', 'Wise', 'Bright', 'Sharp', 'Quick', 'Swift', 'Clever', 'Creative', 'Innovative', 'Dynamic', 'Strategic', 'Efficient', 'Productive', 'Reliable', 'Focused', 'Skilled', 'Expert', 'Advanced', 'Premium', 'Quality', 'Modern', 'Fresh', 'Clean', 'Clear', 'Solid', 'Strong', 'Stable', 'Secure', 'Professional', 'Corporate'],
-            'nouns' => ['Dev', 'Coder', 'Tech', 'Logic', 'Code', 'Data', 'Mind', 'Brain', 'Think', 'Idea', 'Solution', 'Builder', 'Maker', 'Creator', 'Designer', 'Engineer', 'Analyst', 'Consultant', 'Expert', 'Specialist', 'Manager', 'Leader', 'Director', 'Chief', 'Pro', 'Ace', 'Star', 'Elite', 'Prime', 'Core', 'Meeting', 'Report', 'Project', 'Client', 'Budget', 'Invoice', 'Contract', 'Strategy', 'Plan', 'Goal', 'Vision', 'Mission', 'Value', 'Growth', 'Success', 'Management', 'Team', 'Partner', 'Resource', 'Solution', 'Service', 'Support', 'Development', 'Innovation', 'Performance', 'Efficiency', 'Quality', 'Improvement', 'Leadership', 'Collaboration', 'Communication', 'Negotiation', 'Presentation', 'Analysis', 'Research', 'Marketing', 'Sales', 'Finance', 'Accounting', 'Operations', 'Business', 'Enterprise', 'Industry', 'Market', 'Customer', 'Vendor', 'Supplier', 'Product', 'Service', 'Brand', 'Reputation', 'Network', 'Connection', 'Opportunity', 'Challenge', 'Risk', 'Compliance', 'Regulation', 'Policy', 'Procedure', 'Process']
+            'nouns' => ['Dev', 'Coder', 'Tech', 'Logic', 'Code', 'Data', 'Mind', 'Brain', 'Think', 'Idea', 'Solution', 'Builder', 'Maker', 'Creator', 'Designer', 'Engineer', 'Analyst', 'Consultant', 'Expert', 'Specialist', 'Manager', 'Leader', 'Director', 'Chief', 'Pro', 'Ace', 'Star', 'Elite', 'Prime', 'Core', 'Meeting', 'Report', 'Project', 'Client', 'Budget', 'Invoice', 'Contract', 'Strategy', 'Plan', 'Goal', 'Vision', 'Mission', 'Value', 'Growth', 'Success', 'Management', 'Team', 'Partner', 'Resource', 'Solution', 'Service', 'Support', 'Development', 'Innovation', 'Performance', 'Efficiency', 'Quality', 'Improvement', 'Leadership', 'Collaboration', 'Communication', 'Negotiation', 'Presentation', 'Analysis', 'Research', 'Marketing', 'Sales', 'Finance', 'Accounting', 'Operations', 'Business', 'Enterprise', 'Industry', 'Market', 'Customer', 'Vendor', 'Supplier', 'Product', 'Service', 'Brand', 'Reputation', 'Network', 'Connection', 'Opportunity', 'Challenge', 'Risk', 'Compliance', 'Regulation', 'Policy', 'Procedure', 'Process', 'Terms', 'Conditions', 'Agreement', 'Partnership', 'Alliance', 'Merger', 'Acquisition', 'Investment', 'Funding', 'Capital', 'Equity', 'Asset', 'Liability', 'Revenue', 'Profit', 'Margin', 'Cost', 'Expense', 'Budget', 'Forecast', 'Trend', 'Analysis', 'Insight', 'Metric', 'KPI']
         ],
-        'fun' => [
-            'adjectives' => ['Happy', 'Jolly', 'Cheerful', 'Bouncy', 'Bubbly', 'Giggly', 'Silly', 'Funny', 'Crazy', 'Wild', 'Zany', 'Wacky', 'Quirky', 'Peppy', 'Zippy', 'Snappy', 'Perky', 'Spunky', 'Lively', 'Energetic', 'Vibrant', 'Colorful', 'Bright', 'Sunny', 'Rainbow', 'Magic', 'Wonder', 'Amazing', 'Awesome', 'Cool'],
-            'nouns' => ['Panda', 'Penguin', 'Koala', 'Bunny', 'Puppy', 'Kitten', 'Bear', 'Fox', 'Duck', 'Frog', 'Bee', 'Butterfly', 'Star', 'Moon', 'Sun', 'Cloud', 'Rainbow', 'Smile', 'Dream', 'Wish', 'Magic', 'Wonder', 'Joy', 'Bliss', 'Cheer', 'Spark', 'Glow', 'Shine', 'Twinkle', 'Bubble', 'Giggle', 'Angel', 'Clown', 'Game', 'Joke', 'Party', 'Dance', 'Fun', 'Play', 'Toy', 'Gift', 'Cake', 'Candy', 'Cookie', 'IceCream', 'Popcorn', 'Balloon', 'Confetti', 'Surprise', 'Adventure', 'Journey', 'Holiday', 'Vacation', 'Trip', 'Explore', 'Discover', 'Celebrate']
+        'Science and Space' => [
+            'adjectives' => ['Stellar', 'Cosmic', 'Astronomical', 'Galactic', 'Solar', 'Lunar', 'Orbital', 'Nuclear', 'Quantum', 'Atomic', 'Molecular', 'Celestial', 'Interstellar', 'Planetary', 'Astral', 'Nebular', 'Binary', 'Gravitational', 'Magnetic', 'Electric', 'Thermal', 'Radiant', 'Photonic', 'Neutronic', 'Ionic', 'Plasma', 'Fusion', 'Fission', 'Relativistic', 'Dimensional', 'Temporal', 'Nano', 'Tetra', 'Octa', 'Hexa', 'Penta', 'Tri', 'Duo', 'Mono', 'Hyper', 'Ultra', 'Mega', 'Giga', 'Tera', 'Pico', 'Femto', 'Atto', 'Micro', 'Milli', 'Centi', 'Deci', 'Kilo', 'Hecto', 'Deca', 'Exo', 'Zetta', 'Yotta', 'Extra', 'Intra', 'Inter', 'Ultra'],
+            'nouns' => ['Star', 'Planet', 'Moon', 'Galaxy', 'Nebula', 'Comet', 'Asteroid', 'Meteor', 'Satellite', 'Orbit', 'Cosmos', 'Universe', 'Quasar', 'Pulsar', 'Blackhole', 'Supernova', 'Wormhole', 'Spaceship', 'Rocket', 'Probe', 'Station', 'Laboratory', 'Observatory', 'Telescope', 'Microscope', 'Experiment', 'Theory', 'Formula', 'Equation', 'Hypothesis', 'Discovery', 'Research', 'Science', 'Physics', 'Chemistry', 'Biology', 'Astronomy', 'Cosmology', 'Astrophysics', 'Quantum', 'Atom', 'Molecule', 'Electron', 'Proton', 'Neutron', 'Photon', 'Particle', 'Wave', 'Energy', 'Matter', 'Force', 'Field', 'Dimension', 'Time', 'Space', 'Void', 'Infinity', 'Voyager', 'Explorer', 'Pioneer', 'Discovery', 'Endeavour', 'Apollo', 'Artemis', 'Hubble', 'Kepler', 'Galileo', 'Newton', 'Einstein', 'Hawking', 'Tesla', 'Curie', 'Kepler', 'Cassini', 'Voyager', 'Pioneer', 'Opportunity', 'Metric', 'Vector', 'Scalar', 'Tensor', 'Quantum', 'Relativity', 'String', 'Brane', 'Multiverse', 'Singularity', 'Event', 'Horizon', 'Lightyear', 'Parsec', 'Astronaut', 'Cosmonaut', 'Mission', 'Flight', 'Launch', 'Docking', 'EVA', 'Gravity', 'Magnetism', 'Radiation', 'Spectrum', 'Wavelength', 'Frequency', 'Amplitude', 'Velocity', 'Acceleration', 'Momentum', 'Inertia', 'Mass', 'Charge', 'Spin', 'Orbit', 'Trajectory', 'Escape', 'Dock', 'Land', 'Surface', 'Core', 'Crust', 'Mantle', 'Atmosphere', 'Climate', 'Weather', 'Ecosystem', 'Biosphere', 'Stellar'. 'Eclipse']
         ],
-        'nature' => [
-            'adjectives' => ['Wild', 'Forest', 'Mountain', 'Ocean', 'River', 'Sky', 'Earth', 'Green', 'Blue', 'Golden', 'Silver', 'Crystal', 'Pure', 'Fresh', 'Natural', 'Organic', 'Living', 'Growing', 'Flowing', 'Shining', 'Glowing', 'Peaceful', 'Calm', 'Serene', 'Tranquil', 'Gentle', 'Soft', 'Warm', 'Cool', 'Misty'],
-            'nouns' => ['Tree', 'Leaf', 'Branch', 'Root', 'Flower', 'Rose', 'Lily', 'Oak', 'Pine', 'Willow', 'Eagle', 'Falcon', 'Deer', 'Wolf', 'Bear', 'Lion', 'Tiger', 'Whale', 'Dolphin', 'Shark', 'Stone', 'Rock', 'Mountain', 'Valley', 'River', 'Lake', 'Ocean', 'Beach', 'Island', 'Forest', 'Snake', 'Cobra', 'Viper', 'Cactus', 'Desert', 'Jungle', 'Savanna', 'Tundra', 'Volcano', 'Geyser', 'Waterfall', 'Cave', 'Cliff', 'Hill', 'Meadow', 'Prairie', 'Swamp', 'Marsh', 'Reef','Apple','Banana','Cherry','Grape','Lemon', 'Mango','Melon', 'Orange','Peach', 'Pear', 'Plum', 'Berry','Coconut','Kiwi','Papaya','Durian','Avocado','Hawk','Owl','Eagle','Raven', 'Sparrow', 'Robin', 'Dove', 'Parrot', 'Flamingo', 'Peacock', 'Swan', 'Woodpecker', 'Penguin', 'Seagull', 'Crane', 'Tiger', 'Elephant', 'Giraffe', 'Zebra', 'Kangaroo', 'Panda', 'Koala', 'Cheetah', 'Leopard', 'Hyena', 'Buffalo', 'Bison', 'Moose', 'Caribou', 'Antelope', 'Gazelle', 'Jaguar', 'Mud', 'Clay', 'Sand', 'Soil', 'Dirt', 'Grass', 'Moss', 'Fern', 'Vine', 'Ivy', 'Bush', 'Shrub', 'Thorn', 'Bark', 'Seed', 'Bud', 'Blossom']
+        'Computer Technology' => [
+            'adjectives' => ['Digital', 'Cyber', 'Virtual', 'Smart', 'Intelligent', 'Automated', 'Connected', 'Wireless', 'Wired', 'Mobile', 'Cloud', 'Edge', 'Quantum', 'Neural', 'Algorithmic', 'Encrypted', 'Secure', 'Distributed', 'Decentralized', 'Artificial', 'Augmented', 'Enhanced', 'Optimized', 'Scalable', 'Agile', 'Responsive', 'Interactive', 'Dynamic', 'Static', 'Compiled', 'Interpreted', 'Functional', 'Procedural', 'Concurrent', 'Parallel', 'Asynchronous', 'Synchronous', 'Real-time', 'Configured', 'Installed', 'Updated', 'Patched', 'Debugged', 'Tested', 'Monitored', 'Logged', 'Cached', 'Indexed', 'Searched', 'Filtered', 'Sorted', 'Mapped', 'Reduced', 'Analyzed', 'Visualized', 'Modeled', 'Simulated', 'Emulated', 'Virtualized', 'Containerized', 'Orchestrated'],
+            'nouns' => ['Code', 'Algorithm', 'Function', 'Method', 'Class', 'Object', 'Variable', 'Array', 'Loop', 'Condition', 'Database', 'Server', 'Client', 'Browser', 'Framework', 'Library', 'API', 'SDK', 'IDE', 'Compiler', 'Debugger', 'Terminal', 'Console', 'Command', 'Script', 'Program', 'Application', 'Software', 'Hardware', 'System', 'Network', 'Protocol', 'Interface', 'Module', 'Package', 'Repository', 'Version', 'Branch', 'Commit', 'Merge', 'Deploy', 'Build', 'Test', 'Debug', 'Refactor', 'Optimize', 'Scale', 'Monitor', 'Log', 'Cache', 'Session', 'Cookie', 'Token', 'Key', 'Hash', 'Encryption', 'Security', 'Authentication', 'Authorization', 'Validation', 'Sanitization', 'Injection', 'XSS', 'CSRF', 'SQL', 'NoSQL', 'JSON', 'XML', 'HTML', 'CSS', 'JavaScript', 'Python', 'Java', 'CPlusPlus', 'CSharp', 'PHP', 'Ruby', 'Go', 'Rust', 'Swift', 'Kotlin', 'TypeScript', 'React', 'Angular', 'Vue', 'Node', 'Express', 'Django', 'Flask', 'Laravel', 'Spring', 'Docker', 'Kubernetes', 'AWS', 'Azure', 'GCP', 'Firebase', 'MongoDB', 'MySQL', 'PostgreSQL', 'Redis', 'Elasticsearch', 'Apache', 'Nginx', 'Linux', 'Windows', 'MacOS', 'Android', 'iOS', 'Vim', 'Nano', 'Ufw', 'Git', 'Blockchain', 'Bitcoin', 'Ethereum', 'Solidity', 'Bit', 'Byte', 'Pixel', 'Bytecode', 'Firmware', 'Driver', 'Chip', 'Circuit', 'Board', 'Processor', 'Memory', 'Storage', 'Disk', 'SSD', 'HDD', 'Virtual', 'Container', 'Instance', 'Cluster', 'Grid', 'Mesh', 'Topology', 'Bandwidth', 'Latency', 'Throughput', 'Firewall', 'Proxy', 'VPN', 'Router', 'Switch', 'Hub', 'Bridge', 'SSL', 'SSH', 'FTP', 'HTTP', 'HTTPS']
         ],
-        'tech' => [
-            'adjectives' => ['Digital', 'Virtual', 'Cyber', 'Tech', 'Smart', 'AI', 'Quantum', 'Nano', 'Micro', 'Macro', 'Meta', 'Neo', 'Next', 'Future', 'Advanced', 'Modern', 'High', 'Fast', 'Quick', 'Instant', 'Real', 'Live', 'Active', 'Dynamic', 'Interactive', 'Responsive', 'Adaptive', 'Intelligent', 'Automated', 'Optimized'],
-            'nouns' => ['Bot', 'AI', 'Code', 'Data', 'Byte', 'Bit', 'Pixel', 'Node', 'Core', 'Chip', 'Circuit', 'System', 'Network', 'Cloud', 'Server', 'Database', 'Algorithm', 'Function', 'Method', 'Class', 'Object', 'Array', 'String', 'Integer', 'Boolean', 'Variable', 'Constant', 'Interface', 'Framework', 'Library', 'Version', 'Module', 'Package', 'Script', 'App', 'Program', 'Software', 'Hardware', 'Gadget', 'Device', 'Tool', 'Platform', 'Engine', 'Protocol', 'Signal', 'Wave', 'Frequency', 'Spectrum', 'Link', 'Bridge', 'Gateway', 'Html', 'WWW', 'Css', 'Js', 'Json', 'Xml', 'Sql', 'NoSql', 'Api', 'Rest', 'Graphql', 'Grpc', 'Tcp', 'Udp', 'Http', 'Https', 'Ftp', 'Ssh', 'Ssl', 'Tls', 'Vpn', 'Dns', 'Dhcp', 'Ip', 'Mac', 'Lan', 'Wan', 'Vlan']
+        'Elements and Chemistry' => [
+            'adjectives' => ['Atomic', 'Molecular', 'Chemical', 'Organic', 'Inorganic', 'Synthetic', 'Natural', 'Pure', 'Mixed', 'Compound', 'Elementary', 'Metallic', 'Nonmetallic', 'Ionic', 'Covalent', 'Polar', 'Nonpolar', 'Acidic', 'Basic', 'Neutral', 'Oxidized', 'Reduced', 'Catalytic', 'Reactive', 'Stable', 'Unstable', 'Radioactive', 'Crystalline', 'Amorphous', 'Solid', 'Liquid', 'Gaseous', 'Plasma', 'Sublimed', 'Dissolved', 'Precipitated', 'Filtered', 'Distilled', 'Purified'],
+            'nouns' => ['Hydrogen', 'Helium', 'Lithium', 'Beryllium', 'Boron', 'Carbon', 'Nitrogen', 'Oxygen', 'Fluorine', 'Neon', 'Sodium', 'Magnesium', 'Aluminum', 'Silicon', 'Phosphorus', 'Sulfur', 'Chlorine', 'Argon', 'Potassium', 'Calcium', 'Iron', 'Copper', 'Zinc', 'Silver', 'Gold', 'Mercury', 'Lead', 'Uranium', 'Plutonium', 'Radium', 'Element', 'Atom', 'Molecule', 'Ion', 'Electron', 'Proton', 'Neutron', 'Nucleus', 'Shell', 'Orbital', 'Bond', 'Reaction', 'Catalyst', 'Enzyme', 'Protein', 'Amino', 'Acid', 'Base', 'Salt', 'Oxide', 'Hydroxide', 'Carbonate', 'Sulfate', 'Nitrate', 'Phosphate', 'Chloride', 'Fluoride', 'Bromide', 'Iodide', 'Methane', 'Ethane', 'Propane', 'Butane', 'Benzene', 'Ethanol', 'Methanol', 'Acetone', 'Glucose', 'Fructose', 'Sucrose', 'Cellulose', 'Starch', 'DNA', 'RNA', 'ATP', 'Hemoglobin', 'Insulin', 'Adrenaline', 'Dopamine', 'Serotonin', 'Caffeine', 'Nicotine', 'Aspirin', 'Penicillin', 'Vitamin', 'Mineral', 'Crystal', 'Diamond', 'Graphite', 'Polymer', 'Plastic', 'Rubber', 'Glass', 'Ceramic', 'Metal', 'Alloy', 'Steel', 'Bronze', 'Brass', 'Earth', 'Water', 'Fire', 'Air', 'Salt', 'Sand', 'Clay', 'Rock', 'Mineral', 'Fossil', 'Krypton', 'Xenon', 'Radon']
         ],
-        'space' => [
-            'adjectives' => ['Cosmic', 'Stellar', 'Galactic', 'Solar', 'Lunar', 'Astral', 'Celestial', 'Orbital', 'Nebula', 'Quantum', 'Infinite', 'Eternal', 'Universal', 'Interstellar', 'Supernova', 'Meteor', 'Comet', 'Asteroid', 'Plasma', 'Photon', 'Neutron', 'Proton', 'Electron', 'Atomic', 'Nuclear', 'Fusion', 'Zero', 'Dark', 'Bright', 'Distant'],
-            'nouns' => ['Star', 'Planet', 'Moon', 'Sun', 'Galaxy', 'Nebula', 'Cosmos', 'Universe', 'Orbit', 'Satellite', 'Rocket', 'Shuttle', 'Station', 'Explorer', 'Voyager', 'Pioneer', 'Discovery', 'Mission', 'Launch', 'Flight', 'Journey', 'Quest', 'Adventure', 'Expedition', 'Traveler', 'Navigator', 'Pilot', 'Commander', 'Captain', 'Admiral','Alien', 'Martian', 'Astro', 'Cosmonaut', 'Meteor', 'Comet', 'Asteroid', 'BlackHole', 'Wormhole', 'Quasar', 'Pulsar', 'Supernova', 'Eclipse', 'Gravity', 'Lightyear', 'Nebulae', 'Celestial', 'Constellation', 'Telescope', 'Observatory','Rocket','Shuttle','Probe','Lander','Rover','Capsule','Thruster','Booster','Spacewalk','Helmet','Gloves','Boots','Oxygen','Pressure','Vacuum', 'Hydrogen', 'Helium', 'Lithium', 'Beryllium', 'Boron', 'Carbon', 'Nitrogen', 'Fluorine', 'Neon', 'Sodium', 'Magnesium', 'Aluminum', 'Silicon', 'Phosphorus', 'Sulfur', 'Chlorine', 'Argon', 'Potassium', 'Calcium', 'Scandium', 'Titanium', 'Vanadium', 'Chromium', 'Manganese', 'Iron', 'Cobalt', 'Nickel', 'Copper', 'Zinc', 'Gallium', 'Germanium', 'Arsenic', 'Selenium', 'Bromine', 'Krypton']
+        'Things' => [
+            'adjectives' => ['Tiny', 'Small', 'Mini', 'Micro', 'Slim', 'Light', 'Narrow', 'Short', 'Thin', 'Sleek', 'Compact', 'Portable', 'Handy', 'Neat', 'Trim', 'Dainty', 'Petite', 'Fine', 'Delicate', 'Subtle', 'Wide', 'Big', 'Large', 'Huge', 'Giant', 'Massive', 'Colossal', 'Enormous', 'Gigantic', 'Vast', 'Immense', 'Bulky', 'Heavy', 'Thick', 'Solid', 'Strong', 'Sturdy', 'Robust', 'Durable', 'Tough', 'Hard', 'Soft', 'Smooth', 'Rough', 'Sharp', 'Blunt', 'Curved', 'Straight', 'Round', 'Square', 'Flat', 'Deep', 'Shallow', 'Empty', 'Full', 'Clean', 'Dirty', 'New', 'Old', 'Modern', 'Ancient', 'Fresh', 'Stale', 'In', 'On', 'At', 'Under', 'Over', 'Between', 'Inside', 'Outside', 'Above', 'Below', 'Near', 'Far', 'Next', 'Last', 'First', 'Second', 'Third', 'Fourth', 'Fifth', 'Sixth', 'Seventh', 'Eighth', 'Ninth', 'Tenth'],
+            'nouns' => ['Pin', 'Needle', 'Wire', 'Thread', 'String', 'Line', 'Strip', 'Blade', 'Edge', 'Razor', 'Sword', 'Knife', 'Dagger', 'Arrow', 'Spear', 'Rod', 'Stick', 'Twig', 'Branch', 'Stem', 'Table', 'Chair', 'Desk', 'Shelf', 'Box', 'Case', 'Bag', 'Pouch', 'Wallet', 'Purse', 'Belt', 'Strap', 'Hook', 'Clip', 'Latch', 'Lock', 'Key', 'Button', 'Switch', 'Knob', 'Dial', 'Gauge', 'Meter', 'Screen', 'Panel', 'Board', 'Card', 'Chip', 'Disk', 'Drive', 'Wheel', 'Tire', 'Pedal', 'Brake', 'Clutch', 'Gear', 'Lever', 'Handle', 'Hinge', 'Spring', 'Bolt', 'Nut', 'Screw', 'Nail', 'Rivet', 'Pinch', 'Grip', 'Hold', 'Catch', 'Wrench', 'Hammer', 'Saw', 'Drill', 'File', 'Chisel', 'Plane', 'Brush', 'Broom', 'Mop', 'Sponge', 'Cloth', 'Towel', 'Rag', 'Mat', 'Rug', 'Carpet', 'Curtain', 'Blind', 'Shade', 'Lamp', 'Light', 'Bulb', 'Candle', 'Torch', 'Flame', 'Fire', 'Heat', 'Cooler', 'Fan', 'Heater', 'Aircon', 'Fridge', 'Oven', 'Stove', 'Microwave', 'Toaster', 'Kettle', 'Pot', 'Pan', 'Bowl', 'Plate', 'Cup', 'Mug', 'Glass', 'Bottle', 'Jar', 'Glove', 'Fork', 'Spoon', 'Chopstick', 'Napkin', 'Sofa', 'Couch', 'Bed', 'Pillow', 'Blanket', 'Sheet', 'Mattress', 'Frame', 'Mirror', 'Picture', 'Clock', 'Watch', 'Phone', 'Tablet', 'Laptop', 'Computer', 'Printer', 'Camera', 'Speaker', 'Headphone', 'Microphone', 'Remote', 'Console', 'Gamepad', 'Joystick', 'Car', 'Bike', 'Bus', 'Truck', 'Train', 'Plane', 'Boat', 'Ship']
         ],
-        'devops' => [
-            'adjectives' => ['Secure', 'Encrypted', 'Protected', 'Hardened', 'Monitored', 'Automated', 'Scripted', 'Deployed', 'Compiled', 'Optimized', 'Cached', 'Proxied', 'Routed', 'Filtered', 'Validated', 'Authenticated', 'Authorized', 'Logged', 'Tracked', 'Scanned', 'Patched', 'Updated', 'Upgraded', 'Migrated', 'Synced', 'Backed', 'Restored', 'Scaled', 'Load', 'Balanced', 'Pulled', 'Fetched', 'Generated', 'Pushed', 'Committed', 'Merged', 'Branched', 'Cloned', 'Forked', 'Debugged', 'Connected', 'Allowed', 'Denied', 'Configured', 'Installed', 'Removed', 'Started', 'Stopped', 'Restarted', 'Enabled', 'Disabled', 'Activated', 'Scheduled', 'Built'],
-            'nouns' => ['Grep', 'Awk', 'Sed', 'Cat', 'Ls', 'Cd', 'Pwd', 'Top', 'Ps', 'Kill', 'Sudo', 'Chmod', 'Chown', 'Tar', 'Zip', 'Wget', 'Curl', 'Ssh', 'Scp', 'Rsync', 'Git', 'Docker', 'Kubectl', 'Helm', 'Nginx', 'Apache', 'MySQL', 'Redis', 'Jenkins', 'Ansible', 'Terraform', 'Vault', 'Consul', 'Nomad', 'Prometheus', 'Grafana', 'ElasticSearch', 'Kibana', 'Logstash', 'Splunk', 'Nmap', 'Wireshark', 'Metasploit', 'Nessus', 'Burp', 'OWASP', 'Firewall', 'VPN', 'SSL', 'TLS', 'Cert', 'Key', 'Hash', 'Token', 'JWT', 'OAuth', 'LDAP', 'Kerberos', 'SAML', 'Pipeline', 'Build', 'Deploy', 'Release', 'Staging', 'Prod', 'Dev', 'Test', 'QA', 'CI', 'CD', 'Repo', 'Branch', 'Merge', 'Commit', 'Push', 'Pull', 'Clone', 'Fork', 'Issue', 'PR', 'Review', 'Debug', 'Log', 'Trace', 'Monitor', 'Alert', 'Metric', 'Dashboard', 'Health', 'Status', 'Uptime', 'Load', 'CPU', 'Memory', 'Disk', 'Network', 'Bandwidth', 'Latency', 'Throughput', 'Cache', 'Queue', 'Buffer', 'Stream', 'Batch', 'Cron', 'Task', 'Job', 'Worker', 'Process', 'Thread', 'Pool', 'Cluster', 'Node', 'Pod', 'Container', 'Image', 'Registry', 'Volume', 'Mount', 'Config', 'Secret', 'Namespace', 'Service', 'Ingress', 'Route', 'Proxy', 'Gateway', 'Balancer', 'Endpoint', 'API', 'REST', 'GraphQL', 'gRPC', 'WebSocket', 'HTTP', 'HTTPS', 'TCP', 'UDP', 'DNS', 'CDN', 'S3', 'EC2', 'RDS', 'Lambda', 'CloudWatch', 'IAM', 'VPC', 'ELB', 'ASG', 'EKS', 'ECS', 'Fargate', 'Azure', 'GCP', 'AWS', 'Cloud', 'IaC', 'Yaml', 'Json', 'XML', 'CSV', 'SQL', 'NoSQL', 'MongoDB', 'Postgres', 'SQLite', 'Backup', 'Snapshot', 'Recovery', 'Disaster', 'HA', 'DR', 'SLA', 'SLO', 'SLI', 'KPI', 'MTTR', 'MTBF', 'RTO', 'RPO', 'Nano', 'Vim', 'Ufw', 'CICD', 'Apt', 'Bash']
-        ],
-        'things' => [
-            'adjectives' => ['Tiny', 'Small', 'Mini', 'Micro', 'Slim', 'Light', 'Narrow', 'Short', 'Thin', 'Sleek', 'Compact', 'Portable', 'Handy', 'Neat', 'Trim', 'Dainty', 'Petite', 'Fine', 'Delicate', 'Subtle', 'In', 'On', 'At', 'Under', 'Over', 'Above', 'Below', 'Next', 'Near', 'Far', 'Between', 'Around', 'Inside', 'Outside', 'Front', 'Back', 'Top', 'Bottom', 'Left', 'Right', 'Middle', 'Center', 'Wide', 'Big', 'Large', 'Huge', 'Giant', 'Massive', 'Colossal', 'Enormous', 'Gigantic', 'Vast', 'Immense', 'Bulky', 'Heavy', 'Thick', 'Solid', 'Strong', 'Sturdy', 'Robust', 'Durable', 'Tough', 'Hard', 'Soft', 'Smooth'],
-            'nouns' => ['Pin', 'Needle', 'Wire', 'Thread', 'String', 'Line', 'Strip', 'Blade', 'Edge', 'Razor', 'Sword', 'Knife', 'Dagger', 'Arrow', 'Spear', 'Rod', 'Stick', 'Twig', 'Branch', 'Stem', 'Table', 'Chair', 'Desk', 'Shelf', 'Box', 'Case', 'Bag', 'Pouch', 'Wallet', 'Purse', 'Belt', 'Strap', 'Hook', 'Clip', 'Latch', 'Lock', 'Key', 'Button', 'Switch', 'Knob', 'Dial', 'Gauge', 'Meter', 'Screen', 'Panel', 'Board', 'Card', 'Chip', 'Disk', 'Drive', 'Wheel', 'Tire', 'Pedal', 'Brake', 'Clutch', 'Gear', 'Lever', 'Handle', 'Hinge', 'Spring', 'Bolt', 'Nut', 'Screw', 'Nail', 'Rivet', 'Pinch', 'Grip', 'Hold', 'Catch', 'Wrench', 'Hammer', 'Saw', 'Drill', 'File', 'Chisel', 'Plane', 'Brush', 'Broom', 'Mop', 'Sponge', 'Cloth', 'Towel', 'Rag', 'Mat', 'Rug', 'Carpet', 'Curtain', 'Blind', 'Shade', 'Lamp', 'Light', 'Bulb', 'Candle', 'Torch', 'Flame', 'Fire', 'Heat', 'Cooler', 'Fan', 'Heater', 'Aircon', 'Fridge', 'Oven', 'Stove', 'Microwave', 'Toaster', 'Kettle', 'Pot', 'Pan', 'Bowl', 'Plate', 'Cup', 'Mug', 'Glass', 'Bottle', 'Jar', 'Glove', 'Fork', 'Spoon', 'Chopstick', 'Napkin', 'Sofa', 'Couch', 'Bed', 'Pillow', 'Blanket', 'Sheet', 'Mattress', 'Frame', 'Mirror', 'Picture', 'Clock', 'Watch', 'Phone', 'Tablet', 'Laptop', 'Computer', 'Printer', 'Camera', 'Speaker', 'Headphone', 'Microphone', 'Remote', 'Console', 'Gamepad', 'Joystick']
-        ],
-        'Body' => [
+        'Body and Health' => [
             'adjectives' => ['Strong', 'Healthy', 'Fit', 'Agile', 'Quick', 'Swift', 'Brave', 'Bold', 'Fearless', 'Energetic', 'Vigorous', 'Robust', 'Sturdy', 'Tough', 'Resilient', 'Enduring', 'Durable', 'Powerful', 'Mighty', 'Muscular', 'Athletic', 'Lean', 'Toned', 'Sleek', 'Supple', 'Flexible', 'Nimble', 'Lithe', 'Graceful', 'Elegant', 'Weak', 'Fragile', 'Delicate', 'Frail', 'Slender', 'Slim', 'Skinny', 'Chubby', 'Plump', 'Round', 'Curvy', 'Bulky', 'Heavy', 'Massive', 'Giant', 'Tiny', 'Small', 'Mini', 'Micro', 'Short', 'Tall', 'Huge', 'Gigantic', 'Colossal', 'Enormous', 'Vast', 'Immense', 'Big'],
-            'nouns' => ['Head', 'Face', 'Eye', 'Ear', 'Nose', 'Mouth', 'Tooth', 'Tongue', 'Lip', 'Cheek', 'Chin', 'Neck', 'Shoulder', 'Arm', 'Elbow', 'Wrist', 'Hand', 'Finger', 'Thumb', 'Palm', 'Back', 'Chest', 'Stomach', 'Waist', 'Hip', 'Leg', 'Knee', 'Ankle', 'Foot', 'Toe', 'Brain', 'Heart', 'Lung', 'Liver', 'Kidney', 'Muscle', 'Bone', 'Skin', 'Hair', 'Nail', 'Shoulder', 'Arm', 'Hand', 'Palm', 'Fist', 'Finger', 'Thumb', 'Wrist', 'Elbow', 'Forearm', 'Bicep', 'Tricep', 'Chest', 'Back', 'Spine', 'Waist', 'Hip', 'Buttock', 'Thigh', 'Knee', 'Calf', 'Ankle', 'Heel', 'Foot', 'Toe']
+            'nouns' => ['Head', 'Face', 'Eye', 'Ear', 'Nose', 'Mouth', 'Tooth', 'Tongue', 'Lip', 'Cheek', 'Chin', 'Neck', 'Shoulder', 'Arm', 'Elbow', 'Wrist', 'Hand', 'Finger', 'Thumb', 'Palm', 'Back', 'Chest', 'Stomach', 'Waist', 'Hip', 'Leg', 'Knee', 'Ankle', 'Foot', 'Toe', 'Brain', 'Heart', 'Lung', 'Liver', 'Kidney', 'Muscle', 'Bone', 'Skin', 'Hair', 'Nail', 'Shoulder', 'Arm', 'Hand', 'Palm', 'Fist', 'Finger', 'Thumb', 'Wrist', 'Elbow', 'Forearm', 'Bicep', 'Tricep', 'Chest', 'Back', 'Spine', 'Waist', 'Hip', 'Buttock', 'Thigh', 'Knee', 'Calf', 'Ankle', 'Heel', 'Foot', 'Toe', 'Girl', 'Boy', 'Man', 'Lady']
+        ],
+        'Nature' => [
+            'adjectives' => ['Wild', 'Free', 'Green', 'Fresh', 'Pure', 'Natural', 'Earthy', 'Rustic', 'Rural', 'Woodland', 'Forest', 'Jungle', 'Tropical', 'Savanna', 'Desert', 'Arid', 'Mountainous', 'Hilly', 'Valley', 'Riverine', 'Coastal', 'Marine', 'Oceanic', 'Lakeside', 'Wetland', 'Swampy', 'Misty', 'Foggy', 'Sunny', 'Cloudy', 'Rainy', 'Stormy', 'Windy', 'Calm', 'Peaceful', 'Tranquil', 'Serene', 'Clear', 'Bright', 'Dark', 'Shadowy', 'Shady', 'Blooming', 'Flourishing', 'Thriving', 'Vibrant', 'Lush', 'Fertile', 'Barren', 'Rocky', 'Sandy', 'Icy', 'Snowy', 'Frosty', 'Chilly', 'Warm', 'Hot'],
+            'nouns' => ['Tree', 'Flower', 'Grass', 'Leaf', 'Branch', 'Root', 'Bark', 'Seed', 'Fruit', 'Berry', 'Mushroom', 'Fern', 'Moss', 'Vine', 'Bush', 'Shrub', 'Cactus', 'Pinecone', 'Acorn', 'Stream', 'River', 'Lake', 'Pond', 'Ocean', 'Sea', 'Beach', 'Cliff', 'Hill', 'Mountain', 'Valley', 'Cave', 'Desert', 'Dune', 'Rock', 'Stone', 'Pebble', 'Sandstone', 'Apple', 'Banana', 'Orange', 'Grape', 'Lemon', 'Lime', 'Cherry', 'Peach', 'Pear', 'Plum', 'Melon', 'Coconut', 'Pineapple', 'Mango', 'Papaya', 'Kiwi', 'Nut', 'Almond', 'Walnut', 'Pistachio', 'Cashew', 'Hazelnut', 'Chestnut', 'Fox', 'Wolf', 'Tiger', 'Lion', 'Bear', 'Deer', 'Rabbit', 'Squirrel', 'Eagle', 'Hawk', 'Owl', 'Falcon', 'Vulture', 'Parrot', 'Sparrow', 'Dove', 'Pigeon', 'Fish', 'Shark', 'Whale', 'Dolphin', 'Seal', 'Otter', 'Frog', 'Toad', 'Lizard', 'Snake', 'Turtle', 'Insect', 'Butterfly', 'Bee', 'Ant', 'Spider', 'Beetle', 'Worm', 'Caterpillar', 'Dragonfly', 'Grasshopper', 'Cricket', 'Snail', 'Slug', 'Crab', 'Lobster', 'Shrimp', 'Jellyfish', 'Coral', 'Starfish', 'Clam', 'Oyster', 'Mussel', 'Scallop', 'Waterfall', 'Swamp', 'Marsh', 'Jungle', 'Forest', 'Canyon', 'Squirrel', 'Viper', 'Scorpion', 'Cobra', 'Python', 'Anaconda']
+        ],
+        'Space and Time' => [
+            'adjectives' => ['Fast', 'Quick', 'Swift', 'Rapid', 'Speedy', 'Instant', 'Immediate', 'Delayed', 'Slow', 'Steady', 'Gradual', 'Constant', 'Variable', 'Fixed', 'Flexible', 'Adjustable', 'Measurable', 'Quantifiable', 'Precise', 'Accurate', 'Exact', 'Approximate', 'Relative', 'Absolute', 'Linear', 'Nonlinear', 'Cyclic', 'Periodic', 'Random', 'Chaotic', 'Stable', 'Unstable', 'Centi', 'Milli', 'Micro', 'Nano', 'Pico', 'Femto', 'Atto', 'Zepto', 'Yocto', 'Kilo', 'Mega', 'Giga', 'Tera', 'Peta', 'Exa', 'Zetta', 'Yotta'],
+            'nouns' => ['Second', 'Minute', 'Hour', 'Day', 'Week', 'Month', 'Year', 'Decade', 'Century', 'Millennium', 'Moment', 'Instant', 'Eon', 'Epoch', 'Era', 'Age', 'Cycle', 'Phase', 'Period', 'Interval', 'Duration', 'Span', 'Stretch', 'Term', 'Session', 'Shift', 'Meter', 'Kilometer', 'Gram', 'Kilogram', 'Liter', 'Milliliter', 'Celsius', 'Fahrenheit', 'Kelvin', 'Watt', 'Volt', 'Ampere', 'Ohm', 'Joule', 'Newton', 'Pascal', 'Hertz', 'Lumen', 'Lux', 'Candela', 'Metric', 'System', 'Mass', 'Volume', 'Length', 'Distance', 'Speed', 'Velocity', 'Acceleration', 'Force', 'Energy', 'Power', 'Work', 'Heat', 'Temperature', 'Pressure', 'Frequency', 'Wavelength', 'Amplitude', 'Intensity', 'Density', 'Gravity', 'Magnetism', 'Electricity', 'Radiation', 'Lightyear', 'Parsec', 'Gravity']
         ]
     ];
 
@@ -75,8 +75,7 @@ class UsernameGenerator {
     public function generateUsernames($options = []) {
         // Default options
         $defaults = [
-            'theme' => 'gaming',
-            'use_case' => 'gaming',
+            'themes' => ['Fantasy'], // Changed from 'theme' to 'themes' array
             'min_length' => 6,
             'max_length' => 20,
             'count' => 10,
@@ -90,27 +89,45 @@ class UsernameGenerator {
         ];
 
         $options = array_merge($defaults, $options);
+        
+        // Ensure themes is always an array
+        if (isset($options['theme']) && !isset($options['themes'])) {
+            // Backward compatibility: convert single theme to themes array
+            $options['themes'] = [$options['theme']];
+        }
+        if (!is_array($options['themes']) || empty($options['themes'])) {
+            $options['themes'] = ['Fantasy'];
+        }
+
         $usernames = [];
         $used_combinations = [];
 
-        // Get word lists
-        $theme_words = $this->themes[$options['theme']] ?? $this->themes['gaming'];
+        // Get word lists from selected themes
+        $adjectives = [];
+        $nouns = [];
+        
+        // Combine words from all selected themes
+        foreach ($options['themes'] as $theme) {
+            if (isset($this->themes[$theme])) {
+                $adjectives = array_merge($adjectives, $this->themes[$theme]['adjectives']);
+                $nouns = array_merge($nouns, $this->themes[$theme]['nouns']);
+            }
+        }
+        
+        // Remove duplicates
+        $adjectives = array_unique($adjectives);
+        $nouns = array_unique($nouns);
         
         // Handle "Use All Adjectives" option
         if ($options['use_all_adjectives']) {
             // Combine all adjectives from all themes
-            $adjectives = [];
+            $all_adjectives = [];
             foreach ($this->themes as $theme_data) {
-                $adjectives = array_merge($adjectives, $theme_data['adjectives']);
+                $all_adjectives = array_merge($all_adjectives, $theme_data['adjectives']);
             }
             // Remove duplicates and keep only unique adjectives
-            $adjectives = array_unique($adjectives);
-            // Use nouns from selected theme only
-            $nouns = $theme_words['nouns'];
-        } else {
-            // Use both adjectives and nouns from selected theme
-            $adjectives = $theme_words['adjectives'];
-            $nouns = $theme_words['nouns'];
+            $adjectives = array_unique($all_adjectives);
+            // Keep nouns from selected themes only
         }
 
         // Add general adjectives if requested
@@ -206,6 +223,20 @@ class UsernameGenerator {
             $errors[] = 'Count must be between 1 and 50';
         }
 
+        // Validate themes
+        if (isset($options['themes'])) {
+            if (!is_array($options['themes']) || empty($options['themes'])) {
+                $errors[] = 'At least one theme must be selected';
+            } else {
+                foreach ($options['themes'] as $theme) {
+                    if (!array_key_exists($theme, $this->themes)) {
+                        $errors[] = 'Invalid theme selected: ' . $theme;
+                    }
+                }
+            }
+        }
+        
+        // Backward compatibility for single theme
         if (isset($options['theme']) && !array_key_exists($options['theme'], $this->themes)) {
             $errors[] = 'Invalid theme selected';
         }
@@ -222,8 +253,25 @@ $input = json_decode(file_get_contents('php://input'), true);
 
 // Support both JSON POST and GET parameters
 $options = [];
-$options['theme'] = $input['theme'] ?? $_GET['theme'] ?? 'gaming';
-$options['use_case'] = $input['use_case'] ?? $_GET['use_case'] ?? 'gaming';
+
+// Handle themes (multiple themes support)
+if (isset($input['themes'])) {
+    $options['themes'] = is_array($input['themes']) ? $input['themes'] : [$input['themes']];
+} elseif (isset($_GET['themes'])) {
+    // For GET requests, themes can be comma-separated string or array
+    if (is_array($_GET['themes'])) {
+        $options['themes'] = $_GET['themes'];
+    } else {
+        $options['themes'] = array_map('trim', explode(',', $_GET['themes']));
+    }
+} elseif (isset($input['theme']) || isset($_GET['theme'])) {
+    // Backward compatibility for single theme
+    $single_theme = $input['theme'] ?? $_GET['theme'] ?? 'Fantasy';
+    $options['themes'] = [$single_theme];
+} else {
+    $options['themes'] = ['Fantasy'];
+}
+
 $options['min_length'] = intval($input['min_length'] ?? $_GET['min_length'] ?? 6);
 $options['max_length'] = intval($input['max_length'] ?? $_GET['max_length'] ?? 20);
 $options['count'] = intval($input['count'] ?? $_GET['count'] ?? 10);
@@ -241,15 +289,15 @@ if (isset($_GET['action']) && $_GET['action'] === 'themes') {
         'success' => true,
         'themes' => $generator->getAvailableThemes(),
         'theme_descriptions' => [
-            'gaming' => 'Perfect for gaming platforms, esports, and online games',
-            'professional' => 'Suitable for business, LinkedIn, and professional networks',
-            'fun' => 'Playful and cheerful usernames for social media',
-            'nature' => 'Nature-inspired usernames with organic feel',
-            'tech' => 'Technology and programming themed usernames',
-            'space' => 'Cosmic and space exploration themed usernames',
-            'devops' => 'Linux commands, cybersecurity tools, and DevOps terminology',
-            'things' => 'Everyday objects and items themed usernames',
-            'body' => 'Body parts and health-themed usernames'
+            'Fantasy' => 'Epic and mythical usernames for gaming and fantasy lovers',
+            'Professional' => 'Suitable for business, LinkedIn, and professional networks',
+            'Science and Space' => 'Science and space exploration themed usernames',
+            'Computer Technology' => 'Tech and programming themed usernames',
+            'Elements and Chemistry' => 'Science-inspired usernames with elements and compounds',
+            'Things' => 'Everyday objects and items themed usernames',
+            'Body and Health' => 'Body parts and health-themed usernames',
+            'Nature' => 'Nature-inspired usernames with plants, animals, and landscapes',
+            'Space and Time' => 'Usernames inspired by concepts of space and time'
         ]
     ]);
     exit();
@@ -291,8 +339,8 @@ try {
             'options_used' => $options
         ],
         'generation_info' => [
-            'theme' => $options['theme'],
-            'use_case' => $options['use_case'],
+            'themes' => $options['themes'],
+            'theme_count' => count($options['themes']),
             'length_range' => $options['min_length'] . '-' . $options['max_length'] . ' characters',
             'features' => [
                 'numbers' => $options['include_numbers'] ? 'included' : 'excluded',

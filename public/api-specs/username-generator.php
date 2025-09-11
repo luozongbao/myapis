@@ -323,22 +323,42 @@ $baseUrl = getBaseUrl('username-generator');
                 <h2>📖 Overview</h2>
                 <p>The Username Generator API creates unique usernames by combining words from various themed categories. Perfect for user registration systems, game character names, or any application requiring creative username suggestions.</p>
                 
+                <h3>🆕 What's New in v2.1</h3>
                 <div class="features-grid">
                     <div class="feature-card">
-                        <h4>🎭 6 Themed Categories</h4>
-                        <p>Animals, Colors, Nature, Tech, Space, and Fantasy themed word sets</p>
+                        <h4>🎨 Multi-Theme Selection</h4>
+                        <p>Select multiple themes simultaneously using the new <code>themes</code> array parameter</p>
                     </div>
                     <div class="feature-card">
-                        <h4>🔄 Cross-Theme Combinations</h4>
-                        <p>Mix words from different themes for creative combinations</p>
+                        <h4>🔄 Backward Compatibility</h4>
+                        <p>Legacy <code>theme</code> parameter still supported for single-theme selection</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>🧹 Cleaner Interface</h4>
+                        <p>Removed unused <code>use_case</code> parameter for simpler API</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>📚 Enhanced Themes</h4>
+                        <p>9 comprehensive themes with thousands of curated words</p>
+                    </div>
+                </div>
+                
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <h4>🎭 9 Comprehensive Themes</h4>
+                        <p>Fantasy, Professional, Science, Tech, Chemistry, Things, Health, Nature, and Space-Time themed word sets</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>🔄 Multi-Theme Selection</h4>
+                        <p>Select multiple themes simultaneously for diverse combinations</p>
                     </div>
                     <div class="feature-card">
                         <h4>📚 Rich Word Database</h4>
-                        <p>100+ general adjectives plus hundreds of themed words</p>
+                        <p>100+ general adjectives plus thousands of themed words across all categories</p>
                     </div>
                     <div class="feature-card">
                         <h4>📊 Bulk Generation</h4>
-                        <p>Generate multiple username suggestions in a single request</p>
+                        <p>Generate up to 50 usernames in a single request</p>
                     </div>
                 </div>
             </div>
@@ -348,28 +368,40 @@ $baseUrl = getBaseUrl('username-generator');
                 <h2>🎨 Available Themes</h2>
                 <div class="theme-list">
                     <div class="theme-item">
-                        <h5>🐾 Animals</h5>
-                        <p>Wildlife and domestic animals</p>
+                        <h5>🧙 Fantasy</h5>
+                        <p>Epic and mythical usernames for gaming (Epic, Shadow, Warrior, Dragon, Wizard)</p>
                     </div>
                     <div class="theme-item">
-                        <h5>🌈 Colors</h5>
-                        <p>Colors and color variations</p>
+                        <h5>💼 Professional</h5>
+                        <p>Business and LinkedIn-ready usernames (Smart, Expert, Developer, Manager, Director)</p>
+                    </div>
+                    <div class="theme-item">
+                        <h5>🔬 Science and Space</h5>
+                        <p>Space exploration and scientific terms (Stellar, Galaxy, Quantum, Atom, Einstein)</p>
+                    </div>
+                    <div class="theme-item">
+                        <h5>💻 Computer Technology</h5>
+                        <p>Programming and tech-focused (Digital, Algorithm, Framework, Docker, JavaScript)</p>
+                    </div>
+                    <div class="theme-item">
+                        <h5>⚗️ Elements and Chemistry</h5>
+                        <p>Chemistry and periodic elements (Hydrogen, Carbon, Molecular, Crystal, Plasma)</p>
+                    </div>
+                    <div class="theme-item">
+                        <h5>🏠 Things</h5>
+                        <p>Everyday objects and items (Fork, Table, Chair, Lamp, Knife)</p>
+                    </div>
+                    <div class="theme-item">
+                        <h5>💪 Body and Health</h5>
+                        <p>Health and anatomy themed (Heart, Brain, Strong, Healthy, Muscle)</p>
                     </div>
                     <div class="theme-item">
                         <h5>🌿 Nature</h5>
-                        <p>Natural elements and phenomena</p>
+                        <p>Landscape, fruits and animals (Mountain, Grape, Fox, Wolf, Banana)</p>
                     </div>
                     <div class="theme-item">
-                        <h5>💻 Technology</h5>
-                        <p>Tech terms and digital concepts</p>
-                    </div>
-                    <div class="theme-item">
-                        <h5>🚀 Space</h5>
-                        <p>Celestial bodies and space terms</p>
-                    </div>
-                    <div class="theme-item">
-                        <h5>🧙 Fantasy</h5>
-                        <p>Mythical creatures and magical elements</p>
+                        <h5>⏰ Space and Time</h5>
+                        <p>Concepts of space and time (Metric, Meter, Hour, Space, Time, Centi)</p>
                     </div>
                 </div>
             </div>
@@ -392,10 +424,55 @@ $baseUrl = getBaseUrl('username-generator');
             <div class="section">
                 <h2>📡 API Endpoints</h2>
 
+                <!-- Get Available Themes Endpoint -->
+                <div class="endpoint">
+                    <h3>
+                        <span class="method get">GET</span>
+                        <span class="url">/?action=themes</span>
+                        Get Available Themes
+                    </h3>
+                    <p>Retrieve all available themes with descriptions.</p>
+
+                    <h4>Example Request</h4>
+                    <div class="code-block">
+curl "<?php echo $baseUrl; ?>?action=themes"
+                    </div>
+
+                    <h4>Response</h4>
+                    <div class="code-block">
+{
+  "success": true,
+  "themes": [
+    "Fantasy",
+    "Professional", 
+    "Science and Space",
+    "Computer Technology",
+    "Elements and Chemistry",
+    "Things",
+    "Body and Health",
+    "Nature",
+    "Space and Time"
+  ],
+  "theme_descriptions": {
+    "Fantasy": "Epic and mythical usernames for gaming and fantasy lovers",
+    "Professional": "Suitable for business, LinkedIn, and professional networks",
+    "Science and Space": "Science and space exploration themed usernames",
+    "Computer Technology": "Tech and programming themed usernames",
+    "Elements and Chemistry": "Science-inspired usernames with elements and compounds",
+    "Things": "Everyday objects and items themed usernames", 
+    "Body and Health": "Body parts and health-themed usernames",
+    "Nature": "Nature-inspired usernames with plants, animals, and landscapes",
+    "Space and Time": "Usernames inspired by concepts of space and time"
+  }
+}
+                    </div>
+                </div>
+
                 <!-- Generate Username Endpoint -->
                 <div class="endpoint">
                     <h3>
                         <span class="method post">POST</span>
+                        <span class="method get">GET</span>
                         <span class="url">/</span>
                         Generate Username
                     </h3>
@@ -414,18 +491,18 @@ $baseUrl = getBaseUrl('username-generator');
                         </thead>
                         <tbody>
                             <tr>
+                                <td><code>themes</code></td>
+                                <td>array</td>
+                                <td><span class="optional">Optional</span></td>
+                                <td>["Fantasy"]</td>
+                                <td><strong>NEW:</strong> Multiple theme selection - Array of themes: "Fantasy", "Professional", "Science and Space", "Computer Technology", "Elements and Chemistry", "Things", "Body and Health", "Nature", "Space and Time"</td>
+                            </tr>
+                            <tr>
                                 <td><code>theme</code></td>
                                 <td>string</td>
                                 <td><span class="optional">Optional</span></td>
-                                <td>"gaming"</td>
-                                <td>Theme: "gaming", "professional", "fun", "nature", "tech", "space", "devops"</td>
-                            </tr>
-                            <tr>
-                                <td><code>use_case</code></td>
-                                <td>string</td>
-                                <td><span class="optional">Optional</span></td>
-                                <td>"gaming"</td>
-                                <td>Use case context</td>
+                                <td>"Fantasy"</td>
+                                <td><strong>Deprecated:</strong> Single theme selection (use <code>themes</code> instead)</td>
                             </tr>
                             <tr>
                                 <td><code>min_length</code></td>
@@ -505,29 +582,29 @@ $baseUrl = getBaseUrl('username-generator');
                         </tbody>
                     </table>
 
-                    <h4>Example Request - Simple Username</h4>
+                    <h4>Example Request - Multi-Theme Username (NEW)</h4>
                     <div class="code-block">
 curl -X POST "<?php echo $baseUrl; ?>" \
   -H "Content-Type: application/json" \
   -d '{
-    "theme": "nature",
+    "themes": ["Fantasy", "Computer Technology"],
     "min_length": 8,
     "max_length": 15,
-    "count": 5
+    "count": 5,
+    "include_numbers": true
   }'
                     </div>
 
-                    <h4>Example Request - Gaming Username</h4>
+                    <h4>Example Request - Science & Chemistry Mix</h4>
                     <div class="code-block">
 curl -X POST "<?php echo $baseUrl; ?>" \
   -H "Content-Type: application/json" \
   -d '{
-    "theme": "gaming",
+    "themes": ["Science and Space", "Elements and Chemistry"],
     "min_length": 10,
     "max_length": 18,
-    "include_numbers": true,
-    "capitalize": true,
-    "count": 5
+    "use_general_adjectives": true,
+    "count": 10
   }'
                     </div>
 
@@ -536,13 +613,37 @@ curl -X POST "<?php echo $baseUrl; ?>" \
 curl -X POST "<?php echo $baseUrl; ?>" \
   -H "Content-Type: application/json" \
   -d '{
-    "theme": "professional",
+    "themes": ["Professional"],
     "min_length": 8,
     "max_length": 15,
     "capitalize": true,
     "avoid_repetition": true,
-    "use_general_adjectives": true
+    "use_general_adjectives": true,
+    "count": 8
   }'
+                    </div>
+
+                    <h4>Example Request - Creative All-Theme Mix</h4>
+                    <div class="code-block">
+curl -X POST "<?php echo $baseUrl; ?>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "themes": ["Nature", "Things", "Body and Health"],
+    "use_all_adjectives": true,
+    "custom_words": "Dragon,Phoenix",
+    "include_symbols": true,
+    "count": 15
+  }'
+                    </div>
+
+                    <h4>Example GET Request - Multi-Theme</h4>
+                    <div class="code-block">
+curl "<?php echo $baseUrl; ?>?themes=Fantasy,Professional&count=5&include_numbers=true"
+                    </div>
+
+                    <h4>Example GET Request - Single Theme (Backward Compatible)</h4>
+                    <div class="code-block">
+curl "<?php echo $baseUrl; ?>?theme=Nature&min_length=10&max_length=15&count=8"
                     </div>
                 </div>
             </div>
@@ -553,68 +654,81 @@ curl -X POST "<?php echo $baseUrl; ?>" \
 
                 <h3>Success Response</h3>
                 <div class="response-box">
-                    <h4>Single Username Response</h4>
-                    <div class="code-block">
-{
-  "success": true,
-  "data": {
-    "username": "swift_panther",
-    "theme": "animals",
-    "format": "adjective_noun",
-    "length": 13,
-    "components": {
-      "adjective": "swift",
-      "noun": "panther"
-    },
-    "settings": {
-      "separator": "_",
-      "case_style": "lowercase",
-      "numbers": false
-    }
-  },
-  "message": "Username generated successfully",
-  "timestamp": "2025-09-09T12:00:00Z"
-}
-                    </div>
-                </div>
-
-                <div class="response-box">
-                    <h4>Multiple Usernames Response</h4>
+                    <h4>Multi-Theme Username Response (NEW)</h4>
                     <div class="code-block">
 {
   "success": true,
   "data": {
     "usernames": [
-      {
-        "username": "MysticDragon99",
-        "theme": "fantasy",
-        "length": 13,
-        "components": {
-          "adjective": "mystic",
-          "noun": "dragon"
-        }
-      },
-      {
-        "username": "AncientWizard42",
-        "theme": "fantasy",
-        "length": 15,
-        "components": {
-          "adjective": "ancient",
-          "noun": "wizard"
-        }
-      }
+      "QuantumWarrior",
+      "CyberDragon",
+      "StellarNinja",
+      "AlgorithmKnight",
+      "CosmicHunter"
     ],
-    "count": 2,
-    "settings": {
-      "theme": "fantasy",
-      "format": "adjective_noun",
-      "separator": "",
-      "case_style": "title",
-      "numbers": true
+    "count": 5,
+    "options_used": {
+      "themes": ["Fantasy", "Computer Technology"],
+      "min_length": 8,
+      "max_length": 15,
+      "count": 5,
+      "include_numbers": false,
+      "include_symbols": false,
+      "capitalize": true,
+      "avoid_repetition": true,
+      "use_all_adjectives": false,
+      "use_general_adjectives": false,
+      "custom_words": ""
     }
   },
-  "message": "Usernames generated successfully",
-  "timestamp": "2025-09-09T12:00:00Z"
+  "generation_info": {
+    "themes": ["Fantasy", "Computer Technology"],
+    "theme_count": 2,
+    "length_range": "8-15 characters",
+    "features": {
+      "numbers": "excluded",
+      "symbols": "excluded",
+      "capitalization": "enabled"
+    }
+  },
+  "timestamp": "2025-09-11 12:34:56"
+}
+                    </div>
+                </div>
+
+                <div class="response-box">
+                    <h4>Science & Chemistry Mix Response</h4>
+                    <div class="code-block">
+{
+  "success": true,
+  "data": {
+    "usernames": [
+      "AtomicNebula",
+      "MolecularQuasar", 
+      "CrystallineGalaxy",
+      "HydrogenStar",
+      "QuantumCarbon"
+    ],
+    "count": 5,
+    "options_used": {
+      "themes": ["Science and Space", "Elements and Chemistry"],
+      "min_length": 10,
+      "max_length": 18,
+      "use_general_adjectives": true,
+      "count": 5
+    }
+  },
+  "generation_info": {
+    "themes": ["Science and Space", "Elements and Chemistry"],
+    "theme_count": 2,
+    "length_range": "10-18 characters",
+    "features": {
+      "numbers": "excluded",
+      "symbols": "excluded", 
+      "capitalization": "enabled"
+    }
+  },
+  "timestamp": "2025-09-11 14:22:15"
 }
                     </div>
                 </div>
@@ -624,9 +738,10 @@ curl -X POST "<?php echo $baseUrl; ?>" \
                     <div class="code-block">
 {
   "success": false,
-  "error": "Invalid theme specified. Must be one of: animals, colors, nature, tech, space, fantasy, random",
-  "code": "INVALID_THEME",
-  "timestamp": "2025-09-09T12:00:00Z"
+  "error": "Validation failed",
+  "messages": [
+    "Invalid theme selected: invalidtheme"
+  ]
 }
                     </div>
                 </div>
