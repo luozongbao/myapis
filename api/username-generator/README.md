@@ -42,7 +42,7 @@ A powerful and customizable username generator with multiple themes, configurabl
 | **Elements and Chemistry** | Science-inspired usernames with elements and compounds | Hydrogen, Carbon, Molecular, Atomic, Crystal, Plasma |
 | **Things** | Everyday objects and items themed usernames | Fork, Spoon, Table, Sofa, Knife, Chair, Lamp |
 | **Body and Health** | Body parts and health-themed usernames | Heart, Brain, Strong, Healthy, Muscle, Energetic |
-| **Nature**| Lanscape, fruits and animals | Mountain, Apple, Grape, Banana, Fox, Wolf, Hawk |
+| **Nature**| Landscape, fruits and animals | Mountain, Apple, Grape, Banana, Fox, Wolf, Hawk |
 | **Space and Time** | Usernames inspired by concepts of space and time | Metric, Meter, Hour, Space, Time, Centi |
 
 ## 🔧 Usage
