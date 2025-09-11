@@ -145,7 +145,10 @@ class UsernameGenerator {
         }
 
         $attempts = 0;
-        $max_attempts = $options['count'] * 10; // Prevent infinite loops
+        // Increase max attempts for restrictive length constraints
+        $length_range = $options['max_length'] - $options['min_length'] + 1;
+        $difficulty_multiplier = ($length_range <= 5) ? 50 : (($length_range <= 10) ? 25 : 15);
+        $max_attempts = $options['count'] * $difficulty_multiplier;
 
         while (count($usernames) < $options['count'] && $attempts < $max_attempts) {
             $attempts++;
@@ -195,6 +198,11 @@ class UsernameGenerator {
                     $used_combinations[] = $combination_key;
                 }
             }
+        }
+
+        // If we couldn't generate the full count, it's likely due to restrictive constraints
+        if (count($usernames) < $options['count'] && $attempts >= $max_attempts) {
+            // This will be handled in the main response to show a warning
         }
 
         return $usernames;
@@ -350,6 +358,16 @@ try {
         ],
         'timestamp' => date('Y-m-d H:i:s')
     ];
+
+    // Add warning if fewer usernames generated than requested
+    if (count($usernames) < $options['count']) {
+        $response['warning'] = [
+            'message' => 'Generated fewer usernames than requested due to restrictive constraints',
+            'requested' => $options['count'],
+            'generated' => count($usernames),
+            'suggestion' => 'Try increasing max_length, decreasing min_length, or using more themes for better results'
+        ];
+    }
 
     echo json_encode($response, JSON_PRETTY_PRINT);
 

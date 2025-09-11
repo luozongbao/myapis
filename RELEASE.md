@@ -7,7 +7,7 @@
 
 ---
 
-## 🔧 Version 2.1.2 - Username Generator Interface Cleanup
+## 🔧 Version 2.1.2 - Username Generator Interface Cleanup & Generation Improvements
 *Released: September 11, 2025*
 
 ### 🧹 Interface Improvements
@@ -18,6 +18,18 @@
 - **Simplified Interface**: Cleaner, more focused interface without confusing non-functional options
 - **Documentation Updated**: Updated README.md to reflect parameter changes
 - **Backward Compatibility**: Existing API calls will continue to work (parameter simply ignored)
+
+### ⚡ Generation Algorithm Improvements
+
+#### 🎯 Smart Generation for Restrictive Constraints
+- **Intelligent Retry Logic**: Dynamically adjusts maximum attempts based on length constraint difficulty
+- **Guaranteed Count**: Now generates the full requested count of usernames when constraints allow
+- **Adaptive Scaling**: 
+  - Very restrictive constraints (≤5 char range): 50× more attempts
+  - Moderately restrictive (≤10 char range): 25× more attempts  
+  - Normal constraints: 15× more attempts
+- **Warning System**: Provides helpful warnings when constraints are too restrictive to generate full count
+- **Better User Experience**: Users get the exact number of usernames they requested (when possible)
 
 ### 📚 Documentation Updates
 - **Parameter Documentation**: Updated API parameter table to remove `use_case`
