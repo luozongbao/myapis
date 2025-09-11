@@ -5,7 +5,7 @@ A powerful and customizable username generator with multiple themes, configurabl
 ## 🚀 Features
 
 ### 🎯 Username Generation API
-- **Multiple themes**: Gaming, Professional, Fun, Nature, Tech, Space, DevOps, and Things
+- **Multiple themes**: Gaming, Professional, Fun, Nature, Tech, Space, DevOps, Things, and Body
 - **Word combination approach**: Combines adjectives and nouns for meaningful usernames
 - **Customizable length**: Min/max character constraints
 - **Multiple options**: Numbers, symbols, capitalization control
