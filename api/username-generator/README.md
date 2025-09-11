@@ -1,11 +1,11 @@
 # Username Generator API & Web Interface
 
-A powerful and customizable username generator with multiple themes, configurable options, and both REST API and responsive web interface. Generate unique usernames for gaming, professional, social media, and other use cases.
+A powerful and customizable username generator with multiple themes, configurable options, and both REST API and responsive web interface. Generate unique usernames for gaming, professional, creative, and general purposes.
 
 ## 🚀 Features
 
 ### 🎯 Username Generation API
-- **Multiple themes**: Gaming, Professional, Fun, Nature, Tech, Space, and DevOps
+- **Multiple themes**: Gaming, Professional, Fun, Nature, Tech, Space, DevOps, Things, and Body
 - **Word combination approach**: Combines adjectives and nouns for meaningful usernames
 - **Customizable length**: Min/max character constraints
 - **Multiple options**: Numbers, symbols, capitalization control
@@ -35,20 +35,22 @@ A powerful and customizable username generator with multiple themes, configurabl
 
 | Theme | Description | Example Words |
 |-------|-------------|---------------|
-| **Gaming** | Perfect for gaming platforms, esports | Epic, Shadow, Warrior, Ninja |
-| **Professional** | Business, LinkedIn, professional networks | Smart, Expert, Developer, Leader |
-| **Fun** | Playful and cheerful for social media | Happy, Bubbly, Panda, Rainbow |
-| **Nature** | Nature-inspired with organic feel | Wild, Forest, Eagle, Mountain |
-| **Tech** | Technology and programming themed | Digital, Cyber, Algorithm, Cloud |
-| **Space** | Cosmic and space exploration themed | Stellar, Galaxy, Nebula, Voyager |
-| **DevOps** | Linux commands, cybersecurity, DevOps tools | Secure, Encrypted, Docker, Kubectl, Nmap, Ansible |
+| **Fantasy** | Epic and mythical usernames for gaming and fantasy lovers | Epic, Shadow, Warrior, Ninja, Dragon, Wizard |
+| **Professional** | Business, LinkedIn, and professional networks | Smart, Expert, Developer, Leader, Manager, Director |
+| **Science and Space** | Science and space exploration themed usernames | Stellar, Galaxy, Nebula, Quantum, Atom, Einstein |
+| **Computer Technology** | Tech and programming themed usernames | Digital, Cyber, Algorithm, Code, Framework, Docker |
+| **Elements and Chemistry** | Science-inspired usernames with elements and compounds | Hydrogen, Carbon, Molecular, Atomic, Crystal, Plasma |
+| **Things** | Everyday objects and items themed usernames | Fork, Spoon, Table, Sofa, Knife, Chair, Lamp |
+| **Body and Health** | Body parts and health-themed usernames | Heart, Brain, Strong, Healthy, Muscle, Energetic |
+| **Nature**| Landscape, fruits and animals | Mountain, Apple, Grape, Banana, Fox, Wolf, Hawk |
+| **Space and Time** | Usernames inspired by concepts of space and time | Metric, Meter, Hour, Space, Time, Centi |
 
 ## 🔧 Usage
 
 ### Web Interface
 
 1. Open `index.php` in your web browser
-2. Select your preferred theme and use case
+2. Select your preferred theme(s)
 3. Configure length constraints and options
 4. Add custom words (optional)
 5. Choose additional options (numbers, symbols, etc.)
@@ -68,8 +70,8 @@ GET /api/?action=themes  # Get available themes
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `theme` | string | `gaming` | Theme selection (gaming, professional, fun, nature, tech, space) |
-| `use_case` | string | `gaming` | Use case context |
+| `themes` | array | `["Fantasy"]` | **NEW**: Multiple theme selection (Fantasy, Professional, etc.) |
+| `theme` | string | `Fantasy` | Single theme (deprecated, use `themes` instead) |
 | `min_length` | integer | `6` | Minimum username length (3-50) |
 | `max_length` | integer | `20` | Maximum username length (3-50) |
 | `count` | integer | `10` | Number of usernames to generate (1-50) |
@@ -77,7 +79,7 @@ GET /api/?action=themes  # Get available themes
 | `include_symbols` | boolean | `false` | Add symbols like _, -, . |
 | `capitalize` | boolean | `true` | Capitalize words |
 | `avoid_repetition` | boolean | `true` | Avoid duplicate word combinations |
-| `use_all_adjectives` | boolean | `false` | Use adjectives from all themes with selected theme's nouns |
+| `use_all_adjectives` | boolean | `false` | Use adjectives from all themes with selected themes' nouns |
 | `use_general_adjectives` | boolean | `false` | Add general adjectives (colors, shapes, sizes, etc.) |
 | `custom_words` | string | `""` | Comma-separated custom words |
 
@@ -88,12 +90,12 @@ GET /api/?action=themes  # Get available themes
 curl "http://your-domain.com/username-generator/api/?action=themes"
 ```
 
-**Generate Gaming Usernames (POST):**
+**Generate Multi-Theme Usernames (NEW):**
 ```bash
 curl -X POST http://your-domain.com/username-generator/api/ \
   -H "Content-Type: application/json" \
   -d '{
-    "theme": "gaming",
+    "themes": ["Fantasy", "Computer Technology"],
     "min_length": 8,
     "max_length": 15,
     "count": 5,
@@ -102,50 +104,55 @@ curl -X POST http://your-domain.com/username-generator/api/ \
   }'
 ```
 
-**Generate with General Adjectives:**
+**Generate Science & Space + Chemistry Mix:**
 ```bash
 curl -X POST http://your-domain.com/username-generator/api/ \
   -H "Content-Type: application/json" \
   -d '{
-    "theme": "tech",
+    "themes": ["Science and Space", "Elements and Chemistry"],
     "use_general_adjectives": true,
     "count": 10,
     "include_numbers": false
   }'
 ```
 
-**Generate Creative Cross-Theme Usernames:**
+**Generate All-Theme Creative Mix:**
 ```bash
 curl -X POST http://your-domain.com/username-generator/api/ \
   -H "Content-Type: application/json" \
   -d '{
-    "theme": "fun",
+    "themes": ["Professional", "Computer Technology", "Body and Health"],
     "use_all_adjectives": true,
     "count": 10,
     "include_numbers": false
   }'
 ```
 
-**Generate Professional Usernames (GET):**
+**Generate Professional + Things Mix (GET):**
 ```bash
-curl "http://your-domain.com/username-generator/api/?theme=professional&count=10&include_numbers=false"
+curl "http://your-domain.com/username-generator/api/?themes=Professional,Things&count=10&include_numbers=false"
 ```
 
-#### Example Response
+**Legacy Single Theme Support (Backward Compatible):**
+```bash
+curl "http://your-domain.com/username-generator/api/?theme=Fantasy&count=5"
+```
+
+#### Example Response (Multi-Theme)
 ```json
 {
     "success": true,
     "data": {
         "usernames": [
-            "EpicWarrior",
-            "ShadowNinja99",
-            "FireMage",
-            "IceKnight",
-            "StormHunter"
+            "QuantumWarrior",
+            "CyberDragon99",
+            "StellarNinja",
+            "AlgorithmKnight",
+            "CosmicHunter"
         ],
         "count": 5,
         "options_used": {
-            "theme": "gaming",
+            "themes": ["Fantasy", "Science and Space", "Computer Technology"],
             "min_length": 6,
             "max_length": 20,
             "include_numbers": true,
@@ -153,8 +160,8 @@ curl "http://your-domain.com/username-generator/api/?theme=professional&count=10
         }
     },
     "generation_info": {
-        "theme": "gaming",
-        "use_case": "gaming",
+        "themes": ["Fantasy", "Science and Space", "Computer Technology"],
+        "theme_count": 3,
         "length_range": "6-20 characters",
         "features": {
             "numbers": "included",
@@ -162,41 +169,54 @@ curl "http://your-domain.com/username-generator/api/?theme=professional&count=10
             "capitalization": "enabled"
         }
     },
-    "timestamp": "2025-09-08 12:34:56"
+    "timestamp": "2025-09-11 12:34:56"
 }
 ```
 
 ## 🎯 Use Cases
 
-### Gaming & Entertainment
+### Gaming & Fantasy Entertainment
 ```bash
-# Epic gaming usernames with numbers
-curl -d "theme=gaming&include_numbers=true&count=10" http://your-domain.com/username-generator/api/
+# Epic fantasy usernames with numbers
+curl -d "themes=Fantasy&include_numbers=true&count=10" http://your-domain.com/username-generator/api/
+# Example: ["EpicWarrior123", "ShadowDragon", "MysticKnight7"]
 ```
 
 ### Professional Networks
 ```bash
 # Clean professional usernames
-curl -d "theme=professional&include_numbers=false&min_length=8" http://your-domain.com/username-generator/api/
+curl -d "themes=Professional&include_numbers=false&min_length=8" http://your-domain.com/username-generator/api/
+# Example: ["SmartManager", "ExpertConsultant", "InnovativeLeader"]
 ```
 
-### Social Media
+### Science & Technology Mix
 ```bash
-# Fun usernames with symbols
-curl -d "theme=fun&include_symbols=true&max_length=15" http://your-domain.com/username-generator/api/
+# Science and tech combination
+curl -d "themes=Science and Space,Computer Technology&include_symbols=true&count=8" http://your-domain.com/username-generator/api/
+# Example: ["QuantumAlgorithm", "StellarDocker", "CosmicFramework"]
 ```
 
-### Custom Themed
+### Health & Fitness
 ```bash
-# Technology themed with custom words
-curl -d "theme=tech&custom_words=AI,Robot,Code&count=15" http://your-domain.com/username-generator/api/
+# Body and health themed usernames
+curl -d "themes=Body and Health&custom_words=Fitness,Gym,Strong&count=10" http://your-domain.com/username-generator/api/
+# Example: ["HealthyMuscle", "StrongHeart", "FitnessWarrior"]
 ```
 
-### DevOps & Cybersecurity
+### Chemistry & Elements
 ```bash
-# DevOps themed usernames for tech professionals
-curl -d "theme=devops&include_numbers=true&count=8" http://your-domain.com/username-generator/api/
-# Example: ["SecureDocker123", "EncryptedKubectl", "MonitoredNginx7"]
+# Chemistry themed usernames for science lovers
+curl -d "themes=Elements and Chemistry&include_numbers=true&count=8" http://your-domain.com/username-generator/api/
+# Example: ["AtomicCarbon123", "MolecularHydrogen", "CrystallineGold"]
+```
+
+### Multi-Theme Creative Mix
+```bash
+# Combine multiple themes for unique usernames
+curl -X POST http://your-domain.com/username-generator/api/ \
+  -H "Content-Type: application/json" \
+  -d '{"themes": ["Fantasy", "Computer Technology", "Things"], "count": 10}'
+# Example: ["CyberWarrior", "DigitalSword", "AlgorithmKnight"]
 ```
 
 ## 📁 File Structure
