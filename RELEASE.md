@@ -1,13 +1,13 @@
 # 📋 MyAPIs Release Notes
 
-## Current Release: Version 2.1.1
+## Current Release: Version 2.1.2
 
 **Release Date**: September 11, 2025  
 **Status**: Stable Release  
 
 ---
 
-## 🔧 Version 2.1.1 - Username Generator Interface Cleanup
+## 🔧 Version 2.1.2 - Username Generator Interface Cleanup
 *Released: September 11, 2025*
 
 ### 🧹 Interface Improvements
