@@ -1,13 +1,13 @@
 # 📋 MyAPIs Release Notes
 
-## Current Release: Version 2.0.2
+## Current Release: Version 2.1.0
 
 **Release Date**: September 11, 2025  
 **Status**: Stable Release  
 
 ---
 
-## 🎯 Version 2.0.2 - Username Generator Enhanced Multi-Theme Support
+## 🎯 Version 2.1.0 - Username Generator Enhanced Multi-Theme Support
 *Released: September 11, 2025*
 
 ### 🌟 Major New Features
@@ -22,6 +22,7 @@
   - **Elements and Chemistry**: Chemistry and periodic elements (Hydrogen, Carbon, Molecular, Crystal, Plasma)
   - **Things**: Everyday objects and items (Fork, Table, Chair, Lamp, Knife)
   - **Body and Health**: Health and anatomy themed (Heart, Brain, Strong, Healthy, Muscle)
+  - **Nature**: Lanscape fruites and animals (Mountain, Grape, Fox, Wolf, Banana)
 
 #### 🔧 Enhanced API Capabilities
 - **Multi-Theme Parameter**: New `themes` array parameter allows combining multiple themes
