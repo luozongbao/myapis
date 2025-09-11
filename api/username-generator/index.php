@@ -201,10 +201,6 @@ class UsernameGenerator {
         }
 
         // If we couldn't generate the full count, it's likely due to restrictive constraints
-        if (count($usernames) < $options['count'] && $attempts >= $max_attempts) {
-            // This will be handled in the main response to show a warning
-        }
-
         return $usernames;
     }
 
