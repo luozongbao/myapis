@@ -1,9 +1,28 @@
 # 📋 MyAPIs Release Notes
 
-## Current Release: Version 2.1.0
+## Current Release: Version 2.1.1
 
 **Release Date**: September 11, 2025  
 **Status**: Stable Release  
+
+---
+
+## 🔧 Version 2.1.1 - Username Generator Interface Cleanup
+*Released: September 11, 2025*
+
+### 🧹 Interface Improvements
+
+#### 📝 Removed Unused Use Case Field
+- **Removed `use_case` parameter**: Eliminated the unused "Use Case" dropdown from web interface
+- **API Cleanup**: Removed `use_case` from API parameters and response data  
+- **Simplified Interface**: Cleaner, more focused interface without confusing non-functional options
+- **Documentation Updated**: Updated README.md to reflect parameter changes
+- **Backward Compatibility**: Existing API calls will continue to work (parameter simply ignored)
+
+### 📚 Documentation Updates
+- **Parameter Documentation**: Updated API parameter table to remove `use_case`
+- **Example Requests**: Updated all code examples to exclude the removed parameter
+- **Response Examples**: Updated JSON response examples without `use_case` field
 
 ---
 

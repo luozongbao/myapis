@@ -1,6 +1,6 @@
 # Username Generator API & Web Interface
 
-A powerful and customizable username generator with multiple themes, configurable options, and both REST API and responsive web interface. Generate unique usernames for gaming, professional, social media, and other use cases.
+A powerful and customizable username generator with multiple themes, configurable options, and both REST API and responsive web interface. Generate unique usernames for gaming, professional, creative, and general purposes.
 
 ## 🚀 Features
 
@@ -50,7 +50,7 @@ A powerful and customizable username generator with multiple themes, configurabl
 ### Web Interface
 
 1. Open `index.php` in your web browser
-2. Select your preferred theme and use case
+2. Select your preferred theme(s)
 3. Configure length constraints and options
 4. Add custom words (optional)
 5. Choose additional options (numbers, symbols, etc.)
@@ -72,7 +72,6 @@ GET /api/?action=themes  # Get available themes
 |-----------|------|---------|-------------|
 | `themes` | array | `["Fantasy"]` | **NEW**: Multiple theme selection (Fantasy, Professional, etc.) |
 | `theme` | string | `Fantasy` | Single theme (deprecated, use `themes` instead) |
-| `use_case` | string | `gaming` | Use case context |
 | `min_length` | integer | `6` | Minimum username length (3-50) |
 | `max_length` | integer | `20` | Maximum username length (3-50) |
 | `count` | integer | `10` | Number of usernames to generate (1-50) |
@@ -163,7 +162,6 @@ curl "http://your-domain.com/username-generator/api/?theme=Fantasy&count=5"
     "generation_info": {
         "themes": ["Fantasy", "Science and Space", "Computer Technology"],
         "theme_count": 3,
-        "use_case": "gaming",
         "length_range": "6-20 characters",
         "features": {
             "numbers": "included",

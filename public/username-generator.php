@@ -337,16 +337,6 @@
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="useCase">Use Case:</label>
-                    <select id="useCase" name="use_case" required>
-                        <option value="gaming">Gaming & Entertainment</option>
-                        <option value="professional">Professional & Business</option>
-                        <option value="social">Social Media</option>
-                        <option value="general">General Purpose</option>
-                    </select>
-                </div>
-
                 <div class="form-row">
                     <div class="form-group">
                         <label for="minLength">Min Length:</label>

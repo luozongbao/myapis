@@ -76,7 +76,6 @@ class UsernameGenerator {
         // Default options
         $defaults = [
             'themes' => ['Fantasy'], // Changed from 'theme' to 'themes' array
-            'use_case' => 'gaming',
             'min_length' => 6,
             'max_length' => 20,
             'count' => 10,
@@ -273,7 +272,6 @@ if (isset($input['themes'])) {
     $options['themes'] = ['Fantasy'];
 }
 
-$options['use_case'] = $input['use_case'] ?? $_GET['use_case'] ?? 'gaming';
 $options['min_length'] = intval($input['min_length'] ?? $_GET['min_length'] ?? 6);
 $options['max_length'] = intval($input['max_length'] ?? $_GET['max_length'] ?? 20);
 $options['count'] = intval($input['count'] ?? $_GET['count'] ?? 10);
@@ -343,7 +341,6 @@ try {
         'generation_info' => [
             'themes' => $options['themes'],
             'theme_count' => count($options['themes']),
-            'use_case' => $options['use_case'],
             'length_range' => $options['min_length'] . '-' . $options['max_length'] . ' characters',
             'features' => [
                 'numbers' => $options['include_numbers'] ? 'included' : 'excluded',
