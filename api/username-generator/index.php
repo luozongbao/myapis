@@ -45,6 +45,10 @@ class UsernameGenerator {
         'things' => [
             'adjectives' => ['Tiny', 'Small', 'Mini', 'Micro', 'Slim', 'Light', 'Narrow', 'Short', 'Thin', 'Sleek', 'Compact', 'Portable', 'Handy', 'Neat', 'Trim', 'Dainty', 'Petite', 'Fine', 'Delicate', 'Subtle', 'In', 'On', 'At', 'Under', 'Over', 'Above', 'Below', 'Next', 'Near', 'Far', 'Between', 'Around', 'Inside', 'Outside', 'Front', 'Back', 'Top', 'Bottom', 'Left', 'Right', 'Middle', 'Center', 'Wide', 'Big', 'Large', 'Huge', 'Giant', 'Massive', 'Colossal', 'Enormous', 'Gigantic', 'Vast', 'Immense', 'Bulky', 'Heavy', 'Thick', 'Solid', 'Strong', 'Sturdy', 'Robust', 'Durable', 'Tough', 'Hard', 'Soft', 'Smooth'],
             'nouns' => ['Pin', 'Needle', 'Wire', 'Thread', 'String', 'Line', 'Strip', 'Blade', 'Edge', 'Razor', 'Sword', 'Knife', 'Dagger', 'Arrow', 'Spear', 'Rod', 'Stick', 'Twig', 'Branch', 'Stem', 'Table', 'Chair', 'Desk', 'Shelf', 'Box', 'Case', 'Bag', 'Pouch', 'Wallet', 'Purse', 'Belt', 'Strap', 'Hook', 'Clip', 'Latch', 'Lock', 'Key', 'Button', 'Switch', 'Knob', 'Dial', 'Gauge', 'Meter', 'Screen', 'Panel', 'Board', 'Card', 'Chip', 'Disk', 'Drive', 'Wheel', 'Tire', 'Pedal', 'Brake', 'Clutch', 'Gear', 'Lever', 'Handle', 'Hinge', 'Spring', 'Bolt', 'Nut', 'Screw', 'Nail', 'Rivet', 'Pinch', 'Grip', 'Hold', 'Catch', 'Wrench', 'Hammer', 'Saw', 'Drill', 'File', 'Chisel', 'Plane', 'Brush', 'Broom', 'Mop', 'Sponge', 'Cloth', 'Towel', 'Rag', 'Mat', 'Rug', 'Carpet', 'Curtain', 'Blind', 'Shade', 'Lamp', 'Light', 'Bulb', 'Candle', 'Torch', 'Flame', 'Fire', 'Heat', 'Cooler', 'Fan', 'Heater', 'Aircon', 'Fridge', 'Oven', 'Stove', 'Microwave', 'Toaster', 'Kettle', 'Pot', 'Pan', 'Bowl', 'Plate', 'Cup', 'Mug', 'Glass', 'Bottle', 'Jar', 'Glove', 'Fork', 'Spoon', 'Chopstick', 'Napkin', 'Sofa', 'Couch', 'Bed', 'Pillow', 'Blanket', 'Sheet', 'Mattress', 'Frame', 'Mirror', 'Picture', 'Clock', 'Watch', 'Phone', 'Tablet', 'Laptop', 'Computer', 'Printer', 'Camera', 'Speaker', 'Headphone', 'Microphone', 'Remote', 'Console', 'Gamepad', 'Joystick']
+        ],
+        'Body' => [
+            'adjectives' => ['Strong', 'Healthy', 'Fit', 'Agile', 'Quick', 'Swift', 'Brave', 'Bold', 'Fearless', 'Energetic', 'Vigorous', 'Robust', 'Sturdy', 'Tough', 'Resilient', 'Enduring', 'Durable', 'Powerful', 'Mighty', 'Muscular', 'Athletic', 'Lean', 'Toned', 'Sleek', 'Supple', 'Flexible', 'Nimble', 'Lithe', 'Graceful', 'Elegant', 'Weak', 'Fragile', 'Delicate', 'Frail', 'Slender', 'Slim', 'Skinny', 'Chubby', 'Plump', 'Round', 'Curvy', 'Bulky', 'Heavy', 'Massive', 'Giant', 'Tiny', 'Small', 'Mini', 'Micro', 'Short', 'Tall', 'Huge', 'Gigantic', 'Colossal', 'Enormous', 'Vast', 'Immense', 'Big'],
+            'nouns' => ['Head', 'Face', 'Eye', 'Ear', 'Nose,', 'Mouth', 'Tooth', 'Tongue', 'Lip', 'Cheek', 'Chin', 'Neck', 'Shoulder', 'Arm', 'Elbow', 'Wrist', 'Hand', 'Finger', 'Thumb', 'Palm', 'Back', 'Chest', 'Stomach', 'Waist', 'Hip', 'Leg', 'Knee', 'Ankle', 'Foot', 'Toe,', 'Brain', 'Heart,', 'Lung,', 'Liver,', 'Kidney,', 'Muscle,', 'Bone,', 'Skin,', 'Hair,', 'Nail,', 'Shoulder', 'Arm', 'Hand', 'Palm', 'Fist', 'Finger', 'Thumb', 'Wrist', 'Elbow', 'Forearm', 'Bicep', 'Tricep', 'Chest', 'Back', 'Spine', 'Waist', 'Hip', 'Buttock', 'Thigh', 'Knee', 'Calf', 'Ankle', 'Heel', 'Foot', 'Toe']
         ]
     ];
 
@@ -244,7 +248,8 @@ if (isset($_GET['action']) && $_GET['action'] === 'themes') {
             'tech' => 'Technology and programming themed usernames',
             'space' => 'Cosmic and space exploration themed usernames',
             'devops' => 'Linux commands, cybersecurity tools, and DevOps terminology',
-            'things' => 'Everyday objects and items themed usernames'
+            'things' => 'Everyday objects and items themed usernames',
+            'body' => 'Body parts and health-themed usernames'
         ]
     ]);
     exit();
