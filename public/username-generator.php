@@ -328,21 +328,13 @@
         <div class="form-section">
             <form id="usernameForm">
                 <div class="form-group">
-                    <label for="theme">Theme:</label>
-                    <select id="theme" name="theme" required>
-                        <option value="">Select a theme...</option>
-                    </select>
-                    <div id="themeDescription" class="theme-description"></div>
-                </div>
-
-                <div class="form-group">
-                    <label for="useCase">Use Case:</label>
-                    <select id="useCase" name="use_case" required>
-                        <option value="gaming">Gaming & Entertainment</option>
-                        <option value="professional">Professional & Business</option>
-                        <option value="social">Social Media</option>
-                        <option value="general">General Purpose</option>
-                    </select>
+                    <label>Themes (select one or more):</label>
+                    <div id="themesCheckboxGroup" class="checkbox-group">
+                        <!-- Themes will be populated here -->
+                    </div>
+                    <div id="themeDescription" class="theme-description">
+                        💡 <strong>Multi-Theme Selection:</strong> Combine multiple themes for more diverse username combinations. Words will be mixed from all selected themes.
+                    </div>
                 </div>
 
                 <div class="form-row">
@@ -455,32 +447,45 @@
         }
 
         function populateThemeSelect(themeList, descriptions) {
-            const themeSelect = document.getElementById('theme');
-            themeSelect.innerHTML = '<option value="">Select a theme...</option>';
+            const themesContainer = document.getElementById('themesCheckboxGroup');
+            themesContainer.innerHTML = '';
             
             themeList.forEach(theme => {
-                const option = document.createElement('option');
-                option.value = theme;
-                option.textContent = theme.charAt(0).toUpperCase() + theme.slice(1);
-                themeSelect.appendChild(option);
+                const checkboxItem = document.createElement('div');
+                checkboxItem.className = 'checkbox-item';
+                checkboxItem.innerHTML = `
+                    <input type="checkbox" id="theme_${theme}" name="themes" value="${theme}">
+                    <label for="theme_${theme}">${theme}</label>
+                `;
+                themesContainer.appendChild(checkboxItem);
             });
 
-            // Add event listener for theme description
-            themeSelect.addEventListener('change', function() {
-                const description = document.getElementById('themeDescription');
-                if (this.value && descriptions[this.value]) {
-                    description.textContent = descriptions[this.value];
-                    description.style.display = 'block';
-                } else {
-                    description.style.display = 'none';
-                }
-            });
+            // Set Fantasy as default selected
+            const fantasyCheckbox = document.getElementById('theme_Fantasy');
+            if (fantasyCheckbox) {
+                fantasyCheckbox.checked = true;
+            }
+
+            // Setup event listeners for theme checkboxes
+            setupThemeCheckboxListeners();
         }
 
         function setupEventListeners() {
-            // Checkbox styling
-            document.querySelectorAll('.checkbox-item').forEach(item => {
+            // Form submission
+            document.getElementById('usernameForm').addEventListener('submit', generateUsernames);
+            
+            // Copy all button
+            document.getElementById('copyAllBtn').addEventListener('click', copyAllUsernames);
+            
+            // Setup option checkboxes
+            setupOptionCheckboxes();
+        }
+
+        function setupOptionCheckboxes() {
+            // Checkbox styling for options (not themes)
+            document.querySelectorAll('.checkbox-item:not([id="themesCheckboxGroup"] .checkbox-item)').forEach(item => {
                 const checkbox = item.querySelector('input[type="checkbox"]');
+                if (!checkbox) return;
                 
                 item.addEventListener('click', function(e) {
                     if (e.target.type !== 'checkbox') {
@@ -497,12 +502,29 @@
                     updateCheckboxStyle(item, this.checked);
                 });
             });
+        }
 
-            // Form submission
-            document.getElementById('usernameForm').addEventListener('submit', generateUsernames);
-            
-            // Copy all button
-            document.getElementById('copyAllBtn').addEventListener('click', copyAllUsernames);
+        function setupThemeCheckboxListeners() {
+            // Setup theme checkbox styling and events
+            document.querySelectorAll('#themesCheckboxGroup .checkbox-item').forEach(item => {
+                const checkbox = item.querySelector('input[type="checkbox"]');
+                if (!checkbox) return;
+                
+                item.addEventListener('click', function(e) {
+                    if (e.target.type !== 'checkbox') {
+                        checkbox.checked = !checkbox.checked;
+                    }
+                    updateCheckboxStyle(item, checkbox.checked);
+                });
+
+                // Initial state
+                updateCheckboxStyle(item, checkbox.checked);
+                
+                // Listen for direct checkbox changes
+                checkbox.addEventListener('change', function() {
+                    updateCheckboxStyle(item, this.checked);
+                });
+            });
         }
 
         function updateCheckboxStyle(item, checked) {
@@ -519,9 +541,25 @@
             const formData = new FormData(e.target);
             const options = {};
             
+            // Handle multiple themes
+            const selectedThemes = [];
+            document.querySelectorAll('input[name="themes"]:checked').forEach(checkbox => {
+                selectedThemes.push(checkbox.value);
+            });
+            
+            if (selectedThemes.length === 0) {
+                showError('Please select at least one theme.');
+                return;
+            }
+            
+            options.themes = selectedThemes;
+            
             // Convert form data to options object
             for (let [key, value] of formData.entries()) {
-                if (['include_numbers', 'include_symbols', 'use_all_adjectives', 'use_general_adjectives', 'capitalize', 'avoid_repetition'].includes(key)) {
+                if (key === 'themes') {
+                    // Already handled above
+                    continue;
+                } else if (['include_numbers', 'include_symbols', 'use_all_adjectives', 'use_general_adjectives', 'capitalize', 'avoid_repetition'].includes(key)) {
                     options[key] = true; // Checkbox is checked if it exists in formData
                 } else {
                     options[key] = value;
@@ -570,9 +608,10 @@
             
             // Show generation info
             const genInfo = data.generation_info;
+            const themesText = genInfo.themes ? genInfo.themes.join(', ') : 'N/A';
             info.innerHTML = `
                 <strong>Generated:</strong> ${data.data.count} usernames | 
-                <strong>Theme:</strong> ${genInfo.theme} | 
+                <strong>Themes:</strong> ${themesText} (${genInfo.theme_count}) | 
                 <strong>Length:</strong> ${genInfo.length_range} | 
                 <strong>Features:</strong> ${Object.entries(genInfo.features).map(([k,v]) => `${k}: ${v}`).join(', ')}
             `;

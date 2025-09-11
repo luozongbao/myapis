@@ -1,9 +1,80 @@
 # 📋 MyAPIs Release Notes
 
-## Current Release: Version 2.0.1
+## Current Release: Version 2.1.1
 
-**Release Date**: September 10, 2025  
+**Release Date**: September 11, 2025  
 **Status**: Stable Release  
+
+---
+
+## 🔧 Version 2.1.1 - Username Generator Interface Cleanup
+*Released: September 11, 2025*
+
+### 🧹 Interface Improvements
+
+#### 📝 Removed Unused Use Case Field
+- **Removed `use_case` parameter**: Eliminated the unused "Use Case" dropdown from web interface
+- **API Cleanup**: Removed `use_case` from API parameters and response data  
+- **Simplified Interface**: Cleaner, more focused interface without confusing non-functional options
+- **Documentation Updated**: Updated README.md to reflect parameter changes
+- **Backward Compatibility**: Existing API calls will continue to work (parameter simply ignored)
+
+### 📚 Documentation Updates
+- **Parameter Documentation**: Updated API parameter table to remove `use_case`
+- **Example Requests**: Updated all code examples to exclude the removed parameter
+- **Response Examples**: Updated JSON response examples without `use_case` field
+
+---
+
+## 🎯 Version 2.1.0 - Username Generator Enhanced Multi-Theme Support
+*Released: September 11, 2025*
+
+### 🌟 Major New Features
+
+#### 🎨 Multi-Theme Username Generation
+- **Multiple Theme Selection**: Users can now select multiple themes simultaneously for more diverse username combinations
+- **7 Comprehensive Themes**: Updated theme collection with complete word lists:
+  - **Fantasy**: Epic, mythical usernames for gaming (Epic, Shadow, Warrior, Dragon, Wizard)
+  - **Professional**: Business and LinkedIn-ready usernames (Smart, Expert, Developer, Manager, Director)
+  - **Science and Space**: Space exploration and scientific terms (Stellar, Galaxy, Quantum, Atom, Einstein)
+  - **Computer Technology**: Programming and tech-focused (Digital, Algorithm, Framework, Docker, JavaScript)
+  - **Elements and Chemistry**: Chemistry and periodic elements (Hydrogen, Carbon, Molecular, Crystal, Plasma)
+  - **Things**: Everyday objects and items (Fork, Table, Chair, Lamp, Knife)
+  - **Body and Health**: Health and anatomy themed (Heart, Brain, Strong, Healthy, Muscle)
+  - **Nature**: Landscape fruits and animals (Mountain, Grape, Fox, Wolf, Banana)
+  - **Space and Time**: Usernames inspired by concepts of space and time (Metric, Meter, Hour, Space, Time, Centi)
+
+#### 🔧 Enhanced API Capabilities
+- **Multi-Theme Parameter**: New `themes` array parameter allows combining multiple themes
+- **Backward Compatibility**: Legacy `theme` parameter still supported for single-theme selection
+- **GET Support**: Multi-theme selection via comma-separated values in GET requests
+- **Enhanced Response**: Generation info includes selected themes count and theme list
+
+#### 🖥️ Improved Web Interface
+- **Checkbox Theme Selection**: Replaced dropdown with intuitive checkboxes for multi-theme selection
+- **Visual Theme Indicators**: Better visual feedback for selected themes
+- **Multi-Theme Description**: Helpful tooltips explaining multi-theme benefits
+- **Enhanced Results Display**: Shows all selected themes in generation information
+
+### 🛠️ Technical Improvements
+
+#### 📊 API Enhancements
+- **Flexible Input Handling**: Supports both single theme and multiple themes in same API
+- **Improved Validation**: Enhanced theme validation with specific error messages
+- **Word Deduplication**: Automatic removal of duplicate words when combining themes
+- **Extended Word Lists**: Added hundreds of new words across all theme categories
+
+#### 🌐 Web Interface Updates
+- **Dynamic Theme Loading**: Themes loaded dynamically from API for consistency
+- **Improved JavaScript**: Better error handling and form validation
+- **Enhanced UX**: More intuitive multi-selection interface
+- **Responsive Design**: Checkbox layout adapts to different screen sizes
+
+### 📚 Documentation Updates
+- **Complete API Documentation**: Updated all examples to show multi-theme usage
+- **New Use Cases**: Added examples for science, chemistry, and health-themed usernames
+- **Backward Compatibility Guide**: Clear migration path from single to multi-theme
+- **Enhanced README**: Updated project documentation with new theme descriptions
 
 ---
 
