@@ -65,6 +65,138 @@ A comprehensive collection of developer tools and APIs designed to streamline yo
    - Ensure PHP is configured and enabled
    - Set appropriate file permissions
 
+
+  **Apache .htaccess settings**
+  ``` htaccess
+  # Root .htaccess - Redirect all requests to public directory
+  # Place this file in the project root (/var/www/api/)
+
+  RewriteEngine On
+
+  # Redirect everything to public directory except already in public
+  RewriteCond %{REQUEST_URI} !^/public/
+  RewriteCond %{REQUEST_URI} !^/api/
+  RewriteRule ^(.*)$ public/$1 [L]
+
+  # Security - Block access to sensitive files in root
+  <Files ~ "^\.(htaccess|gitignore|env)">
+      Order allow,deny
+      Deny from all
+  </Files>
+
+  <Files ~ "(README\.md|composer\.(json|lock))$">
+      Order allow,deny
+      Deny from all
+  </Files>
+
+  # Block direct access to old structure directories
+  <Directory "health-calculator">
+      Order deny,allow
+      Deny from all
+  </Directory>
+
+  <Directory "password-generator">
+      Order deny,allow
+      Deny from all
+  </Directory>
+
+  <Directory "username-generator">
+      Order deny,allow
+      Deny from all
+  </Directory>
+
+  <Directory "promptpay-qr-generator">
+      Order deny,allow
+      Deny from all
+  </Directory>
+
+  <Directory "fortune-teller">
+      Order deny,allow
+      Deny from all
+  </Directory>
+
+  <Directory "randomizer">
+      Order deny,allow
+      Deny from all
+  </Directory>
+
+
+  ```
+
+
+  **nginx configuration settings**
+  ``` conf
+  server {
+      listen 80;
+      server_name domain.com;
+
+      root /var/www/myapis/public;
+      index index.php;
+
+      # Clean URLs for tools (remove .php extension)
+      location / {
+          try_files $uri $uri/ @rewrite;
+      }
+
+      location @rewrite {
+          rewrite ^/([^/]+)/?$ /$1.php last;
+          rewrite ^/([^/]+)-specs/?$ /$1-specs.php last;
+      }
+
+      # API routing with clean URLs
+      location /api/ {
+          root /var/www/myapis/;
+
+          # Route /api/tool-name/ to /api/tool-name/index.php
+          location ~ ^/api/([^/]+)/?$ {
+              try_files $uri $uri/ /api/$1/index.php?$query_string;
+          }
+
+          # Handle direct PHP file access in API
+          location ~ ^/api/(.+)\.php$ {
+              root /var/www/myapis/;
+              try_files $uri =404;
+              fastcgi_split_path_info ^(.+\.php)(/.+)$;
+              fastcgi_pass unix:/var/run/php/php8.3-fpm.sock;
+              fastcgi_index index.php;
+              fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+              include fastcgi_params;
+
+              # CORS headers for API endpoints
+              add_header Access-Control-Allow-Origin *;
+              add_header Access-Control-Allow-Methods "GET, POST, OPTIONS";
+              add_header Access-Control-Allow-Headers "Content-Type, Authorization";
+          }
+      }
+
+      # PHP processing for public files
+      location ~ \.php$ {
+          try_files $uri =404;
+          fastcgi_split_path_info ^(.+\.php)(/.+)$;
+          fastcgi_pass unix:/var/run/php/php8.3-fpm.sock;
+          fastcgi_index index.php;
+          fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+          include fastcgi_params;
+      }
+
+      # Static assets caching
+      location ~* \.(jpg|jpeg|png|gif|ico|css|js|svg)$ {
+          expires 30d;
+          add_header Cache-Control "public, no-transform";
+      }
+
+      # Block access to sensitive files
+      location ~ /\. {
+          deny all;
+      }
+
+      location ~ /(README\.md|composer\.(json|lock)|\.git)$ {
+          deny all;
+      }
+  }
+
+  ```
+
 3. **Access the application**
    - Open your browser and navigate to `http://localhost:8000/public/` (or your server URL + `/public/`)
    - Explore the tools and their APIs
