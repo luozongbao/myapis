@@ -1,0 +1,74 @@
+# =============================================================
+# MyAPIs - Docker Compose
+# -------------------------------------------------------------
+# Spins up the PHP-FPM backend and an Nginx web server, exposing
+# the application on the port configured in `.env` (WEB_PORT).
+#
+# Usage:
+#   cp example.env .env
+#   docker compose up -d --build
+#   open http://localhost:${WEB_PORT:-8080}
+# =============================================================
+
+services:
+  # ----------------------------------------------------------------
+  # PHP-FPM application server
+  # ----------------------------------------------------------------
+  php:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ${PROJECT_NAME:-myapis}-php:latest
+    container_name: ${PROJECT_NAME:-myapis}-php
+    restart: unless-stopped
+    working_dir: /var/www/html
+    entrypoint: ["/usr/local/bin/entrypoint.sh"]
+    command: ["php-fpm"]
+    volumes:
+      # Mount the whole project so changes are picked up on dev
+      - ./:/var/www/html
+      # Mount the ini template so it can be rendered with current env values
+      - ./docker/php/php.ini.tpl:/usr/local/etc/php/php.ini.tpl:ro
+    environment:
+      TZ: ${TZ:-UTC}
+      APP_ENV: ${APP_ENV:-development}
+      APP_ENV_DISPLAY_ERRORS: ${APP_ENV_DISPLAY_ERRORS:-On}
+      PHP_MEMORY_LIMIT: ${PHP_MEMORY_LIMIT:-256M}
+      PHP_UPLOAD_MAX_FILESIZE: ${PHP_UPLOAD_MAX_FILESIZE:-10M}
+      PHP_POST_MAX_SIZE: ${PHP_POST_MAX_SIZE:-10M}
+      PHP_DATE_TIMEZONE: ${PHP_DATE_TIMEZONE:-UTC}
+    networks:
+      - myapis-net
+    healthcheck:
+      test: ["CMD", "php-fpm-healthcheck"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  # ----------------------------------------------------------------
+  # Nginx web server
+  # ----------------------------------------------------------------
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: ${PROJECT_NAME:-myapis}-nginx
+    restart: unless-stopped
+    depends_on:
+      php:
+        condition: service_healthy
+    ports:
+      - "${WEB_PORT:-8080}:80"
+    volumes:
+      - ./:/var/www/html:ro
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    environment:
+      TZ: ${TZ:-UTC}
+      NGINX_CLIENT_MAX_BODY_SIZE: ${NGINX_CLIENT_MAX_BODY_SIZE:-10M}
+    networks:
+      - myapis-net
+
+# ----------------------------------------------------------------
+# Networks
+# ----------------------------------------------------------------
+networks:
+  myapis-net:
+    driver: bridge
