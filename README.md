@@ -23,6 +23,7 @@ A comprehensive collection of developer tools and APIs designed to streamline yo
 | 🔐 **Password Generator** | Generate cryptographically secure passwords | [Try Tool](public/password-generator.php) | [API](api/password-generator/) | [Full Specs](public/api-specs/password-generator.php) |
 | 👤 **Username Generator** | Create unique usernames with multi-theme support (Fantasy, Professional, Science, Tech, Chemistry, Things, Body & Health) | [Try Tool](public/username-generator.php) | [API](api/username-generator/) | [Full Specs](public/api-specs/username-generator.php) |
 | 💳 **PromptPay QR Generator** | Generate EMV-compliant PromptPay QR codes | [Try Tool](public/promptpay-qr-generator.php) | [API](api/promptpay-qr-generator/) | [Full Specs](public/api-specs/promptpay-qr-generator.php) |
+| 📱 **QR Code Generator** | Universal QR code generator (text, URL, vCard, event, Wi-Fi, phone) powered by [goQR.me](https://goqr.me/api/doc/create-qr-code/) | [Try Tool](public/qr-code-generator.php) | [API](api/qr-code-generator/) | [Full Specs](public/api-specs/qr-code-generator.php) |
 | 🔮 **Fortune Teller** | Get multilingual fortune predictions | [Try Tool](public/fortune-teller.php) | [API](api/fortune-teller/) | [Full Specs](public/api-specs/fortune-teller.php) |
 | 🎲 **Random Generator** | Generate random numbers, dice, coins, and cards | [Try Tool](public/randomizer.php) | [API](api/randomizer/) | [Full Specs](public/api-specs/randomizer.php) |
 
@@ -44,6 +45,7 @@ A comprehensive collection of developer tools and APIs designed to streamline yo
 - PHP 7.0 or higher
 - Web server (Apache, Nginx, or built-in PHP server)
 - Optional: GD extension for QR code generation
+- **Docker** & **Docker Compose** (recommended, easiest setup)
 
 ### Installation
 
@@ -54,19 +56,170 @@ A comprehensive collection of developer tools and APIs designed to streamline yo
    ```
 
 2. **Set up web server**
-   
-   **Option A: Using PHP built-in server (Development)**
+
+   **Option A: Docker (Recommended) 🐳**
+   ```bash
+   # Copy the example env file and adjust as needed
+   cp example.env .env
+
+   # Build and start the stack
+   docker compose up -d --build
+
+   # Open http://localhost:8080
+   ```
+   The stack ships with PHP-FPM 8.2 and Nginx 1.27. All required
+   PHP extensions (gd, intl, mbstring, opcache, bcmath) are installed
+   automatically. The application becomes available on the port
+   defined by `WEB_PORT` in `.env` (default `8080`).
+
+   **Option B: Using PHP built-in server (Development)**
    ```bash
    php -S localhost:8000
    ```
-   
-   **Option B: Apache/Nginx**
+   Then open `http://localhost:8000/public/`.
+
+   **Option C: Apache/Nginx (Production)**
    - Copy files to your web server's document root
    - Ensure PHP is configured and enabled
    - Set appropriate file permissions
+   - See `docs/nginx-conf/` for ready-to-use Nginx vhost samples
+   - The provided `.htaccess` already rewrites requests into `/public/`
+
+
+  **Apache .htaccess settings**
+  ``` htaccess
+  # Root .htaccess - Redirect all requests to public directory
+  # Place this file in the project root (/var/www/api/)
+
+  RewriteEngine On
+
+  # Redirect everything to public directory except already in public
+  RewriteCond %{REQUEST_URI} !^/public/
+  RewriteCond %{REQUEST_URI} !^/api/
+  RewriteRule ^(.*)$ public/$1 [L]
+
+  # Security - Block access to sensitive files in root
+  <Files ~ "^\.(htaccess|gitignore|env)">
+      Order allow,deny
+      Deny from all
+  </Files>
+
+  <Files ~ "(README\.md|composer\.(json|lock))$">
+      Order allow,deny
+      Deny from all
+  </Files>
+
+  # Block direct access to old structure directories
+  <Directory "health-calculator">
+      Order deny,allow
+      Deny from all
+  </Directory>
+
+  <Directory "password-generator">
+      Order deny,allow
+      Deny from all
+  </Directory>
+
+  <Directory "username-generator">
+      Order deny,allow
+      Deny from all
+  </Directory>
+
+  <Directory "promptpay-qr-generator">
+      Order deny,allow
+      Deny from all
+  </Directory>
+
+  <Directory "fortune-teller">
+      Order deny,allow
+      Deny from all
+  </Directory>
+
+  <Directory "randomizer">
+      Order deny,allow
+      Deny from all
+  </Directory>
+
+
+  ```
+
+
+  **nginx configuration settings**
+  ``` conf
+  server {
+      listen 80;
+      server_name domain.com;
+
+      root /var/www/myapis/public;
+      index index.php;
+
+      # Clean URLs for tools (remove .php extension)
+      location / {
+          try_files $uri $uri/ @rewrite;
+      }
+
+      location @rewrite {
+          rewrite ^/([^/]+)/?$ /$1.php last;
+          rewrite ^/([^/]+)-specs/?$ /$1-specs.php last;
+      }
+
+      # API routing with clean URLs
+      location /api/ {
+          root /var/www/myapis/;
+
+          # Route /api/tool-name/ to /api/tool-name/index.php
+          location ~ ^/api/([^/]+)/?$ {
+              try_files $uri $uri/ /api/$1/index.php?$query_string;
+          }
+
+          # Handle direct PHP file access in API
+          location ~ ^/api/(.+)\.php$ {
+              root /var/www/myapis/;
+              try_files $uri =404;
+              fastcgi_split_path_info ^(.+\.php)(/.+)$;
+              fastcgi_pass unix:/var/run/php/php8.3-fpm.sock;
+              fastcgi_index index.php;
+              fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+              include fastcgi_params;
+
+              # CORS headers for API endpoints
+              add_header Access-Control-Allow-Origin *;
+              add_header Access-Control-Allow-Methods "GET, POST, OPTIONS";
+              add_header Access-Control-Allow-Headers "Content-Type, Authorization";
+          }
+      }
+
+      # PHP processing for public files
+      location ~ \.php$ {
+          try_files $uri =404;
+          fastcgi_split_path_info ^(.+\.php)(/.+)$;
+          fastcgi_pass unix:/var/run/php/php8.3-fpm.sock;
+          fastcgi_index index.php;
+          fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+          include fastcgi_params;
+      }
+
+      # Static assets caching
+      location ~* \.(jpg|jpeg|png|gif|ico|css|js|svg)$ {
+          expires 30d;
+          add_header Cache-Control "public, no-transform";
+      }
+
+      # Block access to sensitive files
+      location ~ /\. {
+          deny all;
+      }
+
+      location ~ /(README\.md|composer\.(json|lock)|\.git)$ {
+          deny all;
+      }
+  }
+
+  ```
 
 3. **Access the application**
-   - Open your browser and navigate to `http://localhost:8000/public/` (or your server URL + `/public/`)
+   - Docker: `http://localhost:${WEB_PORT}/` (e.g. `http://localhost:8080/`)
+   - Built-in / Apache / Nginx: `http://localhost:8000/public/`
    - Explore the tools and their APIs
 
 ## 📖 API Documentation
@@ -101,6 +254,7 @@ Each tool has its own API endpoint and documentation:
 - **Password Generator API**: `POST /api/password-generator/` - Generate secure passwords
 - **Username Generator API**: `POST /api/username-generator/` - Create unique usernames
 - **PromptPay QR API**: `POST /api/promptpay-qr-generator/` - Generate PromptPay QR codes
+- **QR Code Generator API**: `POST /api/qr-code-generator/` - Generate QR codes for text, URL, vCard, event, Wi-Fi, and phone (powered by [goQR.me](https://goqr.me/api/doc/create-qr-code/))
 - **Fortune Teller API**: `GET /api/fortune-teller/` - Get random fortune predictions
 - **Random Generator API**: `POST /api/randomizer/` - Generate random numbers, dice, etc.
 
@@ -108,22 +262,48 @@ Each tool has its own API endpoint and documentation:
 
 ### Health Calculator
 ```bash
-curl -X POST "http://localhost:8000/api/health-calculator/" \
+curl -X POST "http://localhost:8080/api/health-calculator/" \
   -H "Content-Type: application/json" \
   -d '{"weight": 70, "height": 175, "unit": "metric", "type": "bmi"}'
 ```
 
 ### Password Generator
 ```bash
-curl -X POST "http://localhost:8000/api/password-generator/" \
+curl -X POST "http://localhost:8080/api/password-generator/" \
   -H "Content-Type: application/json" \
   -d '{"length": 16, "uppercase": true, "lowercase": true, "numbers": true, "symbols": true}'
 ```
 
 ### Fortune Teller
 ```bash
-curl "http://localhost:8000/api/fortune-teller/?lang=en"
+curl "http://localhost:8080/api/fortune-teller/?lang=en"
 ```
+
+### QR Code Generator
+```bash
+# Plain text → PNG (JSON response with base64 image)
+curl -X POST "http://localhost:8080/api/qr-code-generator/?format=json" \
+  -d "type=text" -d "text=Hello, world!" -d "size=300x300"
+
+# Wi-Fi credentials → direct SVG download
+curl "http://localhost:8080/api/qr-code-generator/?format=image" \
+  -d "type=wifi" -d "ssid=CafeWiFi" -d "password=beans2024" \
+  -d "encryption=WPA" -d "file_type=svg" -d "color=cc0066" \
+  --output qr.svg
+
+# Business vCard with multiple dynamic emails / phones / addresses
+curl -X POST "http://localhost:8080/api/qr-code-generator/?format=json" \
+  -d "type=vcard" \
+  -d "first_name=Jane" -d "last_name=Doe" \
+  -d "emails[0][type]=WORK" -d "emails[0][value]=jane@acme.com" \
+  -d "phones[0][type]=CELL,VOICE" -d "phones[0][value]=+66811234567" \
+  -d "addresses[0][type]=WORK" -d "addresses[0][street]=123 Sukhumvit" \
+  -d "addresses[0][city]=Bangkok" -d "addresses[0][country]=Thailand"
+```
+
+> 💡 If you are using the built-in PHP server (`php -S`), replace
+> `http://localhost:8080` with `http://localhost:8000` and add the
+> `/public/` prefix as described in the Quick Start section.
 
 ## 📁 Project Structure
 
@@ -135,6 +315,7 @@ myapis/
 │   ├── password-generator.php # Password Generator web interface
 │   ├── username-generator.php # Username Generator web interface
 │   ├── promptpay-qr-generator.php # PromptPay QR Generator web interface
+│   ├── qr-code-generator.php # QR Code Generator web interface (text, URL, vCard, event, Wi-Fi, phone)
 │   ├── fortune-teller.php   # Fortune Teller web interface
 │   ├── randomizer.php       # Random Generator web interface
 │   └── api-specs/           # API documentation pages
@@ -142,6 +323,7 @@ myapis/
 │       ├── password-generator.php
 │       ├── username-generator.php
 │       ├── promptpay-qr-generator.php
+│       ├── qr-code-generator.php
 │       ├── fortune-teller.php
 │       └── randomizer.php
 ├── api/                     # REST API implementations
@@ -153,14 +335,92 @@ myapis/
 │   │   └── index.php
 │   ├── promptpay-qr-generator/ # PromptPay QR Generator API
 │   │   └── index.php
+│   ├── qr-code-generator/   # QR Code Generator API (powered by goQR.me)
+│   │   └── index.php
 │   ├── fortune-teller/      # Fortune Teller API
 │   │   ├── index.php
 │   │   └── predictions/     # Fortune data files
 │   └── randomizer/          # Random Generator API
 │       └── index.php
+├── docker/                  # Docker configuration files
+│   ├── nginx/default.conf   # Nginx vhost (public + api routing)
+│   └── php/
+│       ├── php.ini          # PHP runtime overrides
+│       └── opcache.ini      # Opcache tuning
+├── docker-compose.yml       # PHP-FPM + Nginx stack definition
+├── Dockerfile               # PHP-FPM image with required extensions
+├── example.env              # Sample environment variables
+├── .dockerignore            # Files excluded from the image
+├── .htaccess                # Apache rewrite rules (root → public)
 ├── README.md                # This file
 └── RELEASE.md               # Release notes
 ```
+
+## 🐳 Docker Deployment
+
+The project ships with a complete, production-ready Docker stack
+(PHP-FPM 8.2 + Nginx 1.27 on Alpine).
+
+### Quick commands
+
+```bash
+# 1. Copy and (optionally) edit environment variables
+cp example.env .env
+
+# 2. Build images and start the stack in the background
+docker compose up -d --build
+
+# 3. Follow the logs
+docker compose logs -f
+
+# 4. Stop the stack
+docker compose down
+```
+
+After `docker compose up -d` finishes, the app is available at
+`http://localhost:${WEB_PORT:-8080}/`.
+
+### Environment variables
+
+All variables are read from `.env` (see [example.env](example.env)):
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `PROJECT_NAME` | `myapis` | Prefix used for container names and networks |
+| `TZ` | `UTC` | Container / PHP timezone |
+| `WEB_PORT` | `8080` | Host port mapped to Nginx (port 80) |
+| `PHP_MEMORY_LIMIT` | `256M` | PHP `memory_limit` |
+| `PHP_UPLOAD_MAX_FILESIZE` | `10M` | PHP `upload_max_filesize` |
+| `PHP_POST_MAX_SIZE` | `10M` | PHP `post_max_size` |
+| `PHP_DATE_TIMEZONE` | `UTC` | PHP `date.timezone` |
+| `NGINX_CLIENT_MAX_BODY_SIZE` | `10M` | Nginx `client_max_body_size` |
+| `APP_ENV` | `development` | `development` shows errors, `production` hides them |
+
+### Common tasks
+
+```bash
+# Rebuild only the PHP image after changing the Dockerfile
+docker compose build php
+
+# Open a shell inside the PHP container
+docker compose exec php sh
+
+# Tail Nginx access / error logs
+docker compose logs -f nginx
+```
+
+### URL routing in Docker
+
+The bundled Nginx vhost serves everything from `public/` and proxies
+API requests to PHP-FPM:
+
+- `http://localhost:8080/` → `public/index.php`
+- `http://localhost:8080/health-calculator.php` → tool page
+- `http://localhost:8080/api/health-calculator/` → `api/health-calculator/index.php`
+- `http://localhost:8080/api/fortune-teller/?lang=en` → fortune API
+
+> 🛡️ Requests for hidden files, `.env`, `README.md`, etc. are
+> explicitly denied by the Nginx configuration.
 
 ## 🔧 Development
 
@@ -184,11 +444,12 @@ myapis/
 
 ## 📊 Statistics
 
-- **6** Active Tools
-- **6** API Endpoints  
-- **6** Interactive Documentation Pages
+- **7** Active Tools
+- **7** API Endpoints
+- **7** Interactive Documentation Pages
 - **Clean Architecture** with public/api separation
 - **Dynamic URLs** for any server environment
+- **🐳 Docker Ready** with PHP-FPM 8.2 + Nginx 1.27
 - **100%** Uptime Target
 - **PHP** Technology Stack
 
@@ -223,7 +484,19 @@ This project is open source and available under the [MIT License](LICENSE).
 
 ---
 
-## 🚀 Latest Updates (v2.0.0)
+## 🚀 Latest Updates (v2.3.x)
+
+### 📱 QR Code Generator (v2.3.0 + v2.3.1)
+- **6 Content Types**: Plain text, URL, vCard, Event, Wi-Fi, Phone — all powered by the [goQR.me](https://goqr.me/api/doc/create-qr-code/) API
+- **SVG Output**: New `file_type=svg` parameter returns scalable vector QR codes (ideal for print)
+- **Native Color Pickers**: Foreground / background controlled with `<input type="color">` paired with a hex text field
+- **Dynamic vCard Fields**: Add unlimited emails, phones, URLs, and structured addresses (street / city / region / postcode / country)
+- **Sticky Form**: All fields (including dynamic rows) repopulate after submission
+- **Documentation**: API specs page ([`public/api-specs/qr-code-generator.php`](public/api-specs/qr-code-generator.php)) links to goQR.me docs and includes 9 curl examples
+
+---
+
+## 🏗️ v2.0.0 — Major Architecture Restructuring
 
 ### 🏗️ Major Architecture Restructuring
 - **Clean Separation**: New `public/` and `api/` directory structure

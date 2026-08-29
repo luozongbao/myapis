@@ -1,9 +1,185 @@
 # 📋 MyAPIs Release Notes
 
-## Current Release: Version 2.1.2
+## Current Release: Version 2.3.1
 
-**Release Date**: September 11, 2025  
-**Status**: Stable Release  
+**Release Date**: August 29, 2026
+**Status**: Stable Release
+
+---
+
+## 📱 Version 2.3.1 - QR Code Generator: SVG, Color Pickers, Dynamic vCard
+*Released: August 29, 2026*
+
+### 🌟 Enhancements
+
+#### 📐 SVG File-Type Support
+- **New `file_type` parameter**: Forwarded to goQR.me as the `format` field, validated
+  against `['png', 'svg', 'gif', 'jpeg', 'jpg', 'eps']`
+- **MIME-aware responses**: SVG returns `image/svg+xml`, PNG `image/png`, etc.
+- **Frontend dropdown**: New "PNG / SVG" selector inside the Appearance panel
+- **Backward compatibility**: Legacy `gformat` parameter still accepted
+
+#### 🎨 Native Colour Pickers
+- **Replaced plain hex inputs** with paired `<input type="color">` + hex text field
+  for both foreground (`color`) and background (`bgcolor`)
+- **Live swatch preview** next to each label
+- **Bi-directional sync**: typing a hex value updates the picker and swatch instantly,
+  and picking a colour updates the hex text
+- **No API changes**: backend already accepted decimal RGB and 3/6-char hex values
+
+#### 📇 Dynamic vCard Fields
+- **Add/remove unlimited emails**: `emails[i][value]` + `emails[i][type]`
+  (`WORK` / `HOME` / `INTERNET`)
+- **Add/remove unlimited phones**: `phones[i][value]` + `phones[i][type]`
+  (`CELL,VOICE` / `WORK,VOICE` / `HOME,VOICE` / `FAX` / `VOICE`)
+- **Add/remove unlimited URLs**: `urls[i][value]` + optional `urls[i][label]`
+- **Add/remove structured addresses**: `addresses[i][type]` + `street` + `po_box`
+  + `city` + `region` + `postcode` + `country`
+- **`reindex()` JavaScript**: keeps bracket numbers dense after row removal
+- **`collectDynamicItems()` backend**: reads both `$_GET` and `$_POST` and merges
+  with legacy single fields (`work_email`, `home_phone`, etc.) for full
+  backward compatibility
+
+#### 📚 API Documentation Updates
+- **New parameter table**: documents the array field patterns and accepted sub-keys
+- **Two new curl examples**: SVG with custom colours (Example 8) and dynamic vCard
+  with multiple entries (Example 9)
+- **Response example** now includes the `file_type` field
+
+### 🧪 Verification
+- All three new features exercised via Docker stack (`docker compose up -d --build`)
+- Direct PNG output: 300×300 with `cc0066` foreground → `image/png`
+- Direct SVG output: 400×400 with `0066cc` foreground → `image/svg+xml`
+- Wi-Fi + SVG + custom colour: payload `WIFI:T:WPA;S:Cafe WiFi;P:beans2024;H:false;`
+- Dynamic vCard payload contains 3 emails, 3 phones, 2 URLs, 2 addresses
+
+---
+
+## 📱 Version 2.3.0 - QR Code Generator (Initial Release)
+*Released: August 29, 2026*
+
+### 🌟 Major New Feature
+
+#### 📱 Universal QR Code Generator
+- **Six content types** powered by the [goQR.me](https://goqr.me/api/doc/create-qr-code/) API:
+  - **Plain Text / Long Text** — any payload, no length restriction
+  - **Website URL** — auto-prefixes `https://` when missing
+  - **Business vCard (vCard 3.0)** — personal, organisational, contact, and address
+    fields including multiple emails, phones, fax, website and free-form note
+  - **Event (iCalendar)** — summary, start, end, location, description
+  - **Wi-Fi** — SSID, password, encryption (WPA / WEP / nopass), hidden flag
+  - **Phone Number** — `tel:` URI
+- **goQR.me parameter passthrough**: `size`, `ecc`, `qzone`, `margin`, `color`,
+  `bgcolor`, `charset-source`, `charset-target`, `format`
+- **Two response modes**:
+  - `format=image` — raw PNG bytes (default goQR.me format)
+  - `format=json` — `{success, type, payload, qr_url, goqr_url, params, file_type}`
+- **CORS enabled** for cross-origin consumption
+- **Validation**: every input is whitelisted; unknown types / sizes / ECC
+  levels return HTTP 400 with a clear error message
+
+#### 🖥️ Web Interface
+- **Type selector grid** — six cards (Text, URL, vCard, Event, Wi-Fi, Phone)
+  with icons and gradient active state
+- **Sticky form**: all simple fields repopulate after submission so users
+  can iteratively tweak
+- **Payload preview**: encoded payload is rendered below the QR image so
+  users can verify exactly what will be scanned
+- **Breadcrumb + header badges** matching the existing tool style
+  (`#667eea → #764ba2` gradient)
+- **Download button**: one-click download of the generated image with the
+  correct file extension
+
+#### 📚 API Specifications Page
+- **`public/api-specs/qr-code-generator.php`** — comprehensive table of
+  every parameter, accepted values, and defaults
+- **Five external links** to the goQR.me `create-qr-code` documentation
+- **Seven curl examples** covering each content type and the direct image
+  download pattern
+- **JSON response example** with all fields shown
+
+#### 🧭 Navigation & Discoverability
+- **Landing page card** (`public/index.php`) — adds a "📱 QR Code Generator"
+  card with eight feature bullets and Try/API/Docs buttons
+- **README.md tools table** — adds the QR row linking to web UI, API, and specs
+- **Total tools: 7** (up from 6)
+
+### 📁 New / Updated Files
+- `api/qr-code-generator/index.php` — REST endpoint
+- `public/qr-code-generator.php` — Web UI
+- `public/api-specs/qr-code-generator.php` — API documentation
+- `public/index.php` — landing page card added
+- `README.md` — tools table, project structure, statistics, usage examples
+- `RELEASE.md` — this file
+
+### ✅ Verification
+- PHP lint via `docker exec myapis-php php -l <file>` passes for all three files
+- HTTP 200 on `http://localhost:8080/qr-code-generator.php`
+- HTTP 200 on `http://localhost:8080/api-specs/qr-code-generator.php`
+- HTTP 200 on `http://localhost:8080/api/qr-code-generator/?format=json` (POST)
+- Each content type produces a standards-compliant payload:
+  - Text → raw string
+  - URL → `https://...`
+  - vCard → `BEGIN:VCARD ... END:VCARD`
+  - Event → `BEGIN:VCALENDAR ... END:VCALENDAR`
+  - Wi-Fi → `WIFI:T:WPA;S:<ssid>;P:<password>;H:<true|false>;`
+  - Phone → `tel:<number>`
+
+---
+
+## 🐳 Version 2.2.0 - Docker Deployment & Operational Tooling
+*Released: August 29, 2026*
+
+### 🌟 Major New Features
+
+#### 🐳 One-Command Docker Deployment
+- **`docker-compose.yml`**: Production-ready stack orchestrating PHP-FPM 8.2 and Nginx 1.27 (both Alpine-based for minimal footprint)
+- **`Dockerfile`**: Builds a custom PHP-FPM image with all required extensions pre-installed (`gd`, `intl`, `mbstring`, `opcache`, `bcmath`)
+- **`example.env`**: Centralised configuration for ports, PHP limits, timezone, and environment
+- **`.dockerignore`**: Keeps build context lean and reproducible
+
+#### ⚙️ Configurable via Environment Variables
+- `WEB_PORT` – host port mapped to Nginx (default `8080`)
+- `PROJECT_NAME` – prefix for container names / networks
+- `TZ` / `PHP_DATE_TIMEZONE` – consistent timezone inside PHP and the container
+- `PHP_MEMORY_LIMIT`, `PHP_UPLOAD_MAX_FILESIZE`, `PHP_POST_MAX_SIZE` – PHP runtime limits
+- `NGINX_CLIENT_MAX_BODY_SIZE` – request size limit
+- `APP_ENV` – `development` shows errors, `production` hides them
+
+#### 🛡️ Hardened Nginx vhost
+- Dedicated location block routes `/api/<tool>/` to `api/<tool>/index.php` through PHP-FPM
+- Sensitive files (`.env`, `README.md`, `RELEASE.md`, `composer.*`, hidden files) are denied
+- Static asset caching for images / CSS / JS
+- Standard security headers (`X-Frame-Options`, `X-XSS-Protection`, `X-Content-Type-Options`, `Referrer-Policy`)
+- `server_tokens off` to hide Nginx version
+
+#### 🩺 Production Touches
+- PHP-FPM healthcheck via the `php-fpm-healthcheck` helper script
+- `depends_on: { php: { condition: service_healthy } }` ensures Nginx waits for PHP
+- Bind-mounted source code (read-only for Nginx) for easy development iteration
+
+### 📁 New / Updated Files
+- `docker-compose.yml` – stack definition
+- `Dockerfile` – PHP-FPM image recipe
+- `docker/nginx/default.conf` – Nginx vhost (public + api routing)
+- `docker/php/php.ini` – PHP runtime overrides
+- `docker/php/opcache.ini` – Opcache tuning
+- `example.env` – sample environment variables
+- `.dockerignore` – Docker build context exclusions
+- `README.md` – new "Docker Deployment" section and updated structure
+
+### 🚀 Quick start
+```bash
+cp example.env .env
+docker compose up -d --build
+open http://localhost:${WEB_PORT:-8080}
+```
+
+### ✅ Verification
+- `docker compose config` validates without errors
+- Nginx vhost reviewed for correct `alias` / `fastcgi_pass` / `try_files` semantics
+- PHP-FPM healthcheck wired so Nginx only starts once PHP is ready
+- All existing tool URLs continue to work without code changes
 
 ---
 

@@ -407,6 +407,28 @@
                 </div>
             </div>
 
+            <!-- QR Code Generator -->
+            <div class="tool-card">
+                <div class="tool-icon">📱</div>
+                <h3 class="tool-title">QR Code Generator</h3>
+                <p class="tool-description">Universal QR code generator powered by the goQR.me API. Create QR codes for plain text, URLs, business vCards, calendar events, Wi-Fi networks, and phone numbers with full control over size, error correction, and colours</p>
+                <ul class="tool-features">
+                    <li>Plain Text &amp; long-form messages</li>
+                    <li>Business vCard (3.0) with full contact fields</li>
+                    <li>iCalendar events with start/end times</li>
+                    <li>Website URLs with auto https:// prefix</li>
+                    <li>Wi-Fi credentials (WPA/WEP/None, hidden flag)</li>
+                    <li>Phone numbers (tel: URI)</li>
+                    <li>Custom size (50-1000px), ECC, margin &amp; quiet zone</li>
+                    <li>JSON / raw-image output with base64 data URL</li>
+                </ul>
+                <div class="tool-actions">
+                    <a href="qr-code-generator.php" class="btn btn-primary">Try Tool</a>
+                    <a href="/api/qr-code-generator/" class="btn btn-secondary">API</a>
+                    <a href="api-specs/qr-code-generator.php" class="btn btn-secondary">API Docs</a>
+                </div>
+            </div>
+
             <!-- Random Generator -->
             <div class="tool-card">
                 <div class="tool-icon">🎲</div>
@@ -435,11 +457,11 @@
             <h2 class="stats-title">📊 Platform Statistics</h2>
             <div class="stats-grid">
                 <div class="stat-item">
-                    <div class="stat-number">6</div>
+                    <div class="stat-number">7</div>
                     <div class="stat-label">Active Tools</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-number">18</div>
+                    <div class="stat-number">21</div>
                     <div class="stat-label">API Endpoints</div>
                 </div>
                 <div class="stat-item">
