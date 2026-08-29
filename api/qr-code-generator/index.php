@@ -125,18 +125,6 @@ class QrCodeGenerator {
         $lastName   = $get('last_name');
         $org        = $get('organization');
         $title      = $get('title');
-        $workEmail  = $get('work_email');
-        $homeEmail  = $get('home_email');
-        $workPhone  = $get('work_phone');
-        $homePhone  = $get('home_phone');
-        $mobile     = $get('mobile');
-        $fax        = $get('fax');
-        $website    = $get('website');
-        $address    = $get('address');
-        $city       = $get('city');
-        $region     = $get('region');
-        $postcode   = $get('postcode');
-        $country    = $get('country');
         $note       = $get('note');
 
         if ($firstName === '' && $lastName === '' && $org === '') {
@@ -159,27 +147,78 @@ class QrCodeGenerator {
         if ($org !== '')   { $lines[] = 'ORG:' . $this->vEscape($org); }
         if ($title !== '') { $lines[] = 'TITLE:' . $this->vEscape($title); }
 
-        if ($workPhone !== '') { $lines[] = 'TEL;TYPE=WORK,VOICE:' . $this->vEscape($workPhone); }
-        if ($homePhone !== '') { $lines[] = 'TEL;TYPE=HOME,VOICE:' . $this->vEscape($homePhone); }
-        if ($mobile !== '')    { $lines[] = 'TEL;TYPE=CELL,VOICE:' . $this->vEscape($mobile); }
-        if ($fax !== '')       { $lines[] = 'TEL;TYPE=FAX:' . $this->vEscape($fax); }
+        // ----------------------------------------------------------------
+        // Backwards-compatible single fields.  They are merged into the
+        // dynamic collections so the same data ends up in the payload.
+        // ----------------------------------------------------------------
+        $legacyEmails = [];
+        if ($get('work_email') !== '') { $legacyEmails[] = ['type' => 'WORK',  'value' => $get('work_email')]; }
+        if ($get('home_email') !== '') { $legacyEmails[] = ['type' => 'HOME',  'value' => $get('home_email')]; }
 
-        if ($workEmail !== '') { $lines[] = 'EMAIL;TYPE=WORK:' . $this->vEscape($workEmail); }
-        if ($homeEmail !== '') { $lines[] = 'EMAIL;TYPE=HOME:' . $this->vEscape($homeEmail); }
+        $legacyPhones = [];
+        if ($get('work_phone') !== '') { $legacyPhones[] = ['type' => 'WORK,VOICE', 'value' => $get('work_phone')]; }
+        if ($get('home_phone') !== '') { $legacyPhones[] = ['type' => 'HOME,VOICE', 'value' => $get('home_phone')]; }
+        if ($get('mobile')     !== '') { $legacyPhones[] = ['type' => 'CELL,VOICE', 'value' => $get('mobile')]; }
+        if ($get('fax')        !== '') { $legacyPhones[] = ['type' => 'FAX',        'value' => $get('fax')]; }
 
-        if ($website !== '')   { $lines[] = 'URL:' . $this->vEscape($website); }
+        $legacyUrls = [];
+        if ($get('website') !== '') { $legacyUrls[] = ['value' => $get('website')]; }
 
-        if ($address !== '' || $city !== '' || $region !== '' || $postcode !== '' || $country !== '') {
+        $legacyAddresses = [];
+        if ($get('address') !== '' || $get('city') !== '' || $get('region') !== ''
+            || $get('postcode') !== '' || $get('country') !== '') {
+            $legacyAddresses[] = [
+                'type'    => 'WORK',
+                'po_box'  => '',
+                'ext'     => '',
+                'street'  => $get('address'),
+                'city'    => $get('city'),
+                'region'  => $get('region'),
+                'postcode'=> $get('postcode'),
+                'country' => $get('country'),
+            ];
+        }
+
+        $emails   = array_merge($legacyEmails,   $this->collectDynamicItems($f, 'emails'));
+        $phones   = array_merge($legacyPhones,   $this->collectDynamicItems($f, 'phones'));
+        $urls     = array_merge($legacyUrls,     $this->collectDynamicItems($f, 'urls'));
+        $addresses= array_merge($legacyAddresses,$this->collectDynamicItems($f, 'addresses'));
+
+        foreach ($emails as $e) {
+            if (empty($e['value'])) { continue; }
+            $type = !empty($e['type']) ? $e['type'] : 'INTERNET';
+            $lines[] = 'EMAIL;TYPE=' . $this->vEscape($type) . ':' . $this->vEscape($e['value']);
+        }
+
+        foreach ($phones as $p) {
+            if (empty($p['value'])) { continue; }
+            $type = !empty($p['type']) ? $p['type'] : 'VOICE';
+            $lines[] = 'TEL;TYPE=' . $this->vEscape($type) . ':' . $this->vEscape($p['value']);
+        }
+
+        foreach ($urls as $u) {
+            if (empty($u['value'])) { continue; }
+            $lines[] = 'URL:' . $this->vEscape($u['value']);
+        }
+
+        foreach ($addresses as $a) {
+            // Skip entirely empty addresses
+            $hasAny = false;
+            foreach (['po_box', 'ext', 'street', 'city', 'region', 'postcode', 'country'] as $k) {
+                if (!empty($a[$k])) { $hasAny = true; break; }
+            }
+            if (!$hasAny) { continue; }
+            $type = !empty($a['type']) ? $a['type'] : 'WORK';
             $adr = implode(';', [
-                $this->vEscape(''),              // PO Box
-                $this->vEscape(''),              // Extended
-                $this->vEscape($address),
-                $this->vEscape($city),
-                $this->vEscape($region),
-                $this->vEscape($postcode),
-                $this->vEscape($country),
+                $this->vEscape($a['po_box']   ?? ''),
+                $this->vEscape($a['ext']      ?? ''),
+                $this->vEscape($a['street']   ?? ''),
+                $this->vEscape($a['city']     ?? ''),
+                $this->vEscape($a['region']   ?? ''),
+                $this->vEscape($a['postcode'] ?? ''),
+                $this->vEscape($a['country']  ?? ''),
             ]);
-            $lines[] = 'ADR;TYPE=WORK:' . $adr;
+            $lines[] = 'ADR;TYPE=' . $this->vEscape($type) . ':' . $adr;
         }
 
         if ($note !== '') { $lines[] = 'NOTE:' . $this->vEscape($note); }
@@ -187,6 +226,34 @@ class QrCodeGenerator {
         $lines[] = 'END:VCARD';
 
         return implode("\r\n", $lines);
+    }
+
+    /**
+     * Collect dynamic vCard items from the request payload.
+     *
+     * Supports two input shapes:
+     *   1) emails[][type]=WORK&emails[][value]=...
+     *   2) emails[0][type]=WORK&emails[0][value]=...
+     *
+     * @return array<int,array<string,string>>
+     */
+    private function collectDynamicItems(array $allFields, string $key) {
+        $items = [];
+        // Look at the raw request (since dynamic lists may be POSTed with
+        // bracketed keys that PHP populates into $_REQUEST)
+        $source = array_merge($_GET, $_POST);
+
+        if (isset($source[$key]) && is_array($source[$key])) {
+            foreach ($source[$key] as $entry) {
+                if (is_array($entry)) {
+                    $items[] = array_map('strval', $entry);
+                } elseif (is_string($entry) && trim($entry) !== '') {
+                    // Bare string — treat as a default-typed value
+                    $items[] = ['value' => $entry];
+                }
+            }
+        }
+        return $items;
     }
 
     /**
@@ -405,15 +472,24 @@ class QrCodeGenerator {
 // ---------------------------------------------------------------
 
 try {
-    $type   = strtolower(trim($_REQUEST['type'] ?? 'text'));
-    $format = strtolower(trim($_REQUEST['format'] ?? 'json'));
+    $type      = strtolower(trim($_REQUEST['type'] ?? 'text'));
+    $format    = strtolower(trim($_REQUEST['format'] ?? 'json'));
+
+    // File type selector: "png" (default) or "svg".
+    // SVG files can be up to 1,000,000 x 1,000,000 logical units and are
+    // ideal for print.  When "svg" is requested we forward gformat=svg to
+    // goQR.me and serve the bytes with the correct MIME type.
+    $fileType  = strtolower(trim($_REQUEST['file_type'] ?? $_REQUEST['gformat'] ?? 'png'));
+    if (!in_array($fileType, ['png', 'svg', 'gif', 'jpeg', 'jpg', 'eps'], true)) {
+        $fileType = 'png';
+    }
 
     // All goQR parameters are read from the request (with safe defaults
     // applied inside buildQrUrl()).
     $goqr = [
         'size'           => $_REQUEST['size']            ?? 300,
         'ecc'            => $_REQUEST['ecc']             ?? 'M',
-        'format'         => $_REQUEST['gformat']         ?? 'png',
+        'format'         => $fileType,
         'qzone'          => $_REQUEST['qzone']           ?? 2,
         'margin'         => $_REQUEST['margin']          ?? 1,
         'charset-source' => $_REQUEST['charset_source']  ?? 'UTF-8',
@@ -425,7 +501,7 @@ try {
     // Pull every field the user submitted (apart from the API control
     // keys) so the payload builder can pick the ones it needs.
     $reserved = [
-        'type', 'format', 'size', 'ecc', 'gformat', 'qzone', 'margin',
+        'type', 'format', 'file_type', 'size', 'ecc', 'gformat', 'qzone', 'margin',
         'charset_source', 'charset_target', 'color', 'bgcolor',
     ];
     $fields = [];
@@ -457,10 +533,22 @@ try {
     $payload = $api->buildPayload($type, $fields);
     $qrUrl   = $api->buildQrUrl($payload, $goqr);
 
-    if ($format === 'image' || $format === 'png') {
+    if ($format === 'image' || $format === 'png' || $format === 'svg') {
         $image = $api->fetchQrImage($qrUrl);
-        header('Content-Type: image/png');
-        header('Content-Disposition: inline; filename="qr-code.png"');
+
+        $mimeMap = [
+            'png'  => 'image/png',
+            'gif'  => 'image/gif',
+            'jpeg' => 'image/jpeg',
+            'jpg'  => 'image/jpeg',
+            'svg'  => 'image/svg+xml',
+            'eps'  => 'application/postscript',
+        ];
+        $mime = $mimeMap[$fileType] ?? 'image/png';
+        $ext  = $fileType;
+
+        header('Content-Type: ' . $mime);
+        header("Content-Disposition: inline; filename=\"qr-code.{$ext}\"");
         header('Cache-Control: public, max-age=3600');
         echo $image;
         exit;
@@ -468,7 +556,16 @@ try {
 
     if ($format === 'json' || $format === 'data') {
         $image   = $api->fetchQrImage($qrUrl);
-        $base64  = 'data:image/png;base64,' . base64_encode($image);
+        $mimeMap = [
+            'png'  => 'image/png',
+            'gif'  => 'image/gif',
+            'jpeg' => 'image/jpeg',
+            'jpg'  => 'image/jpeg',
+            'svg'  => 'image/svg+xml',
+            'eps'  => 'application/postscript',
+        ];
+        $mime = $mimeMap[$fileType] ?? 'image/png';
+        $base64 = 'data:' . $mime . ';base64,' . base64_encode($image);
 
         header('Content-Type: application/json');
         echo json_encode([
@@ -478,6 +575,7 @@ try {
             'payload'   => $payload,
             'qr_url'    => $base64,
             'goqr_url'  => $qrUrl,
+            'file_type' => $fileType,
             'params'    => [
                 'size'           => (int)$goqr['size'],
                 'ecc'            => $goqr['ecc'],
@@ -498,7 +596,7 @@ try {
     header('Content-Type: application/json');
     echo json_encode([
         'error'   => 'Invalid format parameter',
-        'message' => 'Supported formats: image, json',
+        'message' => 'Supported formats: image, json, svg',
     ]);
     exit;
 

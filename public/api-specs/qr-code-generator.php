@@ -329,23 +329,23 @@ $baseUrl = getBaseUrl('qr-code-generator');
                             <tr><td><code>url</code></td>   <td><code>url</code></td>      <td>Website URL (auto-prefixed with <code>https://</code> if missing)</td></tr>
                             <tr><td><code>phone</code></td> <td><code>phone</code></td>    <td>Phone number (any format)</td></tr>
 
-                            <tr><td rowspan="22"><code>vcard</code></td>
+                            <tr><td rowspan="17"><code>vcard</code></td>
                                 <td><code>first_name</code></td>   <td>First name (required with last name, or supply organization)</td></tr>
                             <tr><td><code>last_name</code></td>    <td>Last name</td></tr>
                             <tr><td><code>organization</code></td> <td>Company</td></tr>
                             <tr><td><code>title</code></td>        <td>Job title</td></tr>
-                            <tr><td><code>work_email</code></td>   <td>Work email</td></tr>
-                            <tr><td><code>home_email</code></td>   <td>Personal email</td></tr>
-                            <tr><td><code>work_phone</code></td>   <td>Work phone</td></tr>
-                            <tr><td><code>home_phone</code></td>   <td>Home phone</td></tr>
-                            <tr><td><code>mobile</code></td>       <td>Mobile phone</td></tr>
-                            <tr><td><code>fax</code></td>          <td>Fax</td></tr>
-                            <tr><td><code>website</code></td>      <td>Personal / business website</td></tr>
-                            <tr><td><code>address</code></td>      <td>Street address</td></tr>
-                            <tr><td><code>city</code></td>         <td>City</td></tr>
-                            <tr><td><code>region</code></td>       <td>Region / state / province</td></tr>
-                            <tr><td><code>postcode</code></td>     <td>Postal / ZIP code</td></tr>
-                            <tr><td><code>country</code></td>      <td>Country</td></tr>
+                            <tr><td><code>work_email</code></td>   <td>Work email <em>(single)</em></td></tr>
+                            <tr><td><code>home_email</code></td>   <td>Personal email <em>(single)</em></td></tr>
+                            <tr><td><code>work_phone</code></td>   <td>Work phone <em>(single)</em></td></tr>
+                            <tr><td><code>home_phone</code></td>   <td>Home phone <em>(single)</em></td></tr>
+                            <tr><td><code>mobile</code></td>       <td>Mobile phone <em>(single)</em></td></tr>
+                            <tr><td><code>fax</code></td>          <td>Fax <em>(single)</em></td></tr>
+                            <tr><td><code>website</code></td>      <td>Personal / business website <em>(single)</em></td></tr>
+                            <tr><td><code>address</code></td>      <td>Street address <em>(single)</em></td></tr>
+                            <tr><td><code>city</code></td>         <td>City <em>(single)</em></td></tr>
+                            <tr><td><code>region</code></td>       <td>Region / state / province <em>(single)</em></td></tr>
+                            <tr><td><code>postcode</code></td>     <td>Postal / ZIP code <em>(single)</em></td></tr>
+                            <tr><td><code>country</code></td>      <td>Country <em>(single)</em></td></tr>
                             <tr><td><code>note</code></td>         <td>Free-form note</td></tr>
 
                             <tr><td rowspan="5"><code>event</code></td>
@@ -381,9 +381,46 @@ $baseUrl = getBaseUrl('qr-code-generator');
                             <tr><td><code>bgcolor</code></td>        <td>255-255-255</td>  <td>Background RGB</td></tr>
                             <tr><td><code>charset_source</code></td> <td>UTF-8</td>        <td><code>UTF-8</code> or <code>ISO-8859-1</code></td></tr>
                             <tr><td><code>charset_target</code></td> <td>UTF-8</td>        <td><code>UTF-8</code> or <code>ISO-8859-1</code></td></tr>
-                            <tr><td><code>gformat</code></td>        <td>png</td>          <td>Renderer output format — see <a href="https://goqr.me/api/doc/create-qr-code/" target="_blank" rel="noopener">goQR.me</a></td></tr>
+                            <tr><td><code>file_type</code></td>       <td>png</td>          <td>Renderer output format: <code>png</code>, <code>svg</code>, <code>gif</code>, <code>jpeg</code> or <code>eps</code>. (Legacy alias: <code>gformat</code>.) See <a href="https://goqr.me/api/doc/create-qr-code/" target="_blank" rel="noopener">goQR.me</a></td></tr>
                         </tbody>
                     </table>
+
+                    <h4>Dynamic vCard Fields (vCard type only)</h4>
+                    <p>For <code>type=vcard</code> you can supply multiple emails, phones, URLs and
+                        structured addresses using array notation. Each entry is emitted as a
+                        separate <code>EMAIL;TYPE=…</code>, <code>TEL;TYPE=…</code>, <code>URL</code> or
+                        <code>ADR;TYPE=…</code> line in the vCard payload.</p>
+                    <table class="parameter-table">
+                        <thead>
+                            <tr><th>Field Pattern</th><th>Sub-keys</th><th>Description</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>emails[i][value]</code></td>
+                                <td><code>type</code>: <code>WORK</code> / <code>HOME</code> / <code>INTERNET</code></td>
+                                <td>One email per row. Multiple rows supported via index <code>i = 0, 1, 2 …</code></td>
+                            </tr>
+                            <tr>
+                                <td><code>phones[i][value]</code></td>
+                                <td><code>type</code>: <code>CELL,VOICE</code> / <code>WORK,VOICE</code> / <code>HOME,VOICE</code> / <code>FAX</code> / <code>VOICE</code></td>
+                                <td>One phone per row.</td>
+                            </tr>
+                            <tr>
+                                <td><code>urls[i][value]</code></td>
+                                <td><code>label</code>: optional display label (not embedded in vCard)</td>
+                                <td>One URL per row.</td>
+                            </tr>
+                            <tr>
+                                <td><code>addresses[i][…]</code></td>
+                                <td><code>type</code> (<code>WORK</code> / <code>HOME</code> / <code>OTHER</code>), <code>street</code>, <code>po_box</code>, <code>city</code>, <code>region</code>, <code>postcode</code>, <code>country</code></td>
+                                <td>One full address per row.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p style="margin-top: 10px;">Indexes can be sparse — the server normalises and
+                        packs them densely before emitting the vCard. Legacy single fields
+                        (<code>work_email</code>, <code>home_phone</code>, …) are still accepted
+                        for backward compatibility and are merged with the dynamic arrays.</p>
                 </div>
             </div>
 
@@ -439,6 +476,25 @@ $baseUrl = getBaseUrl('qr-code-generator');
                 <h3>7) Direct PNG Image with Custom Dimension</h3>
                 <div class="code-block">curl "<?php echo htmlspecialchars($baseUrl); ?>?format=image&type=text&text=Scan%20me&size=500x500&ecc=H&qzone=4" \
   --output qr.png</div>
+
+                <h3>8) SVG Output with Custom Colours</h3>
+                <div class="code-block">curl "<?php echo htmlspecialchars($baseUrl); ?>?format=image&type=text&text=Hello" \
+  -d "file_type=svg" \
+  -d "color=cc0066" \
+  -d "bgcolor=ffffcc" \
+  -d "size=400x400" \
+  --output qr.svg</div>
+
+                <h3>9) Dynamic vCard with Multiple Emails / Phones / Addresses</h3>
+                <div class="code-block">curl -X POST "<?php echo htmlspecialchars($baseUrl); ?>?format=json" \
+  -d "type=vcard" \
+  -d "first_name=Jane" -d "last_name=Doe" \
+  -d "emails[0][type]=WORK"    -d "emails[0][value]=jane@acme.com" \
+  -d "emails[1][type]=HOME"    -d "emails[1][value]=jane@home.com" \
+  -d "phones[0][type]=CELL,VOICE" -d "phones[0][value]=+66811234567" \
+  -d "phones[1][type]=WORK,VOICE" -d "phones[1][value]=+6623456789" \
+  -d "addresses[0][type]=WORK" -d "addresses[0][street]=123 Sukhumvit" \
+  -d "addresses[0][city]=Bangkok" -d "addresses[0][country]=Thailand"</div>
             </div>
 
             <!-- Response Format -->
@@ -464,7 +520,8 @@ $baseUrl = getBaseUrl('qr-code-generator');
     "charset-target": "UTF-8",
     "color": "0-0-0",
     "bgcolor": "255-255-255"
-  }
+  },
+  "file_type": "png"
 }</div>
                 </div>
 

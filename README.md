@@ -254,6 +254,7 @@ Each tool has its own API endpoint and documentation:
 - **Password Generator API**: `POST /api/password-generator/` - Generate secure passwords
 - **Username Generator API**: `POST /api/username-generator/` - Create unique usernames
 - **PromptPay QR API**: `POST /api/promptpay-qr-generator/` - Generate PromptPay QR codes
+- **QR Code Generator API**: `POST /api/qr-code-generator/` - Generate QR codes for text, URL, vCard, event, Wi-Fi, and phone (powered by [goQR.me](https://goqr.me/api/doc/create-qr-code/))
 - **Fortune Teller API**: `GET /api/fortune-teller/` - Get random fortune predictions
 - **Random Generator API**: `POST /api/randomizer/` - Generate random numbers, dice, etc.
 
@@ -278,6 +279,28 @@ curl -X POST "http://localhost:8080/api/password-generator/" \
 curl "http://localhost:8080/api/fortune-teller/?lang=en"
 ```
 
+### QR Code Generator
+```bash
+# Plain text → PNG (JSON response with base64 image)
+curl -X POST "http://localhost:8080/api/qr-code-generator/?format=json" \
+  -d "type=text" -d "text=Hello, world!" -d "size=300x300"
+
+# Wi-Fi credentials → direct SVG download
+curl "http://localhost:8080/api/qr-code-generator/?format=image" \
+  -d "type=wifi" -d "ssid=CafeWiFi" -d "password=beans2024" \
+  -d "encryption=WPA" -d "file_type=svg" -d "color=cc0066" \
+  --output qr.svg
+
+# Business vCard with multiple dynamic emails / phones / addresses
+curl -X POST "http://localhost:8080/api/qr-code-generator/?format=json" \
+  -d "type=vcard" \
+  -d "first_name=Jane" -d "last_name=Doe" \
+  -d "emails[0][type]=WORK" -d "emails[0][value]=jane@acme.com" \
+  -d "phones[0][type]=CELL,VOICE" -d "phones[0][value]=+66811234567" \
+  -d "addresses[0][type]=WORK" -d "addresses[0][street]=123 Sukhumvit" \
+  -d "addresses[0][city]=Bangkok" -d "addresses[0][country]=Thailand"
+```
+
 > 💡 If you are using the built-in PHP server (`php -S`), replace
 > `http://localhost:8080` with `http://localhost:8000` and add the
 > `/public/` prefix as described in the Quick Start section.
@@ -292,6 +315,7 @@ myapis/
 │   ├── password-generator.php # Password Generator web interface
 │   ├── username-generator.php # Username Generator web interface
 │   ├── promptpay-qr-generator.php # PromptPay QR Generator web interface
+│   ├── qr-code-generator.php # QR Code Generator web interface (text, URL, vCard, event, Wi-Fi, phone)
 │   ├── fortune-teller.php   # Fortune Teller web interface
 │   ├── randomizer.php       # Random Generator web interface
 │   └── api-specs/           # API documentation pages
@@ -299,6 +323,7 @@ myapis/
 │       ├── password-generator.php
 │       ├── username-generator.php
 │       ├── promptpay-qr-generator.php
+│       ├── qr-code-generator.php
 │       ├── fortune-teller.php
 │       └── randomizer.php
 ├── api/                     # REST API implementations
@@ -309,6 +334,8 @@ myapis/
 │   ├── username-generator/  # Username Generator API
 │   │   └── index.php
 │   ├── promptpay-qr-generator/ # PromptPay QR Generator API
+│   │   └── index.php
+│   ├── qr-code-generator/   # QR Code Generator API (powered by goQR.me)
 │   │   └── index.php
 │   ├── fortune-teller/      # Fortune Teller API
 │   │   ├── index.php
@@ -417,9 +444,9 @@ API requests to PHP-FPM:
 
 ## 📊 Statistics
 
-- **6** Active Tools
-- **6** API Endpoints  
-- **6** Interactive Documentation Pages
+- **7** Active Tools
+- **7** API Endpoints
+- **7** Interactive Documentation Pages
 - **Clean Architecture** with public/api separation
 - **Dynamic URLs** for any server environment
 - **🐳 Docker Ready** with PHP-FPM 8.2 + Nginx 1.27
@@ -457,7 +484,19 @@ This project is open source and available under the [MIT License](LICENSE).
 
 ---
 
-## 🚀 Latest Updates (v2.0.0)
+## 🚀 Latest Updates (v2.3.x)
+
+### 📱 QR Code Generator (v2.3.0 + v2.3.1)
+- **6 Content Types**: Plain text, URL, vCard, Event, Wi-Fi, Phone — all powered by the [goQR.me](https://goqr.me/api/doc/create-qr-code/) API
+- **SVG Output**: New `file_type=svg` parameter returns scalable vector QR codes (ideal for print)
+- **Native Color Pickers**: Foreground / background controlled with `<input type="color">` paired with a hex text field
+- **Dynamic vCard Fields**: Add unlimited emails, phones, URLs, and structured addresses (street / city / region / postcode / country)
+- **Sticky Form**: All fields (including dynamic rows) repopulate after submission
+- **Documentation**: API specs page ([`public/api-specs/qr-code-generator.php`](public/api-specs/qr-code-generator.php)) links to goQR.me docs and includes 9 curl examples
+
+---
+
+## 🏗️ v2.0.0 — Major Architecture Restructuring
 
 ### 🏗️ Major Architecture Restructuring
 - **Clean Separation**: New `public/` and `api/` directory structure

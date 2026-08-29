@@ -2,16 +2,24 @@
 /**
  * QR Code Generator - Frontend
  * Web UI for generating QR codes with multiple content types
+ *
+ * Features:
+ *   - Multiple content types: text, URL, vCard, event, Wi-Fi, phone
+ *   - File type selector: PNG / SVG
+ *   - Foreground & background colour pickers
+ *   - Dynamic vCard fields (add unlimited emails / phones / URLs / addresses)
  */
 
 $error = '';
 $success = false;
 $qrCodeUrl = '';
-$payload = '';
+$qrMime    = 'image/png';
+$payload   = '';
 $selectedType = $_POST['type'] ?? 'text';
+$fileType     = $_POST['file_type'] ?? 'png';
 
 // ----------------------------------------------------------------
-// Pull form fields for all supported types
+// Pull simple form fields
 // ----------------------------------------------------------------
 $fields = [
     'text'         => $_POST['text']         ?? '',
@@ -46,12 +54,12 @@ $fields = [
 ];
 
 // QR appearance parameters
-$ecc    = $_POST['ecc']    ?? 'M';
-$size   = (int)($_POST['size'] ?? 300);
-$qzone  = (int)($_POST['qzone'] ?? 2);
-$margin = (int)($_POST['margin'] ?? 1);
-$color  = $_POST['color']  ?? '0-0-0';
-$bgcolor = $_POST['bgcolor'] ?? '255-255-255';
+$ecc     = $_POST['ecc']     ?? 'M';
+$size    = (int)($_POST['size']  ?? 300);
+$qzone   = (int)($_POST['qzone'] ?? 2);
+$margin  = (int)($_POST['margin'] ?? 1);
+$color   = $_POST['color']   ?? '000000';
+$bgcolor = $_POST['bgcolor'] ?? 'ffffff';
 
 // ----------------------------------------------------------------
 // Handle form submission
@@ -64,7 +72,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $postData = array_merge(
         ['type' => $selectedType, 'ecc' => $ecc, 'size' => $size, 'qzone' => $qzone,
-         'margin' => $margin, 'color' => $color, 'bgcolor' => $bgcolor],
+         'margin' => $margin, 'color' => $color, 'bgcolor' => $bgcolor,
+         'file_type' => $fileType],
         $fields
     );
 
@@ -87,12 +96,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($httpCode === 200 && $data && !empty($data['success'])) {
             $success   = true;
             $qrCodeUrl = $data['qr_url'];
+            $qrMime    = strtolower($data['file_type'] ?? 'png');
             $payload   = $data['payload'];
         } else {
             $error = $data['message'] ?? $data['error'] ?? 'Unknown error occurred';
         }
     }
 }
+
+// Pre-populate dynamic vCard rows from the previous submission so the
+// form is "sticky" (matches the behaviour of the simple fields).
+$dynEmails    = $_POST['emails']    ?? [];
+$dynPhones    = $_POST['phones']    ?? [];
+$dynUrls      = $_POST['urls']      ?? [];
+$dynAddresses = $_POST['addresses'] ?? [];
+
+if (!is_array($dynEmails))    { $dynEmails    = []; }
+if (!is_array($dynPhones))    { $dynPhones    = []; }
+if (!is_array($dynUrls))      { $dynUrls      = []; }
+if (!is_array($dynAddresses)) { $dynAddresses = []; }
+
+// On first load (GET), seed each list with a single empty row so the UI
+// shows them by default.
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    $dynEmails    = [[]];
+    $dynPhones    = [[]];
+    $dynUrls      = [[]];
+    $dynAddresses = [[]];
+}
+
+// Helpers to read a value from a posted dynamic row
+$dVal = function ($row, $key, $default = '') {
+    if (!is_array($row)) { return $default; }
+    return isset($row[$key]) ? (string)$row[$key] : $default;
+};
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -191,22 +228,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             font-size: 0.9em;
         }
 
-        .type-btn:hover {
-            transform: translateY(-2px);
-            background: #e8ecf5;
-        }
-
+        .type-btn:hover { transform: translateY(-2px); background: #e8ecf5; }
         .type-btn.active {
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
             box-shadow: 0 8px 20px rgba(102,126,234,0.35);
         }
-
-        .type-btn .ico {
-            font-size: 1.6em;
-            display: block;
-            margin-bottom: 6px;
-        }
+        .type-btn .ico { font-size: 1.6em; display: block; margin-bottom: 6px; }
 
         .field-group { display: none; animation: fadeIn 0.3s ease; }
         .field-group.active { display: block; }
@@ -220,6 +248,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 15px;
+        }
+        .row-3 {
+            display: grid;
+            grid-template-columns: 2fr 1fr auto;
+            gap: 10px;
+            align-items: end;
         }
 
         .form-group { margin-bottom: 18px; }
@@ -273,6 +307,92 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         .checkbox-row input { width: auto; }
 
+        /* ============== Dynamic vCard rows ============== */
+        .dyn-list {
+            margin-bottom: 10px;
+        }
+        .dyn-row {
+            background: #f8f9fc;
+            border: 1px solid #e3e7ee;
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 10px;
+            position: relative;
+            animation: fadeIn 0.25s ease;
+        }
+        .dyn-row .row { gap: 10px; margin-bottom: 0; }
+
+        .add-row {
+            background: #f0f3f9;
+            border: 2px dashed #b6c2d6;
+            color: #4a5568;
+            padding: 10px 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 6px;
+            width: 100%;
+            transition: all 0.2s;
+        }
+        .add-row:hover {
+            background: #e3e9f3;
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        .remove-row {
+            background: #fff;
+            border: 1px solid #f1c4c4;
+            color: #c0392b;
+            border-radius: 8px;
+            width: 38px;
+            height: 38px;
+            cursor: pointer;
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        .remove-row:hover {
+            background: #fde8e8;
+            border-color: #c0392b;
+        }
+
+        .dyn-row.address .row { grid-template-columns: 2fr 1fr 1fr; gap: 10px; }
+        .dyn-row.address .row + .row { grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+
+        /* ============== Color picker ============== */
+        .color-picker-row {
+            display: grid;
+            grid-template-columns: 60px 1fr;
+            gap: 10px;
+            align-items: center;
+        }
+        .color-picker-row input[type="color"] {
+            width: 60px;
+            height: 42px;
+            padding: 2px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            cursor: pointer;
+            background: white;
+        }
+        .color-picker-row input[type="text"] {
+            font-family: 'Courier New', monospace;
+            text-transform: uppercase;
+        }
+        .swatch {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border-radius: 4px;
+            vertical-align: middle;
+            margin-right: 6px;
+            border: 1px solid #ccc;
+        }
+
+        /* ============== Advanced ============== */
         .advanced-toggle {
             background: #f8f9fa;
             border: none;
@@ -285,7 +405,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             width: 100%;
             text-align: left;
         }
-
         .advanced-toggle:hover { background: #e9ecef; }
 
         .advanced { display: none; }
@@ -304,7 +423,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             margin-top: 15px;
             transition: transform 0.2s, box-shadow 0.2s;
         }
-
         .generate-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 25px rgba(102,126,234,0.4);
@@ -320,7 +438,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             border: 2px dashed #d0d7e3;
         }
 
-        .qr-display img {
+        .qr-display img, .qr-display svg {
             max-width: 100%;
             height: auto;
             border-radius: 8px;
@@ -334,11 +452,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             color: #999;
             font-size: 0.95em;
         }
-
-        .qr-placeholder .ico {
-            font-size: 3em;
-            margin-bottom: 10px;
-        }
+        .qr-placeholder .ico { font-size: 3em; margin-bottom: 10px; }
 
         .download-btn {
             display: inline-block;
@@ -351,7 +465,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             font-weight: 600;
             transition: background 0.2s;
         }
-
         .download-btn:hover { background: #1e7e34; }
 
         .payload-info {
@@ -401,22 +514,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             color: #666;
             flex-wrap: wrap;
         }
-
-        .breadcrumb a {
-            color: #667eea;
-            text-decoration: none;
-            font-weight: 600;
-        }
-
+        .breadcrumb a { color: #667eea; text-decoration: none; font-weight: 600; }
         .breadcrumb a:hover { text-decoration: underline; }
-
-        .breadcrumb .right {
-            margin-left: auto;
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
+        .breadcrumb .right { margin-left: auto; display: flex; gap: 10px; flex-wrap: wrap; }
         .breadcrumb .pill {
             padding: 6px 12px;
             background: white;
@@ -430,7 +530,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         @media (max-width: 900px) {
             .container { grid-template-columns: 1fr; }
             .preview-section { position: static; }
-            .row { grid-template-columns: 1fr; }
+            .row, .row-3 { grid-template-columns: 1fr; }
+            .dyn-row.address .row,
+            .dyn-row.address .row + .row { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -455,7 +557,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="badge-row">
                 <span class="badge">⚡ Powered by goQR.me</span>
                 <span class="badge">🎨 Customisable</span>
-                <span class="badge">📥 Instant Download</span>
+                <span class="badge">📥 PNG &amp; SVG</span>
                 <span class="badge">📱 Mobile Ready</span>
             </div>
         </div>
@@ -536,81 +638,141 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </div>
                     </div>
 
-                    <div class="section-title">Contact</div>
-                    <div class="row">
-                        <div class="form-group">
-                            <label for="work_email">Work Email</label>
-                            <input type="email" id="work_email" name="work_email"
-                                   value="<?= htmlspecialchars($fields['work_email']) ?>">
-                        </div>
-                        <div class="form-group">
-                            <label for="home_email">Personal Email</label>
-                            <input type="email" id="home_email" name="home_email"
-                                   value="<?= htmlspecialchars($fields['home_email']) ?>">
-                        </div>
+                    <div class="section-title">📧 Email Addresses</div>
+                    <div class="dyn-list" data-list="emails">
+                        <?php foreach ($dynEmails as $i => $row): ?>
+                            <div class="dyn-row email" data-row>
+                                <div class="row-3">
+                                    <div class="form-group" style="margin: 0;">
+                                        <input type="email" name="emails[<?= $i ?>][value]"
+                                               placeholder="name@example.com"
+                                               value="<?= htmlspecialchars($dVal($row, 'value')) ?>">
+                                    </div>
+                                    <div class="form-group" style="margin: 0;">
+                                        <select name="emails[<?= $i ?>][type]">
+                                            <?php
+                                            $emailTypes = ['WORK', 'HOME', 'INTERNET'];
+                                            $cur = $dVal($row, 'type', 'WORK');
+                                            foreach ($emailTypes as $t): ?>
+                                                <option value="<?= $t ?>" <?= $cur === $t ? 'selected' : '' ?>><?= $t ?></option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                    </div>
+                                    <button type="button" class="remove-row" data-remove title="Remove email">✕</button>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
                     </div>
-                    <div class="row">
-                        <div class="form-group">
-                            <label for="work_phone">Work Phone</label>
-                            <input type="tel" id="work_phone" name="work_phone"
-                                   value="<?= htmlspecialchars($fields['work_phone']) ?>">
-                        </div>
-                        <div class="form-group">
-                            <label for="home_phone">Home Phone</label>
-                            <input type="tel" id="home_phone" name="home_phone"
-                                   value="<?= htmlspecialchars($fields['home_phone']) ?>">
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="form-group">
-                            <label for="mobile">Mobile</label>
-                            <input type="tel" id="mobile" name="mobile"
-                                   value="<?= htmlspecialchars($fields['mobile']) ?>">
-                        </div>
-                        <div class="form-group">
-                            <label for="fax">Fax</label>
-                            <input type="tel" id="fax" name="fax"
-                                   value="<?= htmlspecialchars($fields['fax']) ?>">
-                        </div>
-                    </div>
+                    <button type="button" class="add-row" data-add="emails">+ Add another email</button>
 
-                    <div class="section-title">Online</div>
-                    <div class="form-group">
-                        <label for="website">Website</label>
-                        <input type="url" id="website" name="website" placeholder="https://example.com"
-                               value="<?= htmlspecialchars($fields['website']) ?>">
+                    <div class="section-title">📞 Phone Numbers</div>
+                    <div class="dyn-list" data-list="phones">
+                        <?php foreach ($dynPhones as $i => $row): ?>
+                            <div class="dyn-row phone" data-row>
+                                <div class="row-3">
+                                    <div class="form-group" style="margin: 0;">
+                                        <input type="tel" name="phones[<?= $i ?>][value]"
+                                               placeholder="+66 81 234 5678"
+                                               value="<?= htmlspecialchars($dVal($row, 'value')) ?>">
+                                    </div>
+                                    <div class="form-group" style="margin: 0;">
+                                        <select name="phones[<?= $i ?>][type]">
+                                            <?php
+                                            $phoneTypes = ['CELL,VOICE' => 'Mobile', 'WORK,VOICE' => 'Work', 'HOME,VOICE' => 'Home', 'FAX' => 'Fax', 'VOICE' => 'Voice'];
+                                            $cur = $dVal($row, 'type', 'CELL,VOICE');
+                                            foreach ($phoneTypes as $val => $label): ?>
+                                                <option value="<?= $val ?>" <?= $cur === $val ? 'selected' : '' ?>><?= $label ?></option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                    </div>
+                                    <button type="button" class="remove-row" data-remove title="Remove phone">✕</button>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
                     </div>
+                    <button type="button" class="add-row" data-add="phones">+ Add another phone</button>
 
-                    <div class="section-title">Address</div>
-                    <div class="form-group">
-                        <label for="address">Street Address</label>
-                        <input type="text" id="address" name="address"
-                               value="<?= htmlspecialchars($fields['address']) ?>">
+                    <div class="section-title">🔗 Websites / URLs</div>
+                    <div class="dyn-list" data-list="urls">
+                        <?php foreach ($dynUrls as $i => $row): ?>
+                            <div class="dyn-row url" data-row>
+                                <div class="row-3">
+                                    <div class="form-group" style="margin: 0;">
+                                        <input type="url" name="urls[<?= $i ?>][value]"
+                                               placeholder="https://example.com"
+                                               value="<?= htmlspecialchars($dVal($row, 'value')) ?>">
+                                    </div>
+                                    <div class="form-group" style="margin: 0;">
+                                        <input type="text" name="urls[<?= $i ?>][label]"
+                                               placeholder="Label (optional)"
+                                               value="<?= htmlspecialchars($dVal($row, 'label')) ?>">
+                                    </div>
+                                    <button type="button" class="remove-row" data-remove title="Remove URL">✕</button>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
                     </div>
-                    <div class="row">
-                        <div class="form-group">
-                            <label for="city">City</label>
-                            <input type="text" id="city" name="city"
-                                   value="<?= htmlspecialchars($fields['city']) ?>">
-                        </div>
-                        <div class="form-group">
-                            <label for="region">Region / State</label>
-                            <input type="text" id="region" name="region"
-                                   value="<?= htmlspecialchars($fields['region']) ?>">
-                        </div>
+                    <button type="button" class="add-row" data-add="urls">+ Add another URL</button>
+
+                    <div class="section-title">🏠 Addresses</div>
+                    <div class="dyn-list" data-list="addresses">
+                        <?php foreach ($dynAddresses as $i => $row): ?>
+                            <div class="dyn-row address" data-row>
+                                <div class="row-3" style="margin-bottom: 10px;">
+                                    <div class="form-group" style="margin: 0;">
+                                        <label style="font-size:0.8em; color:#666;">Type</label>
+                                        <select name="addresses[<?= $i ?>][type]">
+                                            <?php
+                                            $addrTypes = ['WORK' => 'Work', 'HOME' => 'Home', 'OTHER' => 'Other'];
+                                            $cur = $dVal($row, 'type', 'WORK');
+                                            foreach ($addrTypes as $val => $label): ?>
+                                                <option value="<?= $val ?>" <?= $cur === $val ? 'selected' : '' ?>><?= $label ?></option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                    </div>
+                                    <div></div>
+                                    <button type="button" class="remove-row" data-remove title="Remove address">✕</button>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group" style="margin: 0;">
+                                        <label style="font-size:0.8em; color:#666;">Street</label>
+                                        <input type="text" name="addresses[<?= $i ?>][street]"
+                                               value="<?= htmlspecialchars($dVal($row, 'street')) ?>">
+                                    </div>
+                                    <div class="form-group" style="margin: 0;">
+                                        <label style="font-size:0.8em; color:#666;">PO Box</label>
+                                        <input type="text" name="addresses[<?= $i ?>][po_box]"
+                                               value="<?= htmlspecialchars($dVal($row, 'po_box')) ?>">
+                                    </div>
+                                </div>
+                                <div class="row" style="margin-top: 8px;">
+                                    <div class="form-group" style="margin: 0;">
+                                        <label style="font-size:0.8em; color:#666;">City</label>
+                                        <input type="text" name="addresses[<?= $i ?>][city]"
+                                               value="<?= htmlspecialchars($dVal($row, 'city')) ?>">
+                                    </div>
+                                    <div class="form-group" style="margin: 0;">
+                                        <label style="font-size:0.8em; color:#666;">Region / State</label>
+                                        <input type="text" name="addresses[<?= $i ?>][region]"
+                                               value="<?= htmlspecialchars($dVal($row, 'region')) ?>">
+                                    </div>
+                                </div>
+                                <div class="row" style="margin-top: 8px;">
+                                    <div class="form-group" style="margin: 0;">
+                                        <label style="font-size:0.8em; color:#666;">Postcode</label>
+                                        <input type="text" name="addresses[<?= $i ?>][postcode]"
+                                               value="<?= htmlspecialchars($dVal($row, 'postcode')) ?>">
+                                    </div>
+                                    <div class="form-group" style="margin: 0;">
+                                        <label style="font-size:0.8em; color:#666;">Country</label>
+                                        <input type="text" name="addresses[<?= $i ?>][country]"
+                                               value="<?= htmlspecialchars($dVal($row, 'country')) ?>">
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
                     </div>
-                    <div class="row">
-                        <div class="form-group">
-                            <label for="postcode">Postcode</label>
-                            <input type="text" id="postcode" name="postcode"
-                                   value="<?= htmlspecialchars($fields['postcode']) ?>">
-                        </div>
-                        <div class="form-group">
-                            <label for="country">Country</label>
-                            <input type="text" id="country" name="country"
-                                   value="<?= htmlspecialchars($fields['country']) ?>">
-                        </div>
-                    </div>
+                    <button type="button" class="add-row" data-add="addresses">+ Add another address</button>
 
                     <div class="section-title">Notes</div>
                     <div class="form-group">
@@ -682,15 +844,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <!-- ============= APPEARANCE ============= -->
                 <button type="button" class="advanced-toggle" id="advancedToggle">
-                    ⚙️ Appearance &amp; Dimension Settings
+                    ⚙️ Appearance &amp; File Settings
                 </button>
                 <div class="advanced" id="advancedPanel">
+
                     <div class="row">
+                        <div class="form-group">
+                            <label for="file_type">File Type</label>
+                            <select id="file_type" name="file_type">
+                                <option value="png"  <?= $fileType === 'png'  ? 'selected' : '' ?>>PNG — raster image</option>
+                                <option value="svg"  <?= $fileType === 'svg'  ? 'selected' : '' ?>>SVG — scalable vector (ideal for print)</option>
+                            </select>
+                        </div>
                         <div class="form-group">
                             <label for="size">Size (px)</label>
                             <input type="number" id="size" name="size" min="50" max="1000" step="10"
                                    value="<?= htmlspecialchars((string)$size) ?>">
                         </div>
+                    </div>
+
+                    <div class="row">
                         <div class="form-group">
                             <label for="ecc">Error Correction</label>
                             <select id="ecc" name="ecc">
@@ -700,29 +873,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <option value="H" <?= $ecc === 'H' ? 'selected' : '' ?>>H — High (~30%)</option>
                             </select>
                         </div>
-                    </div>
-                    <div class="row">
                         <div class="form-group">
                             <label for="margin">Margin (px)</label>
                             <input type="number" id="margin" name="margin" min="0" max="50"
                                    value="<?= htmlspecialchars((string)$margin) ?>">
                         </div>
+                    </div>
+
+                    <div class="row">
                         <div class="form-group">
                             <label for="qzone">Quiet Zone (modules)</label>
                             <input type="number" id="qzone" name="qzone" min="0" max="100"
                                    value="<?= htmlspecialchars((string)$qzone) ?>">
                         </div>
+                        <div class="form-group"></div>
                     </div>
+
                     <div class="row">
                         <div class="form-group">
-                            <label for="color">Foreground (data)</label>
-                            <input type="text" id="color" name="color" placeholder="0-0-0 or 000000"
-                                   value="<?= htmlspecialchars($color) ?>">
+                            <label>
+                                <span class="swatch" id="color_swatch" style="background:#000000;"></span>
+                                Foreground (data modules)
+                            </label>
+                            <div class="color-picker-row">
+                                <input type="color" id="color_picker" value="#<?= htmlspecialchars($color) ?>">
+                                <input type="text" id="color" name="color" maxlength="6" placeholder="000000"
+                                       value="<?= htmlspecialchars($color) ?>">
+                            </div>
                         </div>
                         <div class="form-group">
-                            <label for="bgcolor">Background</label>
-                            <input type="text" id="bgcolor" name="bgcolor" placeholder="255-255-255 or ffffff"
-                                   value="<?= htmlspecialchars($bgcolor) ?>">
+                            <label>
+                                <span class="swatch" id="bgcolor_swatch" style="background:#ffffff;"></span>
+                                Background
+                            </label>
+                            <div class="color-picker-row">
+                                <input type="color" id="bgcolor_picker" value="#<?= htmlspecialchars($bgcolor) ?>">
+                                <input type="text" id="bgcolor" name="bgcolor" maxlength="6" placeholder="FFFFFF"
+                                       value="<?= htmlspecialchars($bgcolor) ?>">
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -739,9 +927,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="preview-section">
             <div class="qr-display">
                 <?php if ($qrCodeUrl): ?>
-                    <img src="<?= htmlspecialchars($qrCodeUrl) ?>" alt="Generated QR Code">
+                    <?php if ($qrMime === 'svg'): ?>
+                        <img src="<?= htmlspecialchars($qrCodeUrl) ?>" alt="Generated QR Code" style="image-rendering: auto;">
+                    <?php else: ?>
+                        <img src="<?= htmlspecialchars($qrCodeUrl) ?>" alt="Generated QR Code">
+                    <?php endif; ?>
                     <div>
-                        <a href="<?= htmlspecialchars($qrCodeUrl) ?>" download="qr-code.png" class="download-btn">⬇️ Download PNG</a>
+                        <a href="<?= htmlspecialchars($qrCodeUrl) ?>"
+                           download="qr-code.<?= htmlspecialchars($qrMime ?: 'png') ?>"
+                           class="download-btn">⬇️ Download <?= strtoupper(htmlspecialchars($qrMime ?: 'png')) ?></a>
                     </div>
                 <?php else: ?>
                     <div class="qr-placeholder">
@@ -762,7 +956,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 
     <script>
+    (function() {
+        // ----------------------------------------------------------------
         // Type selector
+        // ----------------------------------------------------------------
         const typeButtons = document.querySelectorAll('.type-btn');
         const typeInput   = document.getElementById('typeInput');
         const groups      = document.querySelectorAll('.field-group');
@@ -777,16 +974,176 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             });
         });
 
+        // ----------------------------------------------------------------
         // Advanced toggle
+        // ----------------------------------------------------------------
         const advToggle = document.getElementById('advancedToggle');
         const advPanel  = document.getElementById('advancedPanel');
-        advToggle.addEventListener('click', () => {
-            advPanel.classList.toggle('open');
-        });
-        // Open advanced panel if user submitted with non-default values
+        advToggle.addEventListener('click', () => advPanel.classList.toggle('open'));
         <?php if ($_SERVER['REQUEST_METHOD'] === 'POST'): ?>
         advPanel.classList.add('open');
         <?php endif; ?>
+
+        // ----------------------------------------------------------------
+        // Color picker ↔ hex text sync
+        // ----------------------------------------------------------------
+        const syncColor = (picker, text, swatch) => {
+            const isHex = s => /^#?[0-9a-fA-F]{6}$/.test(s);
+            const strip = s => s.replace(/^#/, '');
+
+            picker.addEventListener('input', () => {
+                text.value = strip(picker.value).toUpperCase();
+                if (swatch) { swatch.style.background = picker.value; }
+            });
+            text.addEventListener('input', () => {
+                const v = strip(text.value);
+                if (isHex('#' + v)) {
+                    picker.value = '#' + v;
+                    if (swatch) { swatch.style.background = '#' + v; }
+                }
+            });
+        };
+        syncColor(
+            document.getElementById('color_picker'),
+            document.getElementById('color'),
+            document.getElementById('color_swatch')
+        );
+        syncColor(
+            document.getElementById('bgcolor_picker'),
+            document.getElementById('bgcolor'),
+            document.getElementById('bgcolor_swatch')
+        );
+
+        // ----------------------------------------------------------------
+        // Dynamic vCard rows
+        // ----------------------------------------------------------------
+        const TEMPLATES = {
+            emails: (i) => `
+                <div class="dyn-row email" data-row>
+                    <div class="row-3">
+                        <div class="form-group" style="margin: 0;">
+                            <input type="email" name="emails[${i}][value]" placeholder="name@example.com">
+                        </div>
+                        <div class="form-group" style="margin: 0;">
+                            <select name="emails[${i}][type]">
+                                <option value="WORK">WORK</option>
+                                <option value="HOME">HOME</option>
+                                <option value="INTERNET">INTERNET</option>
+                            </select>
+                        </div>
+                        <button type="button" class="remove-row" data-remove title="Remove email">✕</button>
+                    </div>
+                </div>`,
+            phones: (i) => `
+                <div class="dyn-row phone" data-row>
+                    <div class="row-3">
+                        <div class="form-group" style="margin: 0;">
+                            <input type="tel" name="phones[${i}][value]" placeholder="+66 81 234 5678">
+                        </div>
+                        <div class="form-group" style="margin: 0;">
+                            <select name="phones[${i}][type]">
+                                <option value="CELL,VOICE">Mobile</option>
+                                <option value="WORK,VOICE">Work</option>
+                                <option value="HOME,VOICE">Home</option>
+                                <option value="FAX">Fax</option>
+                                <option value="VOICE">Voice</option>
+                            </select>
+                        </div>
+                        <button type="button" class="remove-row" data-remove title="Remove phone">✕</button>
+                    </div>
+                </div>`,
+            urls: (i) => `
+                <div class="dyn-row url" data-row>
+                    <div class="row-3">
+                        <div class="form-group" style="margin: 0;">
+                            <input type="url" name="urls[${i}][value]" placeholder="https://example.com">
+                        </div>
+                        <div class="form-group" style="margin: 0;">
+                            <input type="text" name="urls[${i}][label]" placeholder="Label (optional)">
+                        </div>
+                        <button type="button" class="remove-row" data-remove title="Remove URL">✕</button>
+                    </div>
+                </div>`,
+            addresses: (i) => `
+                <div class="dyn-row address" data-row>
+                    <div class="row-3" style="margin-bottom: 10px;">
+                        <div class="form-group" style="margin: 0;">
+                            <label style="font-size:0.8em; color:#666;">Type</label>
+                            <select name="addresses[${i}][type]">
+                                <option value="WORK">Work</option>
+                                <option value="HOME">Home</option>
+                                <option value="OTHER">Other</option>
+                            </select>
+                        </div>
+                        <div></div>
+                        <button type="button" class="remove-row" data-remove title="Remove address">✕</button>
+                    </div>
+                    <div class="row">
+                        <div class="form-group" style="margin: 0;">
+                            <label style="font-size:0.8em; color:#666;">Street</label>
+                            <input type="text" name="addresses[${i}][street]">
+                        </div>
+                        <div class="form-group" style="margin: 0;">
+                            <label style="font-size:0.8em; color:#666;">PO Box</label>
+                            <input type="text" name="addresses[${i}][po_box]">
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top: 8px;">
+                        <div class="form-group" style="margin: 0;">
+                            <label style="font-size:0.8em; color:#666;">City</label>
+                            <input type="text" name="addresses[${i}][city]">
+                        </div>
+                        <div class="form-group" style="margin: 0;">
+                            <label style="font-size:0.8em; color:#666;">Region / State</label>
+                            <input type="text" name="addresses[${i}][region]">
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top: 8px;">
+                        <div class="form-group" style="margin: 0;">
+                            <label style="font-size:0.8em; color:#666;">Postcode</label>
+                            <input type="text" name="addresses[${i}][postcode]">
+                        </div>
+                        <div class="form-group" style="margin: 0;">
+                            <label style="font-size:0.8em; color:#666;">Country</label>
+                            <input type="text" name="addresses[${i}][country]">
+                        </div>
+                    </div>
+                </div>`,
+        };
+
+        const reindex = (list) => {
+            const kind = list.dataset.list;
+            const rows = list.querySelectorAll('[data-row]');
+            rows.forEach((row, i) => {
+                row.querySelectorAll('[name]').forEach(el => {
+                    el.name = el.name.replace(/(\w+)\[\d+\]/, '$1[' + i + ']');
+                });
+            });
+        };
+
+        document.querySelectorAll('[data-add]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const kind = btn.dataset.add;
+                const list = document.querySelector('[data-list="' + kind + '"]');
+                if (!list || !TEMPLATES[kind]) { return; }
+                const i = list.querySelectorAll('[data-row]').length;
+                list.insertAdjacentHTML('beforeend', TEMPLATES[kind](i));
+                bindRemoveHandlers();
+            });
+        });
+
+        const bindRemoveHandlers = () => {
+            document.querySelectorAll('[data-remove]').forEach(btn => {
+                btn.onclick = () => {
+                    const row = btn.closest('[data-row]');
+                    const list = row.parentElement;
+                    row.remove();
+                    reindex(list);
+                };
+            });
+        };
+        bindRemoveHandlers();
+    })();
     </script>
 </body>
 </html>
