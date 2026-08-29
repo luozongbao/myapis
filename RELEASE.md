@@ -1,9 +1,65 @@
 # 📋 MyAPIs Release Notes
 
-## Current Release: Version 2.1.2
+## Current Release: Version 2.2.0
 
-**Release Date**: September 11, 2025  
+**Release Date**: August 29, 2026  
 **Status**: Stable Release  
+
+---
+
+## 🐳 Version 2.2.0 - Docker Deployment & Operational Tooling
+*Released: August 29, 2026*
+
+### 🌟 Major New Features
+
+#### 🐳 One-Command Docker Deployment
+- **`docker-compose.yml`**: Production-ready stack orchestrating PHP-FPM 8.2 and Nginx 1.27 (both Alpine-based for minimal footprint)
+- **`Dockerfile`**: Builds a custom PHP-FPM image with all required extensions pre-installed (`gd`, `intl`, `mbstring`, `opcache`, `bcmath`)
+- **`example.env`**: Centralised configuration for ports, PHP limits, timezone, and environment
+- **`.dockerignore`**: Keeps build context lean and reproducible
+
+#### ⚙️ Configurable via Environment Variables
+- `WEB_PORT` – host port mapped to Nginx (default `8080`)
+- `PROJECT_NAME` – prefix for container names / networks
+- `TZ` / `PHP_DATE_TIMEZONE` – consistent timezone inside PHP and the container
+- `PHP_MEMORY_LIMIT`, `PHP_UPLOAD_MAX_FILESIZE`, `PHP_POST_MAX_SIZE` – PHP runtime limits
+- `NGINX_CLIENT_MAX_BODY_SIZE` – request size limit
+- `APP_ENV` – `development` shows errors, `production` hides them
+
+#### 🛡️ Hardened Nginx vhost
+- Dedicated location block routes `/api/<tool>/` to `api/<tool>/index.php` through PHP-FPM
+- Sensitive files (`.env`, `README.md`, `RELEASE.md`, `composer.*`, hidden files) are denied
+- Static asset caching for images / CSS / JS
+- Standard security headers (`X-Frame-Options`, `X-XSS-Protection`, `X-Content-Type-Options`, `Referrer-Policy`)
+- `server_tokens off` to hide Nginx version
+
+#### 🩺 Production Touches
+- PHP-FPM healthcheck via the `php-fpm-healthcheck` helper script
+- `depends_on: { php: { condition: service_healthy } }` ensures Nginx waits for PHP
+- Bind-mounted source code (read-only for Nginx) for easy development iteration
+
+### 📁 New / Updated Files
+- `docker-compose.yml` – stack definition
+- `Dockerfile` – PHP-FPM image recipe
+- `docker/nginx/default.conf` – Nginx vhost (public + api routing)
+- `docker/php/php.ini` – PHP runtime overrides
+- `docker/php/opcache.ini` – Opcache tuning
+- `example.env` – sample environment variables
+- `.dockerignore` – Docker build context exclusions
+- `README.md` – new "Docker Deployment" section and updated structure
+
+### 🚀 Quick start
+```bash
+cp example.env .env
+docker compose up -d --build
+open http://localhost:${WEB_PORT:-8080}
+```
+
+### ✅ Verification
+- `docker compose config` validates without errors
+- Nginx vhost reviewed for correct `alias` / `fastcgi_pass` / `try_files` semantics
+- PHP-FPM healthcheck wired so Nginx only starts once PHP is ready
+- All existing tool URLs continue to work without code changes
 
 ---
 

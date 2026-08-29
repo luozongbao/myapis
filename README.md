@@ -44,6 +44,7 @@ A comprehensive collection of developer tools and APIs designed to streamline yo
 - PHP 7.0 or higher
 - Web server (Apache, Nginx, or built-in PHP server)
 - Optional: GD extension for QR code generation
+- **Docker** & **Docker Compose** (recommended, easiest setup)
 
 ### Installation
 
@@ -54,16 +55,34 @@ A comprehensive collection of developer tools and APIs designed to streamline yo
    ```
 
 2. **Set up web server**
-   
-   **Option A: Using PHP built-in server (Development)**
+
+   **Option A: Docker (Recommended) 🐳**
+   ```bash
+   # Copy the example env file and adjust as needed
+   cp example.env .env
+
+   # Build and start the stack
+   docker compose up -d --build
+
+   # Open http://localhost:8080
+   ```
+   The stack ships with PHP-FPM 8.2 and Nginx 1.27. All required
+   PHP extensions (gd, intl, mbstring, opcache, bcmath) are installed
+   automatically. The application becomes available on the port
+   defined by `WEB_PORT` in `.env` (default `8080`).
+
+   **Option B: Using PHP built-in server (Development)**
    ```bash
    php -S localhost:8000
    ```
-   
-   **Option B: Apache/Nginx**
+   Then open `http://localhost:8000/public/`.
+
+   **Option C: Apache/Nginx (Production)**
    - Copy files to your web server's document root
    - Ensure PHP is configured and enabled
    - Set appropriate file permissions
+   - See `docs/nginx-conf/` for ready-to-use Nginx vhost samples
+   - The provided `.htaccess` already rewrites requests into `/public/`
 
 
   **Apache .htaccess settings**
@@ -198,7 +217,8 @@ A comprehensive collection of developer tools and APIs designed to streamline yo
   ```
 
 3. **Access the application**
-   - Open your browser and navigate to `http://localhost:8000/public/` (or your server URL + `/public/`)
+   - Docker: `http://localhost:${WEB_PORT}/` (e.g. `http://localhost:8080/`)
+   - Built-in / Apache / Nginx: `http://localhost:8000/public/`
    - Explore the tools and their APIs
 
 ## 📖 API Documentation
@@ -240,22 +260,26 @@ Each tool has its own API endpoint and documentation:
 
 ### Health Calculator
 ```bash
-curl -X POST "http://localhost:8000/api/health-calculator/" \
+curl -X POST "http://localhost:8080/api/health-calculator/" \
   -H "Content-Type: application/json" \
   -d '{"weight": 70, "height": 175, "unit": "metric", "type": "bmi"}'
 ```
 
 ### Password Generator
 ```bash
-curl -X POST "http://localhost:8000/api/password-generator/" \
+curl -X POST "http://localhost:8080/api/password-generator/" \
   -H "Content-Type: application/json" \
   -d '{"length": 16, "uppercase": true, "lowercase": true, "numbers": true, "symbols": true}'
 ```
 
 ### Fortune Teller
 ```bash
-curl "http://localhost:8000/api/fortune-teller/?lang=en"
+curl "http://localhost:8080/api/fortune-teller/?lang=en"
 ```
+
+> 💡 If you are using the built-in PHP server (`php -S`), replace
+> `http://localhost:8080` with `http://localhost:8000` and add the
+> `/public/` prefix as described in the Quick Start section.
 
 ## 📁 Project Structure
 
@@ -290,9 +314,85 @@ myapis/
 │   │   └── predictions/     # Fortune data files
 │   └── randomizer/          # Random Generator API
 │       └── index.php
+├── docker/                  # Docker configuration files
+│   ├── nginx/default.conf   # Nginx vhost (public + api routing)
+│   └── php/
+│       ├── php.ini          # PHP runtime overrides
+│       └── opcache.ini      # Opcache tuning
+├── docker-compose.yml       # PHP-FPM + Nginx stack definition
+├── Dockerfile               # PHP-FPM image with required extensions
+├── example.env              # Sample environment variables
+├── .dockerignore            # Files excluded from the image
+├── .htaccess                # Apache rewrite rules (root → public)
 ├── README.md                # This file
 └── RELEASE.md               # Release notes
 ```
+
+## 🐳 Docker Deployment
+
+The project ships with a complete, production-ready Docker stack
+(PHP-FPM 8.2 + Nginx 1.27 on Alpine).
+
+### Quick commands
+
+```bash
+# 1. Copy and (optionally) edit environment variables
+cp example.env .env
+
+# 2. Build images and start the stack in the background
+docker compose up -d --build
+
+# 3. Follow the logs
+docker compose logs -f
+
+# 4. Stop the stack
+docker compose down
+```
+
+After `docker compose up -d` finishes, the app is available at
+`http://localhost:${WEB_PORT:-8080}/`.
+
+### Environment variables
+
+All variables are read from `.env` (see [example.env](example.env)):
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `PROJECT_NAME` | `myapis` | Prefix used for container names and networks |
+| `TZ` | `UTC` | Container / PHP timezone |
+| `WEB_PORT` | `8080` | Host port mapped to Nginx (port 80) |
+| `PHP_MEMORY_LIMIT` | `256M` | PHP `memory_limit` |
+| `PHP_UPLOAD_MAX_FILESIZE` | `10M` | PHP `upload_max_filesize` |
+| `PHP_POST_MAX_SIZE` | `10M` | PHP `post_max_size` |
+| `PHP_DATE_TIMEZONE` | `UTC` | PHP `date.timezone` |
+| `NGINX_CLIENT_MAX_BODY_SIZE` | `10M` | Nginx `client_max_body_size` |
+| `APP_ENV` | `development` | `development` shows errors, `production` hides them |
+
+### Common tasks
+
+```bash
+# Rebuild only the PHP image after changing the Dockerfile
+docker compose build php
+
+# Open a shell inside the PHP container
+docker compose exec php sh
+
+# Tail Nginx access / error logs
+docker compose logs -f nginx
+```
+
+### URL routing in Docker
+
+The bundled Nginx vhost serves everything from `public/` and proxies
+API requests to PHP-FPM:
+
+- `http://localhost:8080/` → `public/index.php`
+- `http://localhost:8080/health-calculator.php` → tool page
+- `http://localhost:8080/api/health-calculator/` → `api/health-calculator/index.php`
+- `http://localhost:8080/api/fortune-teller/?lang=en` → fortune API
+
+> 🛡️ Requests for hidden files, `.env`, `README.md`, etc. are
+> explicitly denied by the Nginx configuration.
 
 ## 🔧 Development
 
@@ -321,6 +421,7 @@ myapis/
 - **6** Interactive Documentation Pages
 - **Clean Architecture** with public/api separation
 - **Dynamic URLs** for any server environment
+- **🐳 Docker Ready** with PHP-FPM 8.2 + Nginx 1.27
 - **100%** Uptime Target
 - **PHP** Technology Stack
 

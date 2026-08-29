@@ -1,0 +1,86 @@
+# =============================================================
+# MyAPIs - .gitignore
+# =============================================================
+
+# -----------------------------------------
+# Environment / secrets
+# -----------------------------------------
+.env
+.env.*
+!.env.example
+example.env
+
+# -----------------------------------------
+# Logs
+# -----------------------------------------
+*.log
+logs/
+*.pid
+
+# -----------------------------------------
+# PHP
+# -----------------------------------------
+vendor/
+composer.phar
+.phpunit.result.cache
+.phpunit.cache/
+
+# -----------------------------------------
+# Docker
+# -----------------------------------------
+# Generated ini from the entrypoint template (never commit the
+# rendered output - it is generated at container start-up).
+docker/php/zz-app.ini
+
+# -----------------------------------------
+# IDE / Editor
+# -----------------------------------------
+.vscode/
+!.vscode/settings.json.example
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# -----------------------------------------
+# OS files
+# -----------------------------------------
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Desktop.ini
+
+# -----------------------------------------
+# Temporary / cache
+# -----------------------------------------
+*.tmp
+*.bak
+*.swp
+.cache/
+tmp/
+temp/
+
+# -----------------------------------------
+# Build artifacts
+# -----------------------------------------
+build/
+dist/
+out/
+*.tar.gz
+*.zip
+
+# -----------------------------------------
+# Node (in case frontend tooling is added later)
+# -----------------------------------------
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
