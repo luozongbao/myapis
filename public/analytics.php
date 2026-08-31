@@ -1,21 +1,31 @@
 <?php
 /**
  * =============================================================
- * MyAPIs - Analytics partial (auto-prepended to every response)
+ * MyAPIs - Analytics partial (SHARED-HOSTING EDITION)
  * -------------------------------------------------------------
- * Reads Umami / Google Analytics configuration from environment
- * variables and emits the appropriate tracking snippets.
+ * Lives at public/analytics.php and is included directly from
+ * every page in public/ and public/api-specs/ with:
  *
- * Variables:
- *   ANALYTICS_PROVIDER   "umami" | "ga4" | "none"  (default: none)
- *   UMAMI_SCRIPT_URL     Full script URL, e.g.
- *                        https://umami.example.com/script.js
- *   UMAMI_WEBSITE_ID     Umami website UUID
- *   GA4_MEASUREMENT_ID   GA4 measurement ID, e.g. G-XXXXXXXXXX
+ *     <?php require __DIR__ . '/analytics.php'; ?>
  *
- * When ANALYTICS_PROVIDER is unset or "none", nothing is emitted.
- * The script is skipped for CLI invocations and API JSON responses
- * (anything whose Accept header asks for JSON).
+ * Reads Umami / Google Analytics configuration from either
+ * environment variables (Docker / VPS) or a sibling
+ * public/config.php (shared hosting via putenv()).
+ *
+ * Configuration (any of these works):
+ *
+ *   1) Environment variables
+ *      - ANALYTICS_PROVIDER    "umami" | "ga4" | "none"  (none = default)
+ *      - UMAMI_SCRIPT_URL      e.g. https://cloud.umami.is/script.js
+ *      - UMAMI_WEBSITE_ID      Umami website UUID
+ *      - GA4_MEASUREMENT_ID    GA4 ID, e.g. G-XXXXXXXXXX
+ *
+ *   2) public/config.php (shared hosting — copy from
+ *      public/config.php.example and edit your values).
+ *
+ * When ANALYTICS_PROVIDER is unset / "none", nothing is emitted.
+ * The snippet is skipped for CLI invocations and API JSON
+ * responses so JSON output is never polluted.
  * =============================================================
  */
 
@@ -23,22 +33,26 @@ if (!defined('MYAPIS_ANALYTICS_INCLUDED')) {
     define('MYAPIS_ANALYTICS_INCLUDED', true);
 }
 
+// CLI invocations are never user-facing
 if (PHP_SAPI === 'cli') {
     return;
 }
 
 // ---------------------------------------------------------------
-// Shared-hosting fallback: if the env vars are not set, try
-// loading `public/config.php` (or a `config.php` placed next to
-// this file). The example file lives at
-// public/config.php.example - copy it to public/config.php and
-// edit your values there.
+// Shared-hosting fallback: load sibling config.php (which calls
+// putenv()) if env vars are not set. The example file lives at
+// public/config.php.example.
+//
+// Search order (first match wins):
+//   ./config.php                       (this directory)
+//   ../docker/php/../../public/config.php  (repo checkout)
 // ---------------------------------------------------------------
 if (!getenv('ANALYTICS_PROVIDER')) {
     $configCandidates = [
+        __DIR__ . '/config.php',
+        __DIR__ . '/../public/config.php',
         __DIR__ . '/../../public/config.php',
         __DIR__ . '/../config.php',
-        __DIR__ . '/config.php',
     ];
     foreach ($configCandidates as $cfg) {
         if (is_file($cfg)) {
@@ -48,15 +62,15 @@ if (!getenv('ANALYTICS_PROVIDER')) {
     }
 }
 
-$provider = strtolower(getenv('ANALYTICS_PROVIDER') ?: 'none');
+$provider = strtolower(trim((string) (getenv('ANALYTICS_PROVIDER') ?: 'none')));
 
-if ($provider === 'none' || $provider === '' || $provider === 'off' || $provider === 'false') {
+if ($provider === '' || $provider === 'none' || $provider === 'off' || $provider === 'false') {
     return;
 }
 
-// Skip API / JSON responses so we do not pollute JSON output
-$accept = $_SERVER['HTTP_ACCEPT'] ?? '';
-$uri    = $_SERVER['REQUEST_URI'] ?? '';
+// Skip API / JSON responses so we never corrupt JSON output
+$accept = $_SERVER['HTTP_ACCEPT']    ?? '';
+$uri    = $_SERVER['REQUEST_URI']   ?? '';
 if (strpos($uri, '/api/') === 0 || stripos($accept, 'application/json') !== false) {
     return;
 }
@@ -67,10 +81,10 @@ $html = '';
 // Umami - self-hosted, cookie-less, works in China
 // ---------------------------------------------------------------
 if ($provider === 'umami') {
-    $scriptUrl  = getenv('UMAMI_SCRIPT_URL');
-    $websiteId  = getenv('UMAMI_WEBSITE_ID');
+    $scriptUrl = trim((string) getenv('UMAMI_SCRIPT_URL'));
+    $websiteId = trim((string) getenv('UMAMI_WEBSITE_ID'));
 
-    if (!empty($scriptUrl) && !empty($websiteId)) {
+    if ($scriptUrl !== '' && $websiteId !== '') {
         $scriptUrl = htmlspecialchars($scriptUrl, ENT_QUOTES, 'UTF-8');
         $websiteId = htmlspecialchars($websiteId, ENT_QUOTES, 'UTF-8');
 
@@ -87,9 +101,9 @@ if ($provider === 'umami') {
 // Google Analytics 4 (gtag.js)
 // ---------------------------------------------------------------
 if ($provider === 'ga4' || $provider === 'google') {
-    $measurementId = getenv('GA4_MEASUREMENT_ID');
+    $measurementId = trim((string) getenv('GA4_MEASUREMENT_ID'));
 
-    if (!empty($measurementId)) {
+    if ($measurementId !== '') {
         $measurementId = htmlspecialchars($measurementId, ENT_QUOTES, 'UTF-8');
 
         $html .= "<!-- Google Analytics 4 -->\n";
@@ -110,6 +124,4 @@ if ($html === '') {
     return;
 }
 
-// Output directly to the buffer so we appear inside <head> when the
-// script is auto-prepended. Falls back to echoing for non-HTML routes.
 echo $html;

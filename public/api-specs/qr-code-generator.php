@@ -203,6 +203,7 @@ $baseUrl = getBaseUrl('qr-code-generator');
             .code-block { font-size: 0.8em; }
         }
     </style>
+<?php /** MyAPIs Analytics (Hostinger / shared-hosting friendly) */ if (file_exists(__DIR__ . "/analytics.php")) { require __DIR__ . "/analytics.php"; } ?>
 </head>
 <body>
     <div class="container">

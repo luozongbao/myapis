@@ -314,15 +314,15 @@ You can safely skip the `docs/` and `.dockerignore` files.
 
 ### Step 4 — (Optional) Configure analytics without `.env`
 
-Shared hosting can't read `.env`. The analytics partial
-(`docker/php/analytics.php`) tries `getenv()` first and falls back
-to `public/config.php` if it exists — so create
-`public/config.php` ahead of `analytics.php` to inject the values:
+Shared hosting can't read `.env` and doesn't run
+`auto_prepend_file`. Every page in `public/` and `public/api-specs/`
+already `require`s `public/analytics.php` for you, so all you need
+to do is **drop a `public/config.php`** that calls `putenv()`:
 
 ````php
 // filepath: public/config.php
-// Optional: shared-hosting-friendly analytics config.
-// analytics.php (auto-prepended) reads these via getenv() fallbacks.
+// public/analytics.php reads these via getenv() fallbacks.
+// Copy from public/config.php.example and edit your values.
 putenv('ANALYTICS_PROVIDER=umami');
 putenv('UMAMI_SCRIPT_URL=https://cloud.umami.is/script.js');
 putenv('UMAMI_WEBSITE_ID=YOUR-UUID-HERE');
@@ -331,10 +331,22 @@ putenv('UMAMI_WEBSITE_ID=YOUR-UUID-HERE');
 //   putenv('GA4_MEASUREMENT_ID=G-XXXXXXXXXX');
 ````
 
-> 🔒 **Don't commit this file** — add `public/config.php` to your
-> personal `.gitignore` if you fork the repo. A
-> [`public/config.php.example`](public/config.php.example) is
-> shipped with the project as a template.
+The fallback order in `public/analytics.php` is:
+1. Environment variables (works on Docker / VPS)
+2. `public/config.php` (works on shared hosting)
+3. Else: nothing emitted
+
+> 🔒 **Don't commit `public/config.php`** — it contains private IDs.
+> A [`public/config.php.example`](public/config.php.example) ships as
+> a template; copy it to `public/config.php` and edit your values.
+
+> 🔌 **Why every page `require`s `analytics.php` directly:**
+> on shared hosting there is no `auto_prepend_file`, so PHP won't
+> run a file just because it exists in `public/`. Each page
+> includes it explicitly with `require __DIR__ . '/analytics.php';`
+> right before `</head>`. The `require` is wrapped in
+> `file_exists()` so it is safe to delete the analytics files at
+> any time.
 
 ### Step 5 — Set file permissions
 
@@ -409,6 +421,47 @@ Step 6b — `api/` must be reachable at `/api/<tool>/`.
 | Analytics script not appearing | `ANALYTICS_PROVIDER=none` | Edit `public/config.php` and set the provider explicitly |
 | *File not found* on `/api/...` | `api/` not in the right place | Step 6b — upload `api/` one level above `public_html/` |
 | QR code returns blank image | `allow_url_fopen` disabled | Ask hosting support, or generate via the API in `format=json` instead |
+| **Umami script not firing on Hostinger** | `analytics.php` exists in `public/` but is never `require`d | Each page already `require`s `public/analytics.php` in this release. If you still see no script tag, see the **Why is my Umami script not appearing?** checklist below |
+
+#### Why is my Umami script not appearing? (Hostinger checklist)
+
+Walk through this list in order — every step is something I have
+seen cause a silent failure on shared hosting:
+
+1. **Open your page → *View Source* → search for `umami`** (or
+   `gtag`). If you see the `<script>` tag, the snippet is fine and
+   the problem is on the Umami side (wrong Website ID, wrong domain
+   allowlist, ad-blocker, etc.). If you see *nothing*, continue.
+2. **Confirm `public/analytics.php` exists** on the server (it
+   ships in the repo, but make sure File Manager didn't drop it).
+3. **Confirm `public/config.php` exists** and contains the three
+   `putenv('…')` lines for your provider. Without it the partial
+   sees no env vars and emits nothing.
+4. **Check the values you put in `config.php`**:
+   - `ANALYTICS_PROVIDER` must be exactly `umami` (lowercase, no
+     spaces, no quotes around the value).
+   - `UMAMI_SCRIPT_URL` must be the **exact** URL Umami gave you.
+     Common values: `https://cloud.umami.is/script.js`,
+     `https://us.umami.is/script.js`, or
+     `https://your-umami-domain.com/script.js`.
+   - `UMAMI_WEBSITE_ID` must be the UUID shown on the Umami
+     dashboard (looks like `11111111-2222-3333-4444-555555555555`),
+     **not** the website name and **not** the API token.
+5. **Check that the file is UTF-8 plain text**. Hostinger File
+   Manager sometimes saves files as UTF-8 BOM, which makes the
+   first line a no-op and PHP may then choke on the BOM inside
+   `putenv()`. Re-upload via FTP in **binary** mode if in doubt.
+6. **Make sure Cloudflare / your CDN is not caching the old HTML**.
+   Purge the cache for `/`, `/health-calculator.php`, etc.
+7. **Open `public/analytics.php` in the browser directly** —
+   it should output a single comment line (`<!-- MyAPIs Analytics
+   … -->`) or nothing. If you get a *blank page* the PHP parser
+   failed; if you get the script tag it works.
+8. **Run this one-liner from your laptop** to see exactly what the
+   server sends:
+   ```bash
+   curl -s https://yourdomain.com/ | grep -E 'umami|gtag'
+   ```
 
 ### Hosting-specific notes
 
@@ -431,13 +484,11 @@ Step 6b — `api/` must be reachable at `/api/<tool>/`.
 
 - ❌ Docker (the `🐳 Docker Deployment` section does not apply)
 - ❌ `.env` files (use `public/config.php` instead — Step 4)
-- ❌ `auto_prepend_file` (the analytics partial still runs because
-  `public/index.php` and the tool pages include it; analytics
-  will *not* fire on raw PHP scripts you add yourself — wrap them
-  with `require __DIR__ . '/docker/php/analytics.php';` or move
-  the partial to a path that exists on shared hosting and update
-  the include). See [`public/config.php.example`](public/config.php.example)
-  for the recommended shared-hosting layout.
+- ❌ `auto_prepend_file` (every page in `public/` and
+  `public/api-specs/` already `require`s `public/analytics.php`
+  for you, so analytics fires without it; new pages you add must
+  include it themselves — see the snippet in the
+  [📈 Analytics → Tracking scope](#tracking-scope) section)
 
 ---
 
