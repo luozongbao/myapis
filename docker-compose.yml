@@ -37,6 +37,11 @@ services:
       PHP_UPLOAD_MAX_FILESIZE: ${PHP_UPLOAD_MAX_FILESIZE:-10M}
       PHP_POST_MAX_SIZE: ${PHP_POST_MAX_SIZE:-10M}
       PHP_DATE_TIMEZONE: ${PHP_DATE_TIMEZONE:-UTC}
+      # ---- Analytics (see docker/php/analytics.php) ----
+      ANALYTICS_PROVIDER: ${ANALYTICS_PROVIDER:-none}
+      UMAMI_SCRIPT_URL: ${UMAMI_SCRIPT_URL:-}
+      UMAMI_WEBSITE_ID: ${UMAMI_WEBSITE_ID:-}
+      GA4_MEASUREMENT_ID: ${GA4_MEASUREMENT_ID:-}
     networks:
       - myapis-net
     healthcheck:
@@ -44,6 +49,46 @@ services:
       interval: 30s
       timeout: 5s
       retries: 3
+
+  # ----------------------------------------------------------------
+  # Optional: Umami Analytics (self-hosted, cookie-less)
+  # ----------------------------------------------------------------
+  # Uncomment BOTH the umami-db and umami services below (and the
+  # top-level `volumes:` block at the bottom of this file) to run
+  # Umami alongside MyAPIs. Then set in `.env`:
+  #   ANALYTICS_PROVIDER=umami
+  #   UMAMI_SCRIPT_URL=http://umami:3000/script.js
+  #   UMAMI_WEBSITE_ID=<your-website-id>
+  # After `docker compose up -d --build`, open
+  #   http://localhost:${UMAMI_PORT:-3000}
+  # to create your account and grab the website ID.
+
+  # umami-db:
+  #   image: postgres:16-alpine
+  #   container_name: ${PROJECT_NAME:-myapis}-umami-db
+  #   restart: unless-stopped
+  #   environment:
+  #     POSTGRES_DB: ${UMAMI_DB_NAME:-umami}
+  #     POSTGRES_USER: ${UMAMI_DB_USER:-umami}
+  #     POSTGRES_PASSWORD: ${UMAMI_DB_PASSWORD:-umami}
+  #   volumes:
+  #     - umami-db-data:/var/lib/postgresql/data
+  #   networks:
+  #     - myapis-net
+
+  # umami:
+  #   image: ghcr.io/umami-software/umami:postgresql-latest
+  #   container_name: ${PROJECT_NAME:-myapis}-umami
+  #   restart: unless-stopped
+  #   depends_on:
+  #     - umami-db
+  #   environment:
+  #     DATABASE_URL: postgres://${UMAMI_DB_USER:-umami}:${UMAMI_DB_PASSWORD:-umami}@umami-db:5432/${UMAMI_DB_NAME:-umami}
+  #     APP_SECRET: ${UMAMI_APP_SECRET:-change-me-with-openssl-rand-hex-32}
+  #   ports:
+  #     - "${UMAMI_PORT:-3000}:3000"
+  #   networks:
+  #     - myapis-net
 
   # ----------------------------------------------------------------
   # Nginx web server
@@ -67,8 +112,16 @@ services:
       - myapis-net
 
 # ----------------------------------------------------------------
+# ----------------------------------------------------------------
 # Networks
 # ----------------------------------------------------------------
 networks:
   myapis-net:
     driver: bridge
+
+# ----------------------------------------------------------------
+# Volumes (used by the optional Umami Analytics stack below)
+# ----------------------------------------------------------------
+# Uncomment this block when you enable the umami-db service.
+# volumes:
+#   umami-db-data:
