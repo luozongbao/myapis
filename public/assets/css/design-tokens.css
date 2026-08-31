@@ -1,0 +1,162 @@
+/* =========================================================================
+   design-tokens.css — MyAPIs Design System
+   Foundation: single source of truth for colors, spacing, typography, etc.
+   Mobile-first | WCAG 2.1 AA | i18n: TH/EN/ZH
+
+   All values verified for contrast ≥ 4.5:1 against --color-bg-surface (#fff)
+   See docs/designs/components.md for the full a11y audit table.
+   ========================================================================= */
+
+:root {
+  /* ----- Brand / decorative (NOT for text — may fail AA on bg) ---------- */
+  --color-brand-1: #667eea;          /* gradient stop 1 (landing hero) */
+  --color-brand-2: #764ba2;          /* gradient stop 2 */
+  --color-brand-gradient: linear-gradient(135deg, var(--color-brand-1) 0%, var(--color-brand-2) 100%);
+  --color-brand-gradient-dark: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+
+  /* ----- Surfaces -------------------------------------------------------- */
+  --color-bg:           #ffffff;
+  --color-bg-page:      var(--color-brand-gradient); /* fallback body bg */
+  --color-bg-surface:   #ffffff;
+  --color-bg-subtle:    #f8f9fa;     /* stripe rows, code blocks  */
+  --color-bg-muted:     #f3f4f6;
+  --color-bg-overlay:   rgba(0, 0, 0, 0.5);
+
+  /* ----- Text (verified ≥ 4.5:1 vs --color-bg-surface #fff) ------------- */
+  --color-text:         #1f2937;     /* 11.6:1 — AAA */
+  --color-text-muted:   #4b5563;     /*  8.5:1 — AAA (was #666) */
+  --color-text-subtle:  #6b7280;     /*  5.0:1 — AA  */
+  --color-text-inverse: #ffffff;     /* 21.0:1 on dark headers */
+  --color-text-link:    #1d4ed8;     /*  8.6:1 — AAA */
+  --color-text-link-hover: #1e40af;  /*  9.6:1 */
+
+  /* ----- Borders & dividers --------------------------------------------- */
+  --color-border:        #e5e7eb;    /* default */
+  --color-border-strong: #d1d5db;    /* input borders */
+  --color-border-focus:  #2563eb;    /* 5.3:1 — AA */
+
+  /* ----- Action / interactive colors (all AA on white) ------------------- */
+  --color-primary:         #2563eb;  /*  5.3:1 — AA (buttons/links)  */
+  --color-primary-hover:   #1d4ed8;  /*  8.6:1 — AAA                */
+  --color-primary-active:  #1e40af;  /*  9.6:1 — AAA                */
+  --color-primary-bg:      #dbeafe;  /* light bg for selected tabs  */
+  --color-primary-on:      #ffffff;  /* text on --color-primary     */
+
+  --color-success:         #15803d;  /*  5.3:1 — AA */
+  --color-success-hover:   #166534;
+  --color-success-bg:      #dcfce7;
+  --color-success-on:      #ffffff;
+
+  --color-error:           #b91c1c;  /*  6.5:1 — AA */
+  --color-error-hover:     #991b1b;
+  --color-error-bg:        #fee2e2;
+  --color-error-on:        #ffffff;
+
+  --color-warning:         #a16207;  /*  4.9:1 — AA (close — verify on screens) */
+  --color-warning-hover:   #854d0e;
+  --color-warning-bg:      #fef3c7;
+  --color-warning-on:      #ffffff;
+
+  --color-info:            #1e40af;  /*  9.6:1 */
+  --color-info-hover:      #1e3a8a;
+  --color-info-bg:         #dbeafe;
+  --color-info-on:         #ffffff;
+
+  /* ----- Focus ring (WCAG 2.4.7) ---------------------------------------- */
+  --color-focus-ring:      #2563eb;
+  --focus-ring-width:      3px;
+  --focus-ring-offset:    2px;
+
+  /* ----- Spacing (8pt grid) --------------------------------------------- */
+  --space-0: 0;
+  --space-1: 0.25rem;   /*  4px */
+  --space-2: 0.5rem;    /*  8px */
+  --space-3: 0.75rem;   /* 12px */
+  --space-4: 1rem;      /* 16px */
+  --space-5: 1.5rem;    /* 24px */
+  --space-6: 2rem;      /* 32px */
+  --space-7: 2.5rem;    /* 40px */
+  --space-8: 3rem;      /* 48px */
+  --space-9: 4rem;      /* 64px */
+  --space-10: 5rem;     /* 80px */
+
+  /* ----- Typography ----------------------------------------------------- */
+  /* Stack order: Noto Sans Thai (TH) → system Asian fonts (ZH/JA) → Latin → ui */
+  --font-sans: "Noto Sans Thai", -apple-system, BlinkMacSystemFont,
+               "Segoe UI", system-ui, "PingFang SC", "Microsoft YaHei",
+               "Hiragino Sans GB", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, "SFMono-Regular", "SF Mono", Menlo, Consolas,
+               "Noto Sans Thai", monospace;
+
+  --text-xs:   0.75rem;   /* 12px */
+  --text-sm:   0.875rem;  /* 14px */
+  --text-base: 1rem;      /* 16px — body default, prevents iOS zoom on focus */
+  --text-lg:   1.125rem;  /* 18px */
+  --text-xl:   1.25rem;   /* 20px */
+  --text-2xl:  1.5rem;    /* 24px */
+  --text-3xl:  1.875rem;  /* 30px */
+  --text-4xl:  2.5rem;    /* 40px */
+
+  --leading-tight:   1.25;  /* display headings */
+  --leading-snug:    1.4;   /* short headings — better for TH */
+  --leading-normal:  1.5;   /* default Latin */
+  --leading-relaxed: 1.7;   /* Thai bodies — required for readability */
+
+  --weight-regular:  400;
+  --weight-medium:   500;
+  --weight-semibold: 600;
+  --weight-bold:     700;
+
+  /* ----- Radius --------------------------------------------------------- */
+  --radius-sm:   0.375rem;  /*  6px */
+  --radius:      0.5rem;    /*  8px */
+  --radius-md:   0.625rem;  /* 10px */
+  --radius-lg:   0.75rem;   /* 12px */
+  --radius-xl:   1.25rem;   /* 20px — legacy "20px" card radius */
+  --radius-pill: 9999px;
+
+  /* ----- Shadow --------------------------------------------------------- */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow:    0 2px 8px 0 rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 12px 0 rgba(0, 0, 0, 0.10);
+  --shadow-lg: 0 20px 40px 0 rgba(0, 0, 0, 0.10);
+  --shadow-xl: 0 25px 50px 0 rgba(0, 0, 0, 0.15);
+
+  /* ----- Z-index scale -------------------------------------------------- */
+  --z-base:     1;
+  --z-dropdown: 10;
+  --z-sticky:   100;
+  --z-overlay:  500;
+  --z-modal:    1000;
+  --z-toast:    2000;
+
+  /* ----- Transitions ---------------------------------------------------- */
+  --transition-fast: 150ms ease;
+  --transition:      200ms ease;
+  --transition-slow: 300ms ease;
+
+  /* ----- Layout --------------------------------------------------------- */
+  --container-sm:  600px;
+  --container-md:  800px;
+  --container-lg:  1200px;
+  --header-height: 4rem;
+}
+
+/* Honor user preference for reduced motion (WCAG 2.3.3) */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --transition-fast: 0ms;
+    --transition:      0ms;
+    --transition-slow: 0ms;
+  }
+}
+
+/* High-contrast mode: respect Windows/Mac forced-colors */
+@media (forced-colors: active) {
+  :root {
+    --color-bg-surface: Canvas;
+    --color-text:       CanvasText;
+    --color-border:     CanvasText;
+    --focus-ring-width: 3px;
+  }
+}

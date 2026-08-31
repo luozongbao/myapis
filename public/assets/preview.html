@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MyAPIs Design System — Preview</title>
+  <meta name="description" content="Visual preview of the MyAPIs design system: tokens, components, page layout. Reference target for ISSUE-002 migration.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/css/design-tokens.css">
+  <link rel="stylesheet" href="/assets/css/base.css">
+  <link rel="stylesheet" href="/assets/css/components.css">
+  <link rel="stylesheet" href="/assets/css/tool-page.css">
+</head>
+<body class="landing">
+
+  <a href="#main" class="skip-link">ข้ามไปยังเนื้อหา (Skip to main content)</a>
+
+  <main id="main" tabindex="-1">
+
+    <!-- Landing header -->
+    <header class="landing-header" role="banner">
+      <h1>🎨 MyAPIs Design System</h1>
+      <p>Foundation tokens + reusable components. Reference target for ISSUE-002 (CSS extraction) and ISSUE-009 (accessibility improvements). Tested with WCAG 2.1 AA contrast.</p>
+      <span class="status-badge">✓ Preview Build</span>
+    </header>
+
+    <!-- Section: Color & Typography tokens -->
+    <section aria-labelledby="tokens-h" style="max-width:1200px;margin:0 auto var(--space-6);">
+      <div class="card card-loose">
+        <h2 id="tokens-h">Design Tokens</h2>
+        <p class="card-subtitle">Single source of truth — colors, spacing, typography. Mobile-first, supports TH/EN/ZH.</p>
+
+        <h3 style="margin-bottom:var(--space-3);">Color Palette</h3>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:var(--space-3);margin-bottom:var(--space-6);">
+          <div style="text-align:center;">
+            <div style="height:80px;background:var(--color-primary);border-radius:var(--radius);border:1px solid var(--color-border);" aria-hidden="true"></div>
+            <small style="display:block;margin-top:var(--space-2);font-family:var(--font-mono);">--color-primary</small>
+          </div>
+          <div style="text-align:center;">
+            <div style="height:80px;background:var(--color-success);border-radius:var(--radius);" aria-hidden="true"></div>
+            <small style="display:block;margin-top:var(--space-2);font-family:var(--font-mono);">--color-success</small>
+          </div>
+          <div style="text-align:center;">
+            <div style="height:80px;background:var(--color-error);border-radius:var(--radius);" aria-hidden="true"></div>
+            <small style="display:block;margin-top:var(--space-2);font-family:var(--font-mono);">--color-error</small>
+          </div>
+          <div style="text-align:center;">
+            <div style="height:80px;background:var(--color-warning);border-radius:var(--radius);" aria-hidden="true"></div>
+            <small style="display:block;margin-top:var(--space-2);font-family:var(--font-mono);">--color-warning</small>
+          </div>
+          <div style="text-align:center;">
+            <div style="height:80px;background:var(--color-info);border-radius:var(--radius);" aria-hidden="true"></div>
+            <small style="display:block;margin-top:var(--space-2);font-family:var(--font-mono);">--color-info</small>
+          </div>
+          <div style="text-align:center;">
+            <div style="height:80px;background:var(--color-text);border-radius:var(--radius);" aria-hidden="true"></div>
+            <small style="display:block;margin-top:var(--space-2);font-family:var(--font-mono);">--color-text</small>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: Tool grid (landing pattern) -->
+    <section aria-labelledby="cards-h" class="container container-lg" style="margin-bottom:var(--space-6);">
+      <h2 id="cards-h" style="margin-bottom:var(--space-4);">Tool Cards (Landing pattern)</h2>
+      <div class="tool-grid">
+        <article class="tool-card">
+          <div class="tool-card-icon" aria-hidden="true">🏥</div>
+          <h3 class="tool-card-title">Health Calculator</h3>
+          <p class="tool-card-desc">คำนวณ BMI, BMR, พลังงานต่อวัน, น้ำที่ควรดื่ม — Calculate health metrics.</p>
+          <div class="tool-actions">
+            <a href="#" class="btn btn-primary">Try Tool</a>
+            <a href="#" class="btn btn-secondary">API</a>
+          </div>
+        </article>
+        <article class="tool-card">
+          <div class="tool-card-icon" aria-hidden="true">🔐</div>
+          <h3 class="tool-card-title">Password Generator</h3>
+          <p class="tool-card-desc">สร้างรหัสผ่านที่ปลอดภัย — Generate cryptographically secure passwords.</p>
+          <div class="tool-actions">
+            <a href="#" class="btn btn-primary">Try Tool</a>
+            <a href="#" class="btn btn-secondary">API</a>
+          </div>
+        </article>
+        <article class="tool-card">
+          <div class="tool-card-icon" aria-hidden="true">🎲</div>
+          <h3 class="tool-card-title">Randomizer</h3>
+          <p class="tool-card-desc">สุ่มตัวเลข รายการ ทีม — Random selection with weighted options.</p>
+          <div class="tool-actions">
+            <a href="#" class="btn btn-primary">Try Tool</a>
+            <a href="#" class="btn btn-secondary">API</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- Section: Tool page mockup (form + 2-col result) -->
+    <section aria-labelledby="toolpage-h" class="container container-lg" style="margin-bottom:var(--space-6);">
+      <h2 id="toolpage-h" style="margin-bottom:var(--space-4);">Tool Page Layout</h2>
+
+      <header class="tool-header">
+        <h2>🏥 Health Calculator</h2>
+        <p>คำนวณค่าสุขภาพพื้นฐาน — BMI, BMR, TDEE</p>
+        <div class="badge-row">
+          <span class="badge badge-success">Live</span>
+          <span class="badge">TH / EN / ZH</span>
+        </div>
+      </header>
+
+      <div class="tool-selector" role="tablist" aria-label="เลือกเครื่องมือคำนวณ">
+        <button type="button" role="tab" aria-selected="true"  data-type="bmi">BMI</button>
+        <button type="button" role="tab" aria-selected="false" data-type="bmr">BMR</button>
+        <button type="button" role="tab" aria-selected="false" data-type="daily-intake">Daily Intake</button>
+        <button type="button" role="tab" aria-selected="false" data-type="water">น้ำที่ควรดื่ม</button>
+      </div>
+
+      <div class="tool-body">
+        <div class="tool-section">
+          <h3 class="tool-section-title">ข้อมูลของคุณ</h3>
+
+          <form id="demo-form" novalidate>
+            <fieldset>
+              <legend>ข้อมูลส่วนตัว</legend>
+
+              <div class="form-field">
+                <label for="gender">เพศ <span class="required" aria-hidden="true">*</span></label>
+                <select id="gender" name="gender" required aria-required="true">
+                  <option value="">-- เลือกเพศ --</option>
+                  <option value="male">ชาย</option>
+                  <option value="female">หญิง</option>
+                </select>
+              </div>
+
+              <div class="form-row">
+                <div class="form-field">
+                  <label for="age">อายุ (ปี) <span class="required" aria-hidden="true">*</span></label>
+                  <input type="number" id="age" name="age" min="1" max="120" required aria-required="true"
+                         aria-describedby="age-help" placeholder="เช่น 30">
+                  <small id="age-help" class="form-help">ตัวเลข 1-120</small>
+                </div>
+                <div class="form-field">
+                  <label for="weight">น้ำหนัก (kg) <span class="required" aria-hidden="true">*</span></label>
+                  <input type="number" id="weight" name="weight" min="1" max="500" required
+                         aria-required="true" placeholder="เช่น 70">
+                </div>
+              </div>
+
+              <div class="form-field">
+                <label for="height">ส่วนสูง (cm) <span class="required" aria-hidden="true">*</span></label>
+                <input type="number" id="height" name="height" min="30" max="250" required
+                       aria-required="true" aria-invalid="false" placeholder="เช่น 170">
+              </div>
+
+              <div class="form-field">
+                <label for="activity">กิจกรรม</label>
+                <select id="activity" name="activity">
+                  <option value="sedentary">นั่งทำงาน (Sedentary)</option>
+                  <option value="light">ออกกำลังกายเบาๆ (Light)</option>
+                  <option value="moderate" selected>ปานกลาง (Moderate)</option>
+                  <option value="active">หนัก (Active)</option>
+                </select>
+              </div>
+
+              <div class="form-field">
+                <label class="checkbox">
+                  <input type="checkbox" name="agree" required aria-required="true">
+                  ยอมรับเงื่อนไขการใช้งาน
+                </label>
+              </div>
+
+              <button type="submit" class="btn btn-primary btn-lg btn-block">
+                คำนวณ BMI
+              </button>
+            </fieldset>
+          </form>
+        </div>
+
+        <aside class="tool-section" aria-label="ผลลัพธ์">
+          <h3 class="tool-section-title">ผลลัพธ์</h3>
+          <div class="result" role="status" aria-live="polite">
+            <div class="result-value">22.86</div>
+            <div class="result-label">BMI</div>
+            <p class="result-advice">น้ำหนักปกติ ดีแล้ว — อยู่ในเกณฑ์สุขภาพดี</p>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- Section: All states -->
+    <section aria-labelledby="states-h" class="container container-lg" style="margin-bottom:var(--space-6);">
+      <h2 id="states-h" style="margin-bottom:var(--space-4);">UX States — Empty / Loading / Error / Success</h2>
+
+      <div class="tool-body">
+        <div class="tool-section">
+          <h3 class="tool-section-title">Empty State</h3>
+          <p class="empty-state">กรอกข้อมูลเพื่อเริ่มคำนวณ</p>
+        </div>
+
+        <div class="tool-section">
+          <h3 class="tool-section-title">Loading State</h3>
+          <button type="button" class="btn btn-primary btn-block" disabled>
+            <span class="spinner" aria-hidden="true"></span>
+            กำลังคำนวณ...
+          </button>
+          <p class="form-help" style="margin-top:var(--space-2);">Loading region with <code>aria-live</code></p>
+        </div>
+
+        <div class="tool-section" style="grid-column: 1 / -1;">
+          <h3 class="tool-section-title">Alert / Error / Success</h3>
+
+          <div class="alert alert-success" role="status" aria-live="polite">
+            <span class="alert-icon" aria-hidden="true">✓</span>
+            <div>
+              <strong>สำเร็จ:</strong> บันทึกข้อมูลเรียบร้อยแล้ว
+            </div>
+          </div>
+
+          <div class="alert alert-error" role="alert">
+            <span class="alert-icon" aria-hidden="true">✕</span>
+            <div>
+              <strong>เกิดข้อผิดพลาด:</strong> น้ำหนักต้องเป็นตัวเลขบวก (1-500)
+            </div>
+          </div>
+
+          <div class="alert alert-warning" role="alert">
+            <span class="alert-icon" aria-hidden="true">!</span>
+            <div>
+              <strong>คำเตือน:</strong> BMI สูงกว่าปกติ ควรปรึกษาแพทย์
+            </div>
+          </div>
+
+          <div class="alert alert-info" role="status">
+            <span class="alert-icon" aria-hidden="true">ⓘ</span>
+            <div>
+              <strong>ข้อมูล:</strong> การคำนวณนี้เป็นค่าโดยประมาณ ไม่ใช่การวินิจฉัยทางการแพทย์
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: Badges & Language toggle -->
+    <section aria-labelledby="extras-h" class="container container-lg" style="margin-bottom:var(--space-6);">
+      <h2 id="extras-h" style="margin-bottom:var(--space-4);">Badges & Language Toggles</h2>
+
+      <div class="card">
+        <div class="badge-row" style="margin-bottom:var(--space-5);">
+          <span class="badge">Default</span>
+          <span class="badge badge-primary">Primary</span>
+          <span class="badge badge-success">Success</span>
+          <span class="badge badge-error">Error</span>
+          <span class="badge badge-warning">Warning</span>
+          <span class="badge badge-info">Info</span>
+        </div>
+
+        <h3 style="margin-bottom:var(--space-3);">ภาษา / Language / 语言</h3>
+        <div class="language-toggle" role="group" aria-label="เลือกภาษา">
+          <button type="button" class="language-btn" aria-pressed="true">🇹🇭 ไทย</button>
+          <button type="button" class="language-btn" aria-pressed="false">🇬🇧 EN</button>
+          <button type="button" class="language-btn" aria-pressed="false">🇨🇳 中文</button>
+        </div>
+      </div>
+    </section>
+
+    <footer class="site-footer" role="contentinfo">
+      <p>MyAPIs Design System v1.0 — Built for <code style="background:transparent;color:inherit;">WCAG 2.1 AA</code> · <code style="background:transparent;color:inherit;">i18n: TH/EN/ZH</code> · Mobile-first</p>
+    </footer>
+
+  </main>
+</body>
+</html>
