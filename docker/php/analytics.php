@@ -23,6 +23,27 @@ if (PHP_SAPI === 'cli') {
     return;
 }
 
+// ---------------------------------------------------------------
+// Shared-hosting fallback: if the env vars are not set, try
+// loading `public/config.php` (or a `config.php` placed next to
+// this file). The example file lives at
+// public/config.php.example - copy it to public/config.php and
+// edit your values there.
+// ---------------------------------------------------------------
+if (!getenv('ANALYTICS_PROVIDER')) {
+    $configCandidates = [
+        __DIR__ . '/../../public/config.php',
+        __DIR__ . '/../config.php',
+        __DIR__ . '/config.php',
+    ];
+    foreach ($configCandidates as $cfg) {
+        if (is_file($cfg)) {
+            require_once $cfg;
+            break;
+        }
+    }
+}
+
 $provider = strtolower(getenv('ANALYTICS_PROVIDER') ?: 'none');
 
 if ($provider === 'none' || $provider === '' || $provider === 'off' || $provider === 'false') {

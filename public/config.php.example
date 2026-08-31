@@ -1,0 +1,38 @@
+<?php
+/**
+ * =============================================================
+ * MyAPIs - Shared-hosting analytics configuration
+ * -------------------------------------------------------------
+ * On shared hosting (Hostinger, cPanel, etc.) you usually cannot
+ * use a `.env` file or `auto_prepend_file`, so the analytics
+ * partial cannot rely on environment variables alone.
+ *
+ * Usage:
+ *   1. Copy this file to `public/config.php`
+ *   2. Fill in the values that match your provider
+ *   3. Make sure `public/config.php` is included from each entry
+ *      point you want tracked. The simplest way is to keep the
+ *      prepended partial at:
+ *          require __DIR__ . '/docker/php/analytics.php';
+ *      (or copy that file into `public/` and update the path).
+ *
+ * IMPORTANT: do not commit `public/config.php` — it can contain
+ * private IDs. The included `.gitignore` should already exclude
+ * it.
+ * =============================================================
+ */
+
+// ---- Choose ONE provider ----
+// Leave the others empty / commented out.
+
+// --- Umami (self-hosted, cloud.umami.is, or any external host) ---
+putenv('ANALYTICS_PROVIDER=umami');
+putenv('UMAMI_SCRIPT_URL=https://cloud.umami.is/script.js');   // or http://localhost:3000/script.js
+putenv('UMAMI_WEBSITE_ID=YOUR-UMAMI-WEBSITE-UUID');
+
+// --- Google Analytics 4 (gtag.js) ---
+// putenv('ANALYTICS_PROVIDER=ga4');
+// putenv('GA4_MEASUREMENT_ID=G-XXXXXXXXXX');
+
+// --- Disable analytics entirely ---
+// putenv('ANALYTICS_PROVIDER=none');

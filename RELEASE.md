@@ -58,23 +58,63 @@
   [`README.md`](README.md) with:
   - Provider comparison table
   - Step-by-step Umami + GA4 setup instructions
+  - **Option C** for Umami Cloud / externally-hosted Umami, including
+    C.1 (managed SaaS) and C.2 (separate server) plus a comparison
+    table with Option A
   - Tracking-scope clarification (HTML pages vs. `/api/*`)
   - Verification `curl` commands
 - README env-vars table extended with every analytics variable
 - README **Latest Updates** bumped to v2.4.0
 
+#### 🌐 Shared Hosting (Hostinger / cPanel) Deployment Guide
+- Brand-new **🌐 Shared Hosting Deployment (Hostinger / cPanel)**
+  section in the README covering every step from upload to verify:
+  - Prerequisites table (PHP version, extensions, `mod_rewrite`)
+  - Two project layouts (upload only `public/` + `api/`, or the whole
+    repo — including a recommended Hostinger Single/Premium layout)
+  - hPanel upload walkthrough (File Manager / FTP / SSH)
+  - PHP version + extension enablement on hPanel / MultiPHP Manager
+  - **Analytics without `.env`** — drop a `public/config.php` that
+    calls `putenv()` (shared-hosting fallback in
+    [`docker/php/analytics.php`](docker/php/analytics.php))
+  - File-permissions cheat sheet (644 / 755)
+  - Two clean domain-mapping strategies (root repo upload vs.
+    `public/`-only upload with separate `api/` folder)
+  - Verification curl commands
+  - **Troubleshooting table** (403, 500, missing `gd`, 404 on `/api/`,
+    blank QR images, etc.)
+  - Hosting-specific notes for Hostinger Single / Premium / Business
+    / Cloud, SiteGround, Namecheap, and Cloudflare
+  - "What you do **not** get on shared hosting" honest checklist
+
+#### 🆕 Shared-Hosting Analytics Fallback
+- [`docker/php/analytics.php`](docker/php/analytics.php) now tries
+  to `require_once` `public/config.php`, `../config.php`, or
+  `config.php` (next to the partial) **before** reading env vars.
+  This means shared-hosting deployments that can't use `.env` or
+  `auto_prepend_file` can still configure analytics by including
+  the partial manually.
+- [`public/config.php.example`](public/config.php.example) ships as
+  a copy-and-edit template for Umami / GA4 / disabled configurations.
+
 ### 📁 New / Updated Files
-- `docker/php/analytics.php` — new tracking partial
+- `docker/php/analytics.php` — new tracking partial + shared-hosting
+  `config.php` fallback
 - `docker/php/php.ini.tpl` — adds `auto_prepend_file`
 - `docker-compose.yml` — adds analytics env forwarding + optional
   Umami / PostgreSQL service block
 - `example.env` — documents `ANALYTICS_PROVIDER`, `UMAMI_SCRIPT_URL`,
   `UMAMI_WEBSITE_ID`, `GA4_MEASUREMENT_ID`
-- `README.md` — new analytics section, env table, version banner
+- `public/config.php.example` — **new** shared-hosting analytics
+  template
+- `README.md` — new analytics section (with **Option C** Umami Cloud
+  / externally-hosted), env table, full **🌐 Shared Hosting
+  Deployment** section, project-structure update, version banner
 - `RELEASE.md` — this entry
 
 ### ✅ Verification
 - `php -l docker/php/analytics.php` passes
+- `php -l public/config.php.example` passes
 - `docker compose config` validates with the optional Umami block
   both commented and uncommented
 - Manual checks once running:
@@ -82,6 +122,9 @@
     the matching `<script>` tag when the provider is enabled
   - `curl -s http://localhost:8080/api/health-calculator/ | grep -E 'umami|gtag'`
     → returns nothing (API paths are excluded)
+  - On shared hosting: drop a `public/config.php` that sets the
+    provider via `putenv()`, hit any tool page, view-source, and
+    the matching `<script>` tag is present
 - Switching `ANALYTICS_PROVIDER=none` and restarting removes every
   snippet without code changes
 

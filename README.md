@@ -78,9 +78,18 @@ A comprehensive collection of developer tools and APIs designed to streamline yo
    ```
    Then open `http://localhost:8000/public/`.
 
-   **Option C: Apache/Nginx (Production)**
+   **Option C: Apache / Shared hosting (e.g. Hostinger, cPanel)**
+   - Upload the project to your web root (see
+     [🌐 Shared Hosting Deployment](#-shared-hosting-deployment-hostinger--cpanel)
+     for a full Hostinger / cPanel walkthrough)
+   - Ensure PHP ≥ 7.4 is enabled in the control panel
+   - The bundled `.htaccess` already rewrites requests into `/public/`
+   - No Docker, no root access, no `.env` required — see the shared
+     hosting section for the `config.php` step
+
+   **Option D: Nginx (VPS / Production)**
    - Copy files to your web server's document root
-   - Ensure PHP is configured and enabled
+   - Ensure PHP-FPM is configured and enabled
    - Set appropriate file permissions
    - See `docs/nginx-conf/` for ready-to-use Nginx vhost samples
    - The provided `.htaccess` already rewrites requests into `/public/`
@@ -222,6 +231,216 @@ A comprehensive collection of developer tools and APIs designed to streamline yo
    - Built-in / Apache / Nginx: `http://localhost:8000/public/`
    - Explore the tools and their APIs
 
+## 🌐 Shared Hosting Deployment (Hostinger / cPanel)
+
+Most shared-hosting providers (Hostinger, SiteGround, Bluehost,
+Namecheap, etc.) give you a cPanel (or hPanel on Hostinger), **no
+Docker**, **no root shell**, and **no `.env` file routing** — so the
+Docker stack above won't work, but the rest of MyAPIs will run
+fine as long as PHP ≥ 7.4 is available and `mod_rewrite` is on.
+
+The short version: upload the project, point your domain at
+`/public/`, and (optionally) drop a `config.php` to enable
+analytics. The long version follows.
+
+### Prerequisites
+
+| Item | Minimum | Recommended |
+|---|---|---|
+| PHP | 7.4 | 8.1 or 8.2 |
+| PHP extensions | `json`, `mbstring` | + `gd` (PromptPay QR), `intl`, `bcmath` |
+| Apache module | `mod_rewrite` | (almost always on by default) |
+| Disk space | 20 MB | 50 MB |
+| `.env` support | ❌ not available | Use `public/config.php` instead |
+
+> ✅ **Hostinger** *Business* and *Cloud* plans ship PHP 8.1/8.2
+> with all of the above by default. The *Single* / *Premium* shared
+> plans ship PHP 8.0+; the PromptPay QR generator may need `gd`
+> enabled manually from **hPanel → Advanced → PHP Configuration**.
+
+### Step 1 — Prepare the project locally
+
+The repo contains files that shared hosting must never see
+(`docker/`, `docker-compose.yml`, `Dockerfile`, `.dockerignore`,
+`example.env`, `docs/`, `README.md`, `RELEASE.md`). You have two
+options:
+
+**Option 1 — upload only what you need (recommended for Hostinger Single/Premium)**
+
+```text
+public_html/
+└── myapis/                 ← your project root on the server
+    ├── .htaccess           ← root rewrite file (already in repo)
+    ├── api/                ← REST endpoints
+    ├── public/             ← web UIs
+    │   ├── .htaccess       ← already in repo
+    │   ├── index.php
+    │   ├── health-calculator.php
+    │   └── … (all tool pages)
+    └── config.php          ← optional analytics config (see Step 4)
+```
+
+If your provider puts you directly in `public_html/`, copy `api/`
+and `public/` **plus both `.htaccess` files** into the web root —
+the root `.htaccess` will forward everything into `public/`.
+
+**Option 2 — upload everything** (easier, fine for Business / Cloud plans)
+
+Just upload the whole repo. The bundled `.htaccess` already blocks
+direct access to `README.md`, `RELEASE.md`, `.env`, `docker/`, etc.
+You can safely skip the `docs/` and `.dockerignore` files.
+
+### Step 2 — Upload to Hostinger (hPanel)
+
+1. Log in to <https://hpanel.hostinger.com/>.
+2. Go to **Files → File Manager** (or use FTP / SSH if your plan
+   supports it). The recommended host is `public_html/` (or a
+   sub-folder if you're hosting multiple sites).
+3. Upload the project as a `.zip`, then **Extract here**.
+4. Make sure the files end up at the path you want — for
+   `https://yourdomain.com/` to work, the files must live in
+   `public_html/` directly. For `https://yourdomain.com/myapis/`,
+   put them in `public_html/myapis/`.
+
+### Step 3 — Pick the PHP version
+
+1. hPanel → **Advanced → PHP Configuration** (or **MultiPHP
+   Manager** on cPanel).
+2. Select the directory where you uploaded MyAPIs and switch to
+   **PHP 8.1** or **8.2**.
+3. Enable the extensions you need: `gd`, `intl`, `mbstring`,
+   `bcmath`. On Hostinger they're toggles; on cPanel use
+   `Select PHP Version → Extensions`.
+
+### Step 4 — (Optional) Configure analytics without `.env`
+
+Shared hosting can't read `.env`. The analytics partial
+(`docker/php/analytics.php`) tries `getenv()` first and falls back
+to `public/config.php` if it exists — so create
+`public/config.php` ahead of `analytics.php` to inject the values:
+
+````php
+// filepath: public/config.php
+// Optional: shared-hosting-friendly analytics config.
+// analytics.php (auto-prepended) reads these via getenv() fallbacks.
+putenv('ANALYTICS_PROVIDER=umami');
+putenv('UMAMI_SCRIPT_URL=https://cloud.umami.is/script.js');
+putenv('UMAMI_WEBSITE_ID=YOUR-UUID-HERE');
+// For GA4 instead, use:
+//   putenv('ANALYTICS_PROVIDER=ga4');
+//   putenv('GA4_MEASUREMENT_ID=G-XXXXXXXXXX');
+````
+
+> 🔒 **Don't commit this file** — add `public/config.php` to your
+> personal `.gitignore` if you fork the repo. A
+> [`public/config.php.example`](public/config.php.example) is
+> shipped with the project as a template.
+
+### Step 5 — Set file permissions
+
+The default Hostinger / cPanel permissions usually work, but if
+you see *403 Forbidden* errors:
+
+- **Files**: `644` (`-rw-r--r--`)
+- **Directories**: `755` (`drwxr-xr-x`)
+- **Owner**: your FTP user (e.g. `u123456789`)
+
+From File Manager, right-click a folder → **Permissions** → set to
+`755` and tick **Apply to subdirectories**.
+
+### Step 6 — Point your domain at `/public/`
+
+You have two clean choices on shared hosting:
+
+#### 6a. Host the whole repo at the domain root (easiest)
+
+Upload the whole project to `public_html/`. The root
+`.htaccess` already rewrites every request into `public/`:
+
+```apache
+# (this is the shipped root .htaccess)
+RewriteEngine On
+RewriteCond %{REQUEST_URI} !^/public/
+RewriteCond %{REQUEST_URI} !^/api/
+RewriteRule ^(.*)$ public/$1 [L]
+```
+
+Open `https://yourdomain.com/` — you should land on the MyAPIs
+landing page.
+
+#### 6b. Host only the `public/` folder at the domain root
+
+Upload `public/` directly into `public_html/` and upload `api/`
+**one level above** (i.e. into the account home, *not* into
+`public_html/`). Then add a small `public_html/.htaccess` to
+route `/api/`:
+
+```apache
+RewriteEngine On
+RewriteCond %{REQUEST_URI} !^/api/
+RewriteCond %{REQUEST_URI} !^/assets/
+RewriteRule ^(.*)$ public/$1 [L]
+```
+
+This is the most efficient layout — web roots and `/api/` requests
+both go to the right place without any double-rewrite.
+
+### Step 7 — Verify
+
+```bash
+# From your laptop
+curl -sI https://yourdomain.com/            # → HTTP/2 200
+curl -s  https://yourdomain.com/ | grep -i 'umami\|gtag'
+                                            # → only if analytics is enabled
+curl -s  https://yourdomain.com/api/health-calculator/ | head -c 80
+                                            # → {"success":true,...}
+```
+
+If the landing page loads but the API returns *404*, double-check
+Step 6b — `api/` must be reachable at `/api/<tool>/`.
+
+### Troubleshooting
+
+| Symptom | Likely cause | Fix |
+|---|---|---|
+| *403 Forbidden* on `/` | Directory permissions / missing `.htaccess` | Set dirs to `755`, files to `644`; confirm both `.htaccess` files uploaded |
+| *500 Internal Server Error* | PHP version too old, or `mod_rewrite` off | Switch to PHP 8.1+ (Step 3); ask support to enable `mod_rewrite` |
+| *Class 'GdImage' not found* | `gd` extension disabled | Enable `gd` in hPanel PHP Configuration |
+| Analytics script not appearing | `ANALYTICS_PROVIDER=none` | Edit `public/config.php` and set the provider explicitly |
+| *File not found* on `/api/...` | `api/` not in the right place | Step 6b — upload `api/` one level above `public_html/` |
+| QR code returns blank image | `allow_url_fopen` disabled | Ask hosting support, or generate via the API in `format=json` instead |
+
+### Hosting-specific notes
+
+- **Hostinger Single / Premium**: shared IP, no SSH. Use **File
+  Manager** or FTP. `gd` is sometimes disabled by default — enable
+  it in **hPanel → PHP Configuration**.
+- **Hostinger Business / Cloud**: SSH is available; `scp -r
+  ./myapis u123@host:/domains/yourdomain.com/public_html/`
+  uploads the project in one shot.
+- **SiteGround (cPanel)**: use **File Manager** or **SSH Terminal**.
+  Go to **cPanel → MultiPHP Manager** to change the PHP version
+  per-directory.
+- **Namecheap (cPanel)**: same as SiteGround; the bundled
+  `.htaccess` works out of the box.
+- **Cloudflare in front**: enable **Development Mode** during the
+  first deploy to bypass cache and confirm analytics is firing,
+  then re-enable caching once everything looks right.
+
+### What you do **not** get on shared hosting
+
+- ❌ Docker (the `🐳 Docker Deployment` section does not apply)
+- ❌ `.env` files (use `public/config.php` instead — Step 4)
+- ❌ `auto_prepend_file` (the analytics partial still runs because
+  `public/index.php` and the tool pages include it; analytics
+  will *not* fire on raw PHP scripts you add yourself — wrap them
+  with `require __DIR__ . '/docker/php/analytics.php';` or move
+  the partial to a path that exists on shared hosting and update
+  the include). See [`public/config.php.example`](public/config.php.example)
+  for the recommended shared-hosting layout.
+
+---
+
 ## 📖 API Documentation
 
 All tools provide RESTful APIs with consistent response formats:
@@ -346,12 +565,16 @@ myapis/
 │   ├── nginx/default.conf   # Nginx vhost (public + api routing)
 │   └── php/
 │       ├── php.ini          # PHP runtime overrides
-│       └── opcache.ini      # Opcache tuning
+│       ├── opcache.ini      # Opcache tuning
+│       └── analytics.php    # Tracking snippet (auto-prepended)
 ├── docker-compose.yml       # PHP-FPM + Nginx stack definition
 ├── Dockerfile               # PHP-FPM image with required extensions
 ├── example.env              # Sample environment variables
 ├── .dockerignore            # Files excluded from the image
 ├── .htaccess                # Apache rewrite rules (root → public)
+├── public/
+│   └── config.php.example   # Shared-hosting analytics template
+│                           # (copy to public/config.php; gitignored)
 ├── README.md                # This file
 └── RELEASE.md               # Release notes
 ```
@@ -429,7 +652,7 @@ API requests to PHP-FPM:
 > 🛡️ Requests for hidden files, `.env`, `README.md`, etc. are
 > explicitly denied by the Nginx configuration.
 
-## � Analytics / Visitor Tracking
+## 📈 Analytics / Visitor Tracking
 
 Every HTML response automatically prepends a tracking snippet
 chosen by the `ANALYTICS_PROVIDER` environment variable. The
@@ -494,20 +717,95 @@ optional Umami + PostgreSQL block ready to enable.
 3. Restart: `docker compose up -d --build`.
 4. Verify with `curl -s http://localhost:8080/ | grep gtag`.
 
+### Option C — Umami Cloud / Externally-Hosted Umami
+
+Use this when you don't want to run the Umami stack alongside
+MyAPIs — for example when you subscribe to the managed
+[Umami Cloud](https://cloud.umami.is/) service, or when Umami is
+already running on a separate server you control.
+
+The PHP side stays identical to **Option A**; the only difference
+is where the tracker script and the dashboard live.
+
+#### C.1 — Umami Cloud (managed SaaS)
+
+1. Sign up at <https://cloud.umami.is/> and create a website.
+   Umami will give you:
+   - A **Website ID** (UUID)
+   - A **Script URL** — typically
+     `https://cloud.umami.is/script.js`
+2. Add to `.env`:
+   ```env
+   ANALYTICS_PROVIDER=umami
+   UMAMI_SCRIPT_URL=https://cloud.umami.is/script.js
+   UMAMI_WEBSITE_ID=<your-website-id>
+   ```
+3. Restart: `docker compose up -d --build`.
+4. Verify:
+   ```bash
+   curl -s http://localhost:8080/ | grep -i umami
+   # → <script async defer data-website-id="..." src="https://cloud.umami.is/script.js"></script>
+   ```
+5. Log into <https://cloud.umami.is/> — page views should appear
+   within a few seconds.
+
+#### C.2 — Self-hosted Umami on a separate server
+
+If you already operate Umami on another host (or a different VPS
+from MyAPIs), point MyAPIs at it instead of spinning up the
+containerised stack from Option A.
+
+1. On the Umami server, add a website for `your-domain.com` and
+   note the **Website ID**.
+2. In MyAPIs `.env`:
+   ```env
+   ANALYTICS_PROVIDER=umami
+   UMAMI_SCRIPT_URL=https://umami.your-domain.com/script.js
+   UMAMI_WEBSITE_ID=<your-website-id>
+   ```
+3. Restart: `docker compose up -d --build`.
+4. Verify:
+   ```bash
+   curl -s http://localhost:8080/ | grep -i umami
+   ```
+
+> 💡 **Do not enable the optional `umami` / `umami-db` services**
+> in [docker-compose.yml](docker-compose.yml) when using Option C —
+> you would be paying for (and maintaining) an instance you are not
+> actually using. Leave them commented out.
+
+#### Why choose Option C over Option A?
+
+| | Option A (bundled Umami) | Option C (external Umami) |
+|---|---|---|
+| **Best for** | Single-host dev/staging, air-gapped setups | Production, multi-app setups, managed-service users |
+| **Infrastructure** | One `docker compose` brings up everything | Umami runs separately (managed or another VPS) |
+| **Data ownership** | Your own DB on your host | Your own DB (self-hosted) or Umami Inc. (Cloud) |
+| **Maintenance** | You upgrade the image with `docker compose pull` | Handled by the Umami Cloud team (C.1) or by you on the Umami host (C.2) |
+| **Failure isolation** | An Umami outage cannot take MyAPIs down | Same — MyAPIs stays up even if Umami is offline |
+| **Cookie/GDPR** | Cookie-less in both cases | Cookie-less in both cases |
+
 ### Tracking scope
 
 - ✅ **HTML pages** in `public/` (landing page + every tool)
 - ❌ `/api/*` JSON endpoints — skipped (would corrupt responses)
 - ❌ CLI invocations — skipped
 - ❌ Requests with `Accept: application/json` — skipped
+- 🏢 **Shared hosting** — see
+   [🌐 Shared Hosting Deployment](#-shared-hosting-deployment-hostinger--cpanel);
+   use `public/config.php` (template:
+   [`public/config.php.example`](public/config.php.example))
 
 ### Disabling analytics
 
-Set `ANALYTICS_PROVIDER=none` (the default) and restart PHP, or
-just unset the variable. The prepended file short-circuits and
-emits nothing.
+- **Docker / VPS**: set `ANALYTICS_PROVIDER=none` (the default) in
+  `.env` and restart PHP.
+- **Shared hosting**: edit `public/config.php` and set
+  `putenv('ANALYTICS_PROVIDER=none');`.
 
-## �🔧 Development
+In both cases the prepended file short-circuits and emits nothing.
+
+## 🔧 Development
 
 ### Adding a New Tool
 
