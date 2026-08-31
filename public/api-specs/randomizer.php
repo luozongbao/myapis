@@ -307,6 +307,7 @@ $baseUrl = getBaseUrl('randomizer');
             }
         }
     </style>
+<?php /** MyAPIs Analytics (Hostinger / shared-hosting friendly) */ if (file_exists(__DIR__ . "/analytics.php")) { require __DIR__ . "/analytics.php"; } ?>
 </head>
 <body>
     <div class="container">
