@@ -1,9 +1,89 @@
 # 📋 MyAPIs Release Notes
 
-## Current Release: Version 2.3.1
+## Current Release: Version 2.4.0
 
 **Release Date**: August 29, 2026
 **Status**: Stable Release
+
+---
+
+## 📈 Version 2.4.0 - Analytics & Visitor Tracking
+*Released: August 29, 2026*
+
+### 🌟 New Feature
+
+#### 📊 Pluggable Visitor Tracking
+- **`docker/php/analytics.php`**: new partial that emits the correct
+  `<script>` snippet based on `ANALYTICS_PROVIDER`
+  - `umami` — self-hosted, cookie-less, works in China
+  - `ga4` (alias `google`) — Google Analytics 4 via gtag.js
+  - `none` (default) — nothing is emitted
+- **`auto_prepend_file`** directive added to
+  [`docker/php/php.ini.tpl`](docker/php/php.ini.tpl) so the snippet is
+  injected into **every HTML response** without touching the tool
+  pages individually
+- **JSON safety**: the snippet is automatically skipped when:
+  - The request path starts with `/api/`
+  - The `Accept` header contains `application/json`
+  - The script is invoked from the CLI
+- **Safe HTML**: every dynamic value (`UMAMI_SCRIPT_URL`,
+  `UMAMI_WEBSITE_ID`, `GA4_MEASUREMENT_ID`) is run through
+  `htmlspecialchars()` before being echoed
+
+#### 🐳 Optional Self-Hosted Umami Service
+- [`docker-compose.yml`](docker-compose.yml) now ships a **commented-out**
+  `umami-db` + `umami` service block at the bottom (plus the matching
+  `volumes:` declaration)
+- Enable it with one edit to get Umami + PostgreSQL running next to
+  MyAPIs, accessible on `http://localhost:${UMAMI_PORT:-3000}`
+- Default login: `admin` / `umami`
+
+#### ⚙️ Configuration Surface (`example.env`)
+- **`ANALYTICS_PROVIDER`** — `none` (default), `umami`, `ga4`, `google`
+- **`UMAMI_SCRIPT_URL`** — full URL to the Umami tracker
+  (`http://umami:3000/script.js` works out of the box when the
+  compose Umami service is enabled)
+- **`UMAMI_WEBSITE_ID`** — UUID from the Umami dashboard
+- **`GA4_MEASUREMENT_ID`** — `G-XXXXXXXXXX` from the GA4 admin
+- Existing Umami infra variables (`UMAMI_PORT`, `UMAMI_DB_*`,
+  `UMAMI_APP_SECRET`) preserved and now documented in README
+
+#### 🐳 PHP Container Wiring
+- `docker-compose.yml` forwards `ANALYTICS_PROVIDER`,
+  `UMAMI_SCRIPT_URL`, `UMAMI_WEBSITE_ID`, `GA4_MEASUREMENT_ID` to
+  the `php` service so the partial can read them via `getenv()`
+
+### 📚 Documentation
+- New **📈 Analytics / Visitor Tracking** section in
+  [`README.md`](README.md) with:
+  - Provider comparison table
+  - Step-by-step Umami + GA4 setup instructions
+  - Tracking-scope clarification (HTML pages vs. `/api/*`)
+  - Verification `curl` commands
+- README env-vars table extended with every analytics variable
+- README **Latest Updates** bumped to v2.4.0
+
+### 📁 New / Updated Files
+- `docker/php/analytics.php` — new tracking partial
+- `docker/php/php.ini.tpl` — adds `auto_prepend_file`
+- `docker-compose.yml` — adds analytics env forwarding + optional
+  Umami / PostgreSQL service block
+- `example.env` — documents `ANALYTICS_PROVIDER`, `UMAMI_SCRIPT_URL`,
+  `UMAMI_WEBSITE_ID`, `GA4_MEASUREMENT_ID`
+- `README.md` — new analytics section, env table, version banner
+- `RELEASE.md` — this entry
+
+### ✅ Verification
+- `php -l docker/php/analytics.php` passes
+- `docker compose config` validates with the optional Umami block
+  both commented and uncommented
+- Manual checks once running:
+  - `curl -s http://localhost:8080/ | grep -E 'umami|gtag'` → returns
+    the matching `<script>` tag when the provider is enabled
+  - `curl -s http://localhost:8080/api/health-calculator/ | grep -E 'umami|gtag'`
+    → returns nothing (API paths are excluded)
+- Switching `ANALYTICS_PROVIDER=none` and restarting removes every
+  snippet without code changes
 
 ---
 

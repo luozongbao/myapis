@@ -13,3 +13,11 @@ date.timezone = __PHP_DATE_TIMEZONE__
 expose_php = Off
 display_errors = __APP_ENV_DISPLAY_ERRORS__
 error_reporting = E_ALL
+
+; ---------------------------------------------------------------
+; Analytics: auto-prepend a tracking snippet to every response
+; ---------------------------------------------------------------
+; The included file emits the correct <script> tags for Umami,
+; Google Analytics 4, or nothing (default). Set
+; `ANALYTICS_PROVIDER` in your `.env` to enable it.
+auto_prepend_file = /var/www/html/docker/php/analytics.php
