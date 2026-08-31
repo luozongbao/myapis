@@ -395,6 +395,13 @@ All variables are read from `.env` (see [example.env](example.env)):
 | `PHP_DATE_TIMEZONE` | `UTC` | PHP `date.timezone` |
 | `NGINX_CLIENT_MAX_BODY_SIZE` | `10M` | Nginx `client_max_body_size` |
 | `APP_ENV` | `development` | `development` shows errors, `production` hides them |
+| `ANALYTICS_PROVIDER` | `none` | Tracking snippet to inject: `umami`, `ga4` (Google Analytics 4), or `none` |
+| `UMAMI_SCRIPT_URL` | _(empty)_ | URL to the Umami tracker script (e.g. `http://umami:3000/script.js`) |
+| `UMAMI_WEBSITE_ID` | _(empty)_ | Umami website UUID shown in the dashboard |
+| `GA4_MEASUREMENT_ID` | _(empty)_ | Google Analytics 4 measurement ID (e.g. `G-XXXXXXXXXX`) |
+| `UMAMI_PORT` | `3000` | Host port mapped to the optional Umami web container |
+| `UMAMI_DB_NAME` / `UMAMI_DB_USER` / `UMAMI_DB_PASSWORD` | `umami` | PostgreSQL credentials for Umami |
+| `UMAMI_APP_SECRET` | _(change me)_ | Long random string used by Umami (`openssl rand -hex 32`) |
 
 ### Common tasks
 
@@ -422,7 +429,85 @@ API requests to PHP-FPM:
 > 🛡️ Requests for hidden files, `.env`, `README.md`, etc. are
 > explicitly denied by the Nginx configuration.
 
-## 🔧 Development
+## � Analytics / Visitor Tracking
+
+Every HTML response automatically prepends a tracking snippet
+chosen by the `ANALYTICS_PROVIDER` environment variable. The
+snippet is implemented by [`docker/php/analytics.php`](docker/php/analytics.php)
+and wired in via `auto_prepend_file` in
+[`docker/php/php.ini.tpl`](docker/php/php.ini.tpl), so you do not
+need to edit any of the tool pages individually. JSON API
+responses (`/api/*` or `Accept: application/json`) are skipped so
+the tracker never pollutes JSON output.
+
+Supported providers:
+
+| Provider | When to use | Required variables |
+|----------|-------------|--------------------|
+| `umami` | Self-hosted, cookie-less, works in China | `UMAMI_SCRIPT_URL`, `UMAMI_WEBSITE_ID` |
+| `ga4` / `google` | Standard Google Analytics 4 (gtag.js) | `GA4_MEASUREMENT_ID` |
+| `none` (default) | Disabled — nothing is emitted | — |
+
+### Option A — Umami (recommended, self-hosted)
+
+Umami is privacy-friendly, does not set cookies, and works in
+countries that block Google. The compose file ships with an
+optional Umami + PostgreSQL block ready to enable.
+
+1. **Enable the Umami service** in [`docker-compose.yml`](docker-compose.yml):
+   uncomment the `umami-db` and `umami` services at the bottom
+   (and the matching `volumes:` block).
+2. **Set the variables** in `.env`:
+   ```env
+   ANALYTICS_PROVIDER=umami
+   UMAMI_SCRIPT_URL=http://umami:3000/script.js
+   UMAMI_WEBSITE_ID=         # fill in after step 3
+   UMAMI_APP_SECRET=$(openssl rand -hex 32)
+   ```
+3. **Create your account & website**:
+   - Open `http://localhost:${UMAMI_PORT:-3000}`
+   - Default login: `admin` / `umami`
+   - Add a website (name + domain `localhost` is fine for dev)
+   - Copy the **Website ID** into `UMAMI_WEBSITE_ID`
+4. **Restart so PHP picks up the new env values**:
+   ```bash
+   docker compose up -d --build
+   ```
+5. **Verify**:
+   ```bash
+   curl -s http://localhost:8080/ | grep -i umami
+   # → <script async defer data-website-id="..." src="http://umami:3000/script.js"></script>
+   ```
+   Then visit the Umami dashboard — page views should appear within
+   a few seconds.
+
+### Option B — Google Analytics 4
+
+1. Create a GA4 property in the
+   [Google Analytics admin](https://analytics.google.com/) and copy
+   the **Measurement ID** (format `G-XXXXXXXXXX`).
+2. Add to `.env`:
+   ```env
+   ANALYTICS_PROVIDER=ga4
+   GA4_MEASUREMENT_ID=G-XXXXXXXXXX
+   ```
+3. Restart: `docker compose up -d --build`.
+4. Verify with `curl -s http://localhost:8080/ | grep gtag`.
+
+### Tracking scope
+
+- ✅ **HTML pages** in `public/` (landing page + every tool)
+- ❌ `/api/*` JSON endpoints — skipped (would corrupt responses)
+- ❌ CLI invocations — skipped
+- ❌ Requests with `Accept: application/json` — skipped
+
+### Disabling analytics
+
+Set `ANALYTICS_PROVIDER=none` (the default) and restart PHP, or
+just unset the variable. The prepended file short-circuits and
+emits nothing.
+
+## �🔧 Development
 
 ### Adding a New Tool
 
@@ -483,6 +568,24 @@ This project is open source and available under the [MIT License](LICENSE).
 **Built with ❤️ for developers by developers**
 
 ---
+
+## 🚀 Latest Updates (v2.4.0)
+
+### 📈 Analytics & Visitor Tracking
+- **Pluggable tracking provider** controlled by `ANALYTICS_PROVIDER`
+  in `.env` — supports Umami (self-hosted, cookie-less, works in
+  China) and Google Analytics 4 out of the box
+- **Zero-touch injection** via `auto_prepend_file` in
+  [`docker/php/php.ini.tpl`](docker/php/php.ini.tpl) and a new
+  [`docker/php/analytics.php`](docker/php/analytics.php) partial —
+  no need to edit every tool page
+- **Optional Umami service** added (commented by default) to
+  [`docker-compose.yml`](docker-compose.yml) — uncomment to spin up
+  Umami + PostgreSQL alongside the API
+- **JSON / API responses are excluded** so the tracker never pollutes
+  API output
+- **Full docs**: see the [📈 Analytics / Visitor Tracking](#-analytics--visitor-tracking)
+  section below
 
 ## 🚀 Latest Updates (v2.3.x)
 
