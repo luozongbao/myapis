@@ -1,0 +1,57 @@
+# =============================================================
+# MyAPIs - Dependabot (ISSUE-004 + security.md §10)
+# -------------------------------------------------------------
+# Monitors upstream versions for:
+#   * Docker base images (php:8.2-fpm-alpine, nginx:1.27-alpine,
+#     postgres:16-alpine, ghcr.io/umami-software/umami)
+#   * GitHub Actions versions (setup-php, checkout, etc.)
+#
+# Composer is NOT enabled on purpose: the project ships zero
+# runtime dependencies (security.md §10 -- "no Composer"). When
+# ISSUE-003 (PHPUnit scaffold) lands, add a `composer` ecosystem
+# entry here.
+#
+# Schedule: Monday 06:00 ICT (UTC+7) so the weekly digest lands
+# early in the work-week.
+# =============================================================
+
+version: 2
+
+updates:
+  # Docker base images (Dockerfile, docker-compose.yml)
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "Asia/Bangkok"
+    labels:
+      - "dependencies"
+      - "docker"
+    commit-message:
+      prefix: "deps(docker)"
+      include: "scope"
+    groups:
+      minor-and-patch:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+
+  # GitHub Actions (any workflow file under .github/workflows/)
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "Asia/Bangkok"
+    labels:
+      - "dependencies"
+      - "ci"
+    commit-message:
+      prefix: "deps(ci)"
+      include: "scope"
+    groups:
+      actions-minor-and-patch:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]

@@ -1,0 +1,44 @@
+# =============================================================
+# MyAPIs - Docker Compose Production Overrides (ISSUE-020)
+# -------------------------------------------------------------
+# Apply on top of docker-compose.yml:
+#
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml config   # validate
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+#
+# Hardening applied here:
+#   * security_opt: no-new-privileges   (block setuid escalation)
+#   * mem_limit / cpus                  (resource caps; protect host)
+#   * read_only: true on the PHP-FPM root FS + tmpfs for /tmp
+#   * explicit `:ro` re-bind of the source code volume
+#
+# Nginx keeps a writable FS because it needs to write pid + logs
+# (read_only would break the official image's entrypoint); we still
+# apply no-new-privileges and resource limits.
+# =============================================================
+
+services:
+  php:
+    # Drop privilege escalation
+    security_opt:
+      - "no-new-privileges:true"
+    # Resource caps (per container). PHP-FPM is the heaviest
+    # worker; tighten if p95 > budget.
+    mem_limit: 256m
+    cpus: "0.50"
+    # Read-only root FS. /tmp must stay writable (sessions, uploads).
+    read_only: true
+    tmpfs:
+      - /tmp:size=32m,mode=1777,uid=82,gid=82   # 82 = www-data inside php:alpine
+    volumes:
+      # Re-bind source code read-only -- defence in depth even
+      # though the application never writes into /var/www/html.
+      - ./:/var/www/html:ro
+
+  nginx:
+    security_opt:
+      - "no-new-privileges:true"
+    mem_limit: 64m
+    cpus: "0.25"
+    volumes:
+      - ./:/var/www/html:ro

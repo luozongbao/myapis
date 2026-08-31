@@ -25,7 +25,9 @@ services:
     entrypoint: ["/usr/local/bin/entrypoint.sh"]
     command: ["php-fpm"]
     volumes:
-      # Mount the whole project so changes are picked up on dev
+      # Mount the whole project so changes are picked up on dev.
+      # Overridden to read-only (`:ro`) by docker-compose.prod.yml
+      # so the running container cannot tamper with the source tree.
       - ./:/var/www/html
       # Mount the ini template so it can be rendered with current env values
       - ./docker/php/php.ini.tpl:/usr/local/etc/php/php.ini.tpl:ro
@@ -103,11 +105,20 @@ services:
     ports:
       - "${WEB_PORT:-8080}:80"
     volumes:
+      # Source code (read-only)
       - ./:/var/www/html:ro
-      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      # Nginx config template -- rendered by 00-envsubst.sh
+      # (dropped into /docker-entrypoint.d/) using the env vars
+      # below. Placeholders: __NGINX_CLIENT_MAX_BODY_SIZE__,
+      # __RATE_LIMIT_PER_MINUTE__.
+      - ./docker/nginx/default.conf.template:/etc/nginx/conf.d/default.conf.template:ro
+      - ./docker/nginx/00-envsubst.sh:/docker-entrypoint.d/00-envsubst.sh:ro
     environment:
       TZ: ${TZ:-UTC}
       NGINX_CLIENT_MAX_BODY_SIZE: ${NGINX_CLIENT_MAX_BODY_SIZE:-10M}
+      # ISSUE-001: per-IP request rate limit (requests / minute).
+      # burst=20 is hard-coded in the template (absorbs small spikes).
+      RATE_LIMIT_PER_MINUTE: ${RATE_LIMIT_PER_MINUTE:-100}
     networks:
       - myapis-net
 
@@ -118,6 +129,15 @@ services:
 networks:
   myapis-net:
     driver: bridge
+
+# ----------------------------------------------------------------
+# Production hardening overrides
+# ----------------------------------------------------------------
+# Apply on top of this file with:
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+# See docker-compose.prod.yml for the security_opt / mem_limit /
+# cpus / read_only overrides (ISSUE-020).
+# ----------------------------------------------------------------
 
 # ----------------------------------------------------------------
 # Volumes (used by the optional Umami Analytics stack below)

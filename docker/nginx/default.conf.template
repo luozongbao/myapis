@@ -1,0 +1,161 @@
+# =============================================================
+# MyAPIs - Nginx configuration (Docker template)
+# -------------------------------------------------------------
+# This file is rendered at container start-up by 00-envsubst.sh
+# from /etc/nginx/conf.d/default.conf.template.
+# Placeholders __NGINX_CLIENT_MAX_BODY_SIZE__ and
+# __RATE_LIMIT_PER_MINUTE__ are replaced with values from .env.
+# =============================================================
+
+# -------------------------------------------------------------
+# Rate limiting (ISSUE-001)
+# -------------------------------------------------------------
+# limit_req_zone MUST live in the http {} context. This file is
+# included inside http {} via nginx.conf -> include /etc/nginx/conf.d/*.conf
+# so the directive is processed at http scope here.
+limit_req_zone $binary_remote_addr zone=myrl:10m rate=__RATE_LIMIT_PER_MINUTE__r/m;
+
+server {
+    listen 80 default_server;
+    server_name _;
+
+    # Allow uploads up to the value configured in .env (was hardcoded; see ISSUE-001)
+    client_max_body_size __NGINX_CLIENT_MAX_BODY_SIZE__;
+
+    # =============================================================
+    # Security headers (ISSUE-018 + base set from security.md §5)
+    # =============================================================
+    # `always` flag emits on 2xx, 3xx, 4xx, 5xx responses.
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-XSS-Protection "1; mode=block" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+
+    # HTTPS-only headers (security.md §5 "recommended when HTTPS")
+    # HSTS is harmless over HTTP (browsers ignore it) so we ship
+    # it everywhere -- documents intent and is future-proof when
+    # TLS is terminated at the edge.
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+
+    # CSP -- defaults allow self + inline scripts (the analytics
+    # auto-prepend emits inline <script> tags). Umami cloud is
+    # whitelisted. For self-hosted Umami or GA4, extend script-src
+    # accordingly (see docker/README.md).
+    add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://cloud.umami.is; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://cloud.umami.is; frame-ancestors 'self'; base-uri 'self'" always;
+
+    # Disable powerful features that the API never needs.
+    add_header Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=()" always;
+
+    # Rate-limit visibility (ISSUE-001). Stock OSS nginx does not
+    # expose $limit_req_remaining / $limit_req_reset variables,
+    # so only the static limit is emitted. Dynamic counters would
+    # require the openresty / nginx-plus build -- tracked as a known
+    # limitation in ISSUE-001.
+    add_header X-RateLimit-Limit "__RATE_LIMIT_PER_MINUTE__" always;
+
+    # Hide server tokens (do not leak nginx version)
+    server_tokens off;
+
+    # =============================================================
+    # Health check endpoint (excluded from rate limiting)
+    # =============================================================
+    location = /health {
+        access_log off;
+        default_type text/plain;
+        return 200 "ok\n";
+    }
+
+    # ------------------------------------------------------------
+    # Block direct access to sensitive / hidden files
+    # ------------------------------------------------------------
+    location ~ /\.(?!well-known) {
+        deny all;
+    }
+
+    location ~* (README\.md|RELEASE\.md|composer\.(json|lock)|\.env) {
+        deny all;
+    }
+
+    # Block any multi-segment PHP path under /api/ (defence in depth)
+    location ~ ^/api/.+/.+\.php$ {
+        deny all;
+    }
+
+    # ------------------------------------------------------------
+    # API endpoints - /api/<tool> (with or without trailing slash)
+    # ------------------------------------------------------------
+    location ~ ^/api/([^/]+)/?$ {
+        # Rate limit per source IP. burst=20 absorbs small spikes
+        # (browser prefetch, retries) without delaying legitimate
+        # requests; nodelay returns 429 immediately once burst is
+        # exhausted instead of queueing.
+        limit_req zone=myrl burst=20 nodelay;
+        limit_req_status 429;
+
+        # Always hand the request to PHP-FPM, regardless of whether
+        # the trailing slash is present.
+        fastcgi_pass php:9000;
+        fastcgi_index index.php;
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME /var/www/html/api/$1/index.php;
+        fastcgi_param PATH_INFO $fastcgi_path_info;
+
+        # 429 -> named location that emits Retry-After + JSON body
+        error_page 429 @rate_limited;
+    }
+
+    # ------------------------------------------------------------
+    # Web interfaces - everything served from /public
+    # ------------------------------------------------------------
+    root /var/www/html/public;
+    index index.php;
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    # Pass PHP requests to PHP-FPM
+    location ~ \.php$ {
+        try_files $uri =404;
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+        fastcgi_pass php:9000;
+        fastcgi_index index.php;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_param PATH_INFO $fastcgi_path_info;
+        include fastcgi_params;
+
+        # Same rate limit zone for public PHP entrypoints
+        limit_req zone=myrl burst=20 nodelay;
+        limit_req_status 429;
+        error_page 429 @rate_limited;
+    }
+
+    # Static asset caching (ISSUE-002 support -- extracted CSS/JS)
+    location ~* \.(jpg|jpeg|png|gif|ico|css|js|svg|woff2?)$ {
+        expires 7d;
+        access_log off;
+        add_header Cache-Control "public, max-age=604800";
+    }
+
+    # ------------------------------------------------------------
+    # 429 response body + headers (named location)
+    # ------------------------------------------------------------
+    # Re-declares every security header because named locations
+    # do NOT inherit `add_header` from server context when ANY
+    # add_header is present in the location itself.
+    location @rate_limited {
+        internal;
+        default_type application/json;
+        return 429 "{\"error\":\"rate_limit_exceeded\",\"retry_after\":60,\"limit\":\"__RATE_LIMIT_PER_MINUTE__\"}\n";
+
+        add_header Retry-After "60" always;
+        add_header X-Frame-Options "SAMEORIGIN" always;
+        add_header X-XSS-Protection "1; mode=block" always;
+        add_header X-Content-Type-Options "nosniff" always;
+        add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+        add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+        add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://cloud.umami.is; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://cloud.umami.is; frame-ancestors 'self'; base-uri 'self'" always;
+        add_header Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=()" always;
+        add_header X-RateLimit-Limit "__RATE_LIMIT_PER_MINUTE__" always;
+    }
+}
