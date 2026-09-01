@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fortune Teller — MyAPIs</title>
+    <meta name="description" content="Get multilingual fortune predictions covering all aspects of life.">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="page-tool">
+    <!-- ===================== Header (มาจาก includes/header.php) ===================== -->
+    <header class="site-header">
+        <div class="container site-header__inner">
+            <a class="site-brand" href="homepage.html">
+                <span class="site-brand__logo">🚀</span> MyAPIs
+            </a>
+            <button class="site-nav__toggle" aria-label="Toggle menu" aria-expanded="false">☰</button>
+            <nav class="site-nav">
+                <div class="site-nav__links">
+                    <a class="site-nav__link" href="homepage.html">Home</a>
+                    <a class="site-nav__link is-active" href="homepage.html#tools">Tools</a>
+                    <a class="site-nav__link" href="api-specs.html">Docs</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Breadcrumb -->
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <div class="container">
+            <a href="homepage.html">Home</a>
+            <span class="breadcrumb__sep">/</span>
+            <span aria-current="page">Fortune Teller</span>
+            <span style="margin-left:auto; display:flex; gap:8px;">
+                <a class="btn btn--sm btn--ghost" href="#">🔗 API</a>
+                <a class="btn btn--sm btn--ghost" href="api-specs.html">📚 API Docs</a>
+            </span>
+        </div>
+    </nav>
+
+    <main class="main">
+        <div class="container container--narrow">
+            <div class="tool-head">
+                <h1>🔮 ดูดวงออนไลน์</h1>
+                <p>คำพยากรณ์ 52 บท ครอบคลุมทุกเรื่องในชีวิต</p>
+            </div>
+
+            <div class="controls">
+                <div class="language-toggle">
+                    <button class="language-btn active">ไทย</button>
+                    <button class="language-btn">中文</button>
+                    <button class="language-btn">English</button>
+                </div>
+                <br>
+                <button class="fortune-btn">ขอคำพยากรณ์</button>
+            </div>
+
+            <div class="fortune-display">
+                <div class="placeholder">
+                    กดปุ่ม "ขอคำพยากรณ์" เพื่อดูดวงของคุณ
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- ===================== Footer (มาจาก includes/footer.php) ===================== -->
+    <footer class="site-footer">
+        <div class="container site-footer__inner">
+            <p class="site-footer__tagline">🚀 MyAPIs — a collection of developer tools &amp; APIs</p>
+            <div class="site-footer__links">
+                <a href="homepage.html">Home</a>
+                <a href="api-specs.html">Documentation</a>
+                <a href="homepage.html#tools">All Tools</a>
+            </div>
+            <p class="site-footer__copyright">© 2026 MyAPIs. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="app.js" defer></script>
+</body>
+</html>

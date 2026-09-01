@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyAPIs — Developer Tools Collection</title>
+    <meta name="description" content="A comprehensive collection of developer tools and APIs.">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- ===================== Header (มาจาก includes/header.php) ===================== -->
+    <header class="site-header">
+        <div class="container site-header__inner">
+            <a class="site-brand" href="#">
+                <span class="site-brand__logo">🚀</span> MyAPIs
+            </a>
+            <button class="site-nav__toggle" aria-label="Toggle menu" aria-expanded="false">☰</button>
+            <nav class="site-nav">
+                <div class="site-nav__links">
+                    <a class="site-nav__link is-active" href="#">Home</a>
+                    <a class="site-nav__link" href="#tools">Tools</a>
+                    <a class="site-nav__link" href="api-specs.html">Docs</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container">
+            <!-- Hero -->
+            <section class="hero">
+                <h1>🚀 MyAPIs</h1>
+                <p>A comprehensive collection of developer tools and APIs designed to streamline your development workflow.</p>
+                <span class="badge badge--success">✅ All Systems Operational</span>
+            </section>
+
+            <!-- Tools Grid -->
+            <section class="tools-grid" id="tools">
+                <!-- Card (ตัวอย่าง 3 ใน 7) -->
+                <article class="tool-card">
+                    <div class="tool-card__icon">🏥</div>
+                    <h3 class="tool-card__title">Health Calculator</h3>
+                    <p class="tool-card__desc">Comprehensive health metrics calculator providing BMI, BMR, daily caloric intake, and water requirements.</p>
+                    <ul class="tool-card__features">
+                        <li>BMI Calculator with WHO classification</li>
+                        <li>BMR Calculator (Mifflin-St Jeor)</li>
+                        <li>Metric &amp; Imperial unit support</li>
+                        <li>Comprehensive REST API with JSON</li>
+                    </ul>
+                    <div class="tool-card__actions">
+                        <a href="tool-page.html" class="btn btn--primary">Try Tool</a>
+                        <a href="#" class="btn btn--secondary">API</a>
+                        <a href="api-specs.html" class="btn btn--secondary">API Docs</a>
+                    </div>
+                </article>
+
+                <article class="tool-card">
+                    <div class="tool-card__icon">🔐</div>
+                    <h3 class="tool-card__title">Password Generator</h3>
+                    <p class="tool-card__desc">Advanced cryptographically secure password generator with real-time strength analysis.</p>
+                    <ul class="tool-card__features">
+                        <li>Cryptographically secure generation</li>
+                        <li>Customizable length (4–128)</li>
+                        <li>Character set controls</li>
+                    </ul>
+                    <div class="tool-card__actions">
+                        <a href="tool-page.html" class="btn btn--primary">Try Tool</a>
+                        <a href="#" class="btn btn--secondary">API</a>
+                        <a href="api-specs.html" class="btn btn--secondary">API Docs</a>
+                    </div>
+                </article>
+
+                <article class="tool-card">
+                    <div class="tool-card__icon">🔮</div>
+                    <h3 class="tool-card__title">Fortune Teller</h3>
+                    <p class="tool-card__desc">Get multilingual fortune predictions covering all aspects of life.</p>
+                    <ul class="tool-card__features">
+                        <li>Thai, Chinese &amp; English</li>
+                        <li>52 unique fortunes</li>
+                        <li>5 life categories</li>
+                    </ul>
+                    <div class="tool-card__actions">
+                        <a href="tool-page.html" class="btn btn--primary">Try Tool</a>
+                        <a href="#" class="btn btn--secondary">API</a>
+                        <a href="api-specs.html" class="btn btn--secondary">API Docs</a>
+                    </div>
+                </article>
+            </section>
+
+            <!-- Stats -->
+            <section class="stats">
+                <div class="stats__grid">
+                    <div class="stat">
+                        <div class="stat__number">7</div>
+                        <div class="stat__label">Active Tools</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat__number">7</div>
+                        <div class="stat__label">REST APIs</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat__number">100%</div>
+                        <div class="stat__label">Free &amp; CORS-Enabled</div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- ===================== Footer (มาจาก includes/footer.php) ===================== -->
+    <footer class="site-footer">
+        <div class="container site-footer__inner">
+            <p class="site-footer__tagline">🚀 MyAPIs — a collection of developer tools &amp; APIs</p>
+            <div class="site-footer__links">
+                <a href="#">Home</a>
+                <a href="api-specs.html">Documentation</a>
+                <a href="#tools">All Tools</a>
+            </div>
+            <p class="site-footer__copyright">© 2026 MyAPIs. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="app.js" defer></script>
+</body>
+</html>

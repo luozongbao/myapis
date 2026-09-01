@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fortune Teller API — MyAPIs</title>
+    <meta name="description" content="Fortune Teller API documentation — multilingual fortune predictions.">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- ===================== Header (มาจาก includes/header.php) ===================== -->
+    <header class="site-header">
+        <div class="container site-header__inner">
+            <a class="site-brand" href="homepage.html">
+                <span class="site-brand__logo">🚀</span> MyAPIs
+            </a>
+            <button class="site-nav__toggle" aria-label="Toggle menu" aria-expanded="false">☰</button>
+            <nav class="site-nav">
+                <div class="site-nav__links">
+                    <a class="site-nav__link" href="homepage.html">Home</a>
+                    <a class="site-nav__link" href="homepage.html#tools">Tools</a>
+                    <a class="site-nav__link is-active" href="api-specs.html">Docs</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Breadcrumb -->
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <div class="container">
+            <a href="homepage.html">Home</a>
+            <span class="breadcrumb__sep">/</span>
+            <a href="tool-page.html">Fortune Teller</a>
+            <span class="breadcrumb__sep">/</span>
+            <span aria-current="page">API Documentation</span>
+        </div>
+    </nav>
+
+    <main class="main">
+        <div class="container">
+            <!-- Overview -->
+            <section class="section">
+                <h2>📖 Overview</h2>
+                <p>The Fortune Teller API provides random fortune predictions in multiple languages, perfect for entertainment apps and daily motivation services.</p>
+                <div class="features-grid">
+                    <div class="feature-card"><h4>🌍 Multilingual</h4><p>Thai, Chinese, English</p></div>
+                    <div class="feature-card"><h4>🎯 52 Fortunes</h4><p>Carefully curated predictions</p></div>
+                    <div class="feature-card"><h4>🎲 Random</h4><p>Cryptographically secure selection</p></div>
+                </div>
+            </section>
+
+            <!-- Base URL -->
+            <section class="section">
+                <h2>🌐 Base URL</h2>
+                <div class="code-block">https://example.com/api/fortune-teller/</div>
+            </section>
+
+            <!-- Endpoints -->
+            <section class="section">
+                <h2>📡 API Endpoints</h2>
+                <div class="endpoint">
+                    <h3>
+                        <span class="method method--get">GET</span>
+                        <span class="url">/</span>
+                        Get Random Fortune
+                    </h3>
+                    <p>Retrieve a random fortune prediction in the specified language.</p>
+                    <h4>Example Request</h4>
+                    <div class="code-block">curl "https://example.com/api/fortune-teller/"</div>
+                    <h4>Parameters</h4>
+                    <table class="table">
+                        <thead><tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+                        <tbody>
+                            <tr><td><code>lang</code></td><td>string</td><td><span class="optional">Optional</span></td><td>Language code: "th", "zh", "en"</td></tr>
+                            <tr><td><code>id</code></td><td>integer</td><td><span class="optional">Optional</span></td><td>Specific fortune ID (1–52)</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Response -->
+            <section class="section">
+                <h2>📊 Response Format</h2>
+                <div class="response-box">
+                    <h4>Success Response</h4>
+                    <div class="code-block">{
+  "success": true,
+  "fortune": {
+    "id": 7,
+    "th": "…", "zh": "…", "en": "…"
+  }
+}</div>
+                </div>
+                <div class="error-box">
+                    <h4>Error Response</h4>
+                    <div class="code-block">{ "success": false, "error": "Fortune file not found" }</div>
+                </div>
+            </section>
+
+            <!-- Try it -->
+            <section class="try-it">
+                <h3>Ready to try it?</h3>
+                <p>Open the Fortune Teller tool and see the API in action.</p>
+                <a class="btn btn--secondary" href="tool-page.html">Try the Tool</a>
+            </section>
+        </div>
+    </main>
+
+    <!-- ===================== Footer (มาจาก includes/footer.php) ===================== -->
+    <footer class="site-footer">
+        <div class="container site-footer__inner">
+            <p class="site-footer__tagline">🚀 MyAPIs — a collection of developer tools &amp; APIs</p>
+            <div class="site-footer__links">
+                <a href="homepage.html">Home</a>
+                <a href="api-specs.html">Documentation</a>
+                <a href="homepage.html#tools">All Tools</a>
+            </div>
+            <p class="site-footer__copyright">© 2026 MyAPIs. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="app.js" defer></script>
+</body>
+</html>
