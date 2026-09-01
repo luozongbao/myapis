@@ -1,45 +1,55 @@
 <?php
-header('Content-Type: application/json; charset=UTF-8');
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type');
+/**
+ * Fortune Teller — Random fortune from 52 JSON files (TH/EN/ZH)
+ *
+ * @author MyAPIs Team
+ * @since  2.5.0 (refactor — ISSUE-013, ISSUE-024)
+ */
 
-// Handle preflight requests
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    exit(0);
-}
+declare(strict_types=1);
 
-// Function to read a fortune from JSON file
-function getFortune($fortuneId) {
-    $filePath = __DIR__ . '/predictions/' . $fortuneId . '.json';
-    
-    if (!file_exists($filePath)) {
-        return null;
+require_once __DIR__ . "/../_includes/Cors.php";
+require_once __DIR__ . "/../_includes/ErrorHandler.php";
+require_once __DIR__ . "/../_includes/Validator.php";
+
+Cors::handle();
+ErrorHandler::register();
+
+final class FortuneTeller
+{
+    private const TOTAL_FORTUNES = 52;
+
+    /**
+     * @return array<string,mixed>
+     */
+    public function pickRandom(): array
+    {
+        $id = random_int(1, self::TOTAL_FORTUNES);
+        $file = __DIR__ . "/predictions/{$id}.json";
+
+        if (!is_file($file)) {
+            throw new NotFoundException("Fortune file for ID {$id} not found");
+        }
+
+        $raw = file_get_contents($file);
+        if ($raw === false) {
+            throw new RuntimeException("Unable to read fortune file {$id}");
+        }
+
+        try {
+            $fortune = json_decode($raw, true, flags: JSON_THROW_ON_ERROR);
+        } catch (\JsonException $e) {
+            throw new RuntimeException("Invalid fortune JSON: " . $e->getMessage());
+        }
+
+        return [
+            "fortune"        => $fortune,
+            "total_fortunes" => self::TOTAL_FORTUNES,
+        ];
     }
-    
-    $jsonContent = file_get_contents($filePath);
-    return json_decode($jsonContent, true);
 }
 
-// Get a random fortune ID (1-52)
-$randomId = rand(1, 52);
-$fortune = getFortune($randomId);
-
-if ($fortune === null) {
-    // Fallback in case file doesn't exist
-    echo json_encode([
-        'success' => false,
-        'error' => 'Fortune file not found',
-        'requested_id' => $randomId
-    ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
-    exit;
-}
-
-// Return the fortune as JSON
-echo json_encode([
-    'success' => true,
-    'fortune' => $fortune,
-    'timestamp' => date('Y-m-d H:i:s'),
-    'total_fortunes' => 52
-], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
-?>
+ErrorHandler::wrap(static function (): void {
+    $teller = new FortuneTeller();
+    ErrorHandler::success($teller->pickRandom());
+});

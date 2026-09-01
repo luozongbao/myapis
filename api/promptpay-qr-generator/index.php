@@ -1,271 +1,237 @@
 <?php
 /**
- * PromptPay QR Code Generator API
- * REST API endpoint for generating PromptPay QR codes
+ * PromptPay QR Generator — EMV QRCPS-compliant QR for Thai PromptPay
+ *
+ * Supports 3 response formats:
+ *   - image  → binary PNG
+ *   - json   → JSON envelope with base64 QR
+ *   - base64 → JSON envelope with base64-only QR
+ *
+ * @author MyAPIs Team
+ * @since  2.5.0 (refactor — ISSUE-013, ISSUE-024)
  */
 
-// Set CORS headers for cross-origin requests
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type');
+declare(strict_types=1);
 
-// Handle preflight OPTIONS requests
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(204);
-    exit;
-}
+require_once __DIR__ . "/../_includes/Cors.php";
+require_once __DIR__ . "/../_includes/ErrorHandler.php";
+require_once __DIR__ . "/../_includes/Validator.php";
 
-class PromptPayAPI {
-    
-    const ID_PAYLOAD_FORMAT = '00';
-    const ID_POI_METHOD = '01';
-    const ID_MERCHANT_INFORMATION_BOT = '29';
-    const ID_TRANSACTION_CURRENCY = '53';
-    const ID_TRANSACTION_AMOUNT = '54';
-    const ID_COUNTRY_CODE = '58';
-    const ID_CRC = '63';
-    
-    const PAYLOAD_FORMAT_EMV_QRCPS_MERCHANT_PRESENTED_MODE = '01';
-    const POI_METHOD_STATIC = '11';
-    const POI_METHOD_DYNAMIC = '12';
-    const MERCHANT_INFORMATION_TEMPLATE_ID_GUID = '00';
-    const BOT_ID_MERCHANT_PHONE_NUMBER = '01';
-    const BOT_ID_MERCHANT_TAX_ID = '02';
-    const BOT_ID_MERCHANT_EWALLET_ID = '03';
-    const GUID_PROMPTPAY = 'A000000677010111';
-    const TRANSACTION_CURRENCY_THB = '764';
-    const COUNTRY_CODE_TH = 'TH';
+Cors::handle();
+ErrorHandler::register();
 
-    public function generatePayload($target, $amount = null) {
+final class PromptPayAPI
+{
+    // EMV QRCPS tag IDs
+    private const ID_PAYLOAD_FORMAT              = "00";
+    private const ID_POI_METHOD                  = "01";
+    private const ID_MERCHANT_INFORMATION_BOT    = "29";
+    private const ID_TRANSACTION_CURRENCY        = "53";
+    private const ID_TRANSACTION_AMOUNT          = "54";
+    private const ID_COUNTRY_CODE                = "58";
+    private const ID_CRC                         = "63";
+
+    private const PAYLOAD_FORMAT_EMV_QRCPS_MERCHANT_PRESENTED_MODE = "01";
+    private const POI_METHOD_STATIC  = "11";
+    private const POI_METHOD_DYNAMIC = "12";
+    private const MERCHANT_INFORMATION_TEMPLATE_ID_GUID = "00";
+    private const BOT_ID_MERCHANT_PHONE_NUMBER = "01";
+    private const BOT_ID_MERCHANT_TAX_ID       = "02";
+    private const BOT_ID_MERCHANT_EWALLET_ID    = "03";
+    private const GUID_PROMPTPAY         = "A000000677010111";
+    private const TRANSACTION_CURRENCY_THB = "764";
+    private const COUNTRY_CODE_TH         = "TH";
+
+    /**
+     * Generate the EMV QRCPS payload string for the given target.
+     *
+     * @return array{payload:string,target_type:string}
+     */
+    public function generate(string $target, ?float $amount = null): array
+    {
         $target = $this->sanitizeTarget($target);
-        $targetType = strlen($target) >= 15 ? self::BOT_ID_MERCHANT_EWALLET_ID : 
-                     (strlen($target) >= 13 ? self::BOT_ID_MERCHANT_TAX_ID : self::BOT_ID_MERCHANT_PHONE_NUMBER);
+        if ($target === "") {
+            throw new ValidationException("target is required");
+        }
+
+        $targetType = $this->detectTargetType($target);
 
         $data = [
-            $this->f(self::ID_PAYLOAD_FORMAT, self::PAYLOAD_FORMAT_EMV_QRCPS_MERCHANT_PRESENTED_MODE),
-            $this->f(self::ID_POI_METHOD, $amount ? self::POI_METHOD_DYNAMIC : self::POI_METHOD_STATIC),
-            $this->f(self::ID_MERCHANT_INFORMATION_BOT, $this->serialize([
-                $this->f(self::MERCHANT_INFORMATION_TEMPLATE_ID_GUID, self::GUID_PROMPTPAY),
-                $this->f($targetType, $this->formatTarget($target))
+            $this->field(self::ID_PAYLOAD_FORMAT, self::PAYLOAD_FORMAT_EMV_QRCPS_MERCHANT_PRESENTED_MODE),
+            $this->field(self::ID_POI_METHOD, $amount !== null ? self::POI_METHOD_DYNAMIC : self::POI_METHOD_STATIC),
+            $this->field(self::ID_MERCHANT_INFORMATION_BOT, $this->serialize([
+                $this->field(self::MERCHANT_INFORMATION_TEMPLATE_ID_GUID, self::GUID_PROMPTPAY),
+                $this->field($targetType, $this->formatTarget($target)),
             ])),
-            $this->f(self::ID_COUNTRY_CODE, self::COUNTRY_CODE_TH),
-            $this->f(self::ID_TRANSACTION_CURRENCY, self::TRANSACTION_CURRENCY_THB),
+            $this->field(self::ID_COUNTRY_CODE, self::COUNTRY_CODE_TH),
+            $this->field(self::ID_TRANSACTION_CURRENCY, self::TRANSACTION_CURRENCY_THB),
         ];
-        
+
         if ($amount !== null && $amount > 0) {
-            array_push($data, $this->f(self::ID_TRANSACTION_AMOUNT, $this->formatAmount($amount)));
+            $data[] = $this->field(self::ID_TRANSACTION_AMOUNT, $this->formatAmount($amount));
         }
-        
-        $dataToCrc = $this->serialize($data) . self::ID_CRC . '04';
-        array_push($data, $this->f(self::ID_CRC, $this->crc16($dataToCrc)));
-        
-        return $this->serialize($data);
+
+        $dataToCrc = $this->serialize($data) . self::ID_CRC . "04";
+        $data[] = $this->field(self::ID_CRC, $this->crc16($dataToCrc));
+
+        return [
+            "payload"     => $this->serialize($data),
+            "target_type" => $this->targetTypeName($targetType),
+        ];
     }
 
-    private function f($id, $value) {
-        return implode('', [$id, substr('00' . strlen($value), -2), $value]);
-    }
-    
-    private function serialize($xs) {
-        return implode('', $xs);
-    }
-    
-    private function sanitizeTarget($str) {
-        return preg_replace('/[^0-9]/', '', $str);
+    private function detectTargetType(string $target): string
+    {
+        $len = strlen($target);
+        if ($len >= 15) return self::BOT_ID_MERCHANT_EWALLET_ID;
+        if ($len >= 13) return self::BOT_ID_MERCHANT_TAX_ID;
+        return self::BOT_ID_MERCHANT_PHONE_NUMBER;
     }
 
-    private function formatTarget($target) {
+    private function targetTypeName(string $id): string
+    {
+        return match ($id) {
+            self::BOT_ID_MERCHANT_EWALLET_ID => "ewallet",
+            self::BOT_ID_MERCHANT_TAX_ID     => "tax_id",
+            default                          => "phone",
+        };
+    }
+
+    private function field(string $id, string $value): string
+    {
+        return $id . substr("00" . strlen($value), -2) . $value;
+    }
+
+    private function serialize(array $xs): string
+    {
+        return implode("", $xs);
+    }
+
+    private function sanitizeTarget(string $str): string
+    {
+        return preg_replace("/[^0-9]/", "", $str) ?? "";
+    }
+
+    private function formatTarget(string $target): string
+    {
         $str = $this->sanitizeTarget($target);
         if (strlen($str) >= 13) {
             return $str;
         }
-        
-        $str = preg_replace('/^0/', '66', $str);
-        $str = '0000000000000' . $str;
-        
+        $str = preg_replace("/^0/", "66", $str) ?? $str;
+        $str = "0000000000000" . $str;
         return substr($str, -13);
     }
 
-    private function formatAmount($amount) {
-        return number_format($amount, 2, '.', '');
+    private function formatAmount(float $amount): string
+    {
+        return number_format($amount, 2, ".", "");
     }
 
-    private function crc16($data) {
+    private function crc16(string $data): string
+    {
         $crc = 0xFFFF;
         $polynomial = 0x1021;
-        
         for ($i = 0; $i < strlen($data); $i++) {
             $crc ^= ord($data[$i]) << 8;
             for ($j = 0; $j < 8; $j++) {
-                if ($crc & 0x8000) {
-                    $crc = ($crc << 1) ^ $polynomial;
-                } else {
-                    $crc = $crc << 1;
-                }
+                $crc = ($crc & 0x8000) ? (($crc << 1) ^ $polynomial) : ($crc << 1);
             }
         }
-        
         return strtoupper(dechex($crc & 0xFFFF));
     }
 
     /**
-     * Generate QR code using goQR.me API (no local dependencies)
-     * Note: Requires internet connection
+     * Build the goQR.me URL for for the the given payload.
      */
-    public function generateQrCodeUrl($target, $amount = null, $size = 300) {
-        $payload = $this->generatePayload($target, $amount);
-        
-        // Use goQR.me API with better parameters
+    public function buildQrUrl(string $payload, int $size): string
+    {
         $params = [
-            'data' => $payload,
-            'size' => $size . 'x' . $size,
-            'ecc' => 'M',  // Medium error correction (15% redundancy)
-            'format' => 'png',
-            'qzone' => 1,  // Quiet zone for better scanning
-            'charset-source' => 'UTF-8',
-            'charset-target' => 'UTF-8'
+            "data"            => $payload,
+            "size"            => $size . "x" . $size,
+            "ecc"             => "M",
+            "format"          => "png",
+            "qzone"           => 1,
+            "charset-source"  => "UTF-8",
+            "charset-target"  => "UTF-8",
         ];
-        
         return "https://api.qrserver.com/v1/create-qr-code/?" . http_build_query($params);
-    }
-    
-    /**
-     * Generate and save QR code using goQR.me API
-     */
-    public function generateQrCodeFile($savePath, $target, $amount = null, $size = 300) {
-        $qrUrl = $this->generateQrCodeUrl($target, $amount, $size);
-        
-        // Use cURL for better error handling
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $qrUrl);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        
-        $qrData = curl_exec($ch);
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $error = curl_error($ch);
-        curl_close($ch);
-        
-        if ($qrData === false || !empty($error) || $httpCode !== 200) {
-            throw new Exception('Failed to generate QR code: ' . ($error ?: 'HTTP ' . $httpCode));
-        }
-        
-        return file_put_contents($savePath, $qrData);
     }
 
     /**
-     * Generate and return QR code image data directly
+     * Fetch the binary PNG from goQR.me.
      */
-    public function generateQrCodeData($target, $amount = null, $size = 300) {
-        $qrUrl = $this->generateQrCodeUrl($target, $amount, $size);
-        
-        // Use cURL for better error handling
+    public function fetchQrPng(string $payload, int $size): string
+    {
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $qrUrl);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        
-        $qrData = curl_exec($ch);
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $error = curl_error($ch);
+        curl_setopt_array($ch, [
+            CURLOPT_URL            => $this->buildQrUrl($payload, $size),
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_TIMEOUT        => 30,
+            CURLOPT_SSL_VERIFYPEER => false,
+        ]);
+        $data = curl_exec($ch);
+        $code = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $err  = curl_error($ch);
         curl_close($ch);
-        
-        if ($qrData === false || !empty($error) || $httpCode !== 200) {
-            throw new Exception('Failed to generate QR code: ' . ($error ?: 'HTTP ' . $httpCode));
+
+        if ($data === false || $err !== "" || $code !== 200) {
+            throw new RuntimeException("Failed to generate QR code: " . ($err !== "" ? $err : "HTTP " . $code));
         }
-        
-        return $qrData;
+        return $data;
     }
 }
 
-// API Request Handler - this endpoint only handles API requests
-try {
-    // Get parameters from GET or POST
-    $target = trim($_REQUEST['target'] ?? '');
-    $amount = trim($_REQUEST['amount'] ?? '');
-    $size = intval($_REQUEST['size'] ?? 300);
-    $format = strtolower($_REQUEST['format'] ?? 'image');
-    
-    // Validate size parameter
-    if ($size < 50 || $size > 1000) {
-        $size = 300;
+ErrorHandler::wrap(static function (): void {
+    $input = Validator::readInput();
+    $target = trim((string) ($input["target"] ?? ""));
+    $amountRaw = $input["amount"] ?? null;
+    $amount = ($amountRaw === null || $amountRaw === "") ? null : (float) $amountRaw;
+    $size = (int) ($input["size"] ?? 300);
+    $size = max(50, min(1000, $size));
+    $format = strtolower((string) ($input["format"] ?? "image"));
+
+    if (!in_array($format, ["image", "json", "base64"], true)) {
+        throw new ValidationException("Invalid format. Supported: image, json, base64");
     }
-    
-    // Validate required parameters
-    if (empty($target)) {
-        http_response_code(400);
-        header('Content-Type: application/json');
-        echo json_encode([
-            'error' => 'Missing required parameter: target',
-            'message' => 'Please provide a phone number, tax ID, or e-wallet ID'
-        ]);
+
+    $api = new PromptPayAPI();
+    $generated = $api->generate($target, $amount);
+    $payload = $generated["payload"];
+
+    if ($format === "image") {
+        $png = $api->fetchQrPng($payload, $size);
+        if (!headers_sent()) {
+            header("Content-Type: image/png");
+            header("Content-Disposition: inline; filename=\"promptpay-qr.png\"");
+            header("Cache-Control: public, max-age=3600");
+        }
+        echo $png;
         exit;
     }
-    
-    $api = new PromptPayAPI();
-        
-        if ($format === 'image') {
-            // Return QR code image directly
-            $qrData = $api->generateQrCodeData($target, $amount ? floatval($amount) : null, $size);
-            
-            header('Content-Type: image/png');
-            header('Content-Disposition: inline; filename="promptpay-qr.png"');
-            header('Cache-Control: public, max-age=3600'); // Cache for 1 hour
-            echo $qrData;
-            
-        } else if ($format === 'json') {
-            // Return JSON response with payload and QR URL
-            header('Content-Type: application/json');
-            $payload = $api->generatePayload($target, $amount ? floatval($amount) : null);
-            
-            // Generate QR code data and convert to base64 to avoid URL issues
-            $qrData = $api->generateQrCodeData($target, $amount ? floatval($amount) : null, $size);
-            $base64Image = 'data:image/png;base64,' . base64_encode($qrData);
-            
-            echo json_encode([
-                'success' => true,
-                'message' => 'QR code generated successfully',
-                'payload' => $payload,
-                'qr_url' => $base64Image,
-                'target' => $target,
-                'amount' => $amount ? floatval($amount) : null,
-                'target_type' => strlen($target) >= 15 ? 'ewallet' : (strlen($target) >= 13 ? 'tax_id' : 'phone'),
-                'qr_size' => $size
-            ]);
-            
-        } else if ($format === 'base64') {
-            // Return base64 encoded image
-            header('Content-Type: application/json');
-            $qrData = $api->generateQrCodeData($target, $amount ? floatval($amount) : null, $size);
-            $base64 = base64_encode($qrData);
-            
-            echo json_encode([
-                'success' => true,
-                'image_base64' => 'data:image/png;base64,' . $base64,
-                'payload' => $api->generatePayload($target, $amount ? floatval($amount) : null),
-                'target' => $target,
-                'amount' => $amount ? floatval($amount) : null,
-                'size' => $size
-            ]);
-            
-        } else {
-            http_response_code(400);
-            header('Content-Type: application/json');
-            echo json_encode([
-                'error' => 'Invalid format parameter',
-                'message' => 'Supported formats: image, json, base64'
-            ]);
-        }
-        
-    } catch (Exception $e) {
-        http_response_code(500);
-        header('Content-Type: application/json');
-        echo json_encode([
-            'error' => 'Internal server error',
-            'message' => $e->getMessage()
+
+    // json / base64 — use new envelope via ErrorHandler::success
+    $png = $api->fetchQrPng($payload, $size);
+    $b64 = "data:image/png;base64," . base64_encode($png);
+
+    if ($format === "json") {
+        ErrorHandler::success([
+            "payload"     => $payload,
+            "qr_url"      => $b64,
+            "target"      => $target,
+            "amount"      => $amount,
+            "target_type" => $generated["target_type"],
+            "qr_size"     => $size,
         ]);
     }
+
+    // base64
+    ErrorHandler::success([
+        "image_base64" => $b64,
+        "payload"      => $payload,
+        "target"       => $target,
+        "amount"       => $amount,
+        "size"         => $size,
+    ]);
+});

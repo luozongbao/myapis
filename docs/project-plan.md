@@ -117,7 +117,7 @@ Context:
 
 หน้าที่ของคุณ:
 1. ตรวจสอบ `docs/architecture/overview.md` และ `docs/architecture/directory-structure.md`
-2. ตรวจสอบ ADRs ที่มีอยู่ใน `docs/architecture/ADRs/` (ถ้ายังไม่มี เขียนใหม่)
+2. ตรวจสอบ ADRs ที่มีอยู่ใน `docs/adr/` (ถ้ายังไม่มี เขียนใหม่)
 3. เขียน ADR ใหม่สำหรับ decision ที่ยังขาด:
    - เลือก PHP version + extension list
    - เลือก frontend approach (vanilla JS vs Alpine vs HTMX)
@@ -169,7 +169,7 @@ Constraints:
 - `docs/architecture/overview.md` (complete)
 - `docs/architecture/directory-structure.md` (complete)
 - `docs/architecture/deployment.md` (complete)
-- `docs/architecture/ADRs/ADR-NNN-*.md` (≥ 3 ADRs)
+- `docs/adr/ADR-NNN-*.md` (≥ 3 ADRs)
 
 ## 1.5 DoD
 

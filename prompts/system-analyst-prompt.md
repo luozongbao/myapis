@@ -44,7 +44,7 @@
 ### 3. Architecture Decision
 - ตัดสิน technical trade-off
 - เขียน ADR (Architecture Decision Record)
-- ดู: [`architecture/ADRs/`](../docs/architecture/ADRs/)
+- ดู: [`architecture/ADRs/`](../docs/adr/)
 
 ### 4. Data Modeling
 - JSON response shape
@@ -71,7 +71,7 @@
 |-------------|--------|------|
 | Functional Requirements | `docs/requirements/FR-XXX.md` | Per feature |
 | API Spec | `docs/api-specs/<tool>.md` | Per tool / per change |
-| ADR | `docs/architecture/ADRs/ADR-NNN-*.md` | Per architecture decision |
+| ADR | `docs/adr/ADR-NNN-*.md` | Per architecture decision |
 | Use case | Section ใน Issue | Per feature |
 | Error code table | Table ใน spec | Per tool |
 

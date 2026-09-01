@@ -1,455 +1,291 @@
 <?php
-header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type');
+/**
+ * Health Calculator — BMI / BMR / Daily Intake / Water Intake
+ *
+ * @author MyAPIs Team
+ * @since  2.5.0 (refactor — ISSUE-013, ISSUE-024)
+ */
 
-// Handle preflight requests
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
-    exit();
-}
+declare(strict_types=1);
 
-// BMI Calculator Functions
-function calculateBMI($weight, $height) {
-    // Convert height from cm to meters if needed
-    if ($height > 3) {
-        $height = $height / 100;
-    }
-    
-    $bmi = $weight / ($height * $height);
-    return round($bmi, 2);
-}
+require_once __DIR__ . "/../_includes/Cors.php";
+require_once __DIR__ . "/../_includes/ErrorHandler.php";
+require_once __DIR__ . "/../_includes/Validator.php";
 
-function getBMICategory($bmi) {
-    if ($bmi < 18.5) {
-        return 'Underweight';
-    } elseif ($bmi >= 18.5 && $bmi < 25) {
-        return 'Normal weight';
-    } elseif ($bmi >= 25 && $bmi < 30) {
-        return 'Overweight';
-    } else {
-        return 'Obese';
-    }
-}
+Cors::handle();
+ErrorHandler::register();
 
-function getBMIAdvice($category) {
-    $advice = [
-        'Underweight' => 'Consider consulting with a healthcare provider about gaining weight in a healthy way.',
-        'Normal weight' => 'Great! Maintain your current lifestyle with a balanced diet and regular exercise.',
-        'Overweight' => 'Consider adopting a healthier diet and increasing physical activity.',
-        'Obese' => 'It\'s recommended to consult with a healthcare provider for a comprehensive weight management plan.'
+final class HealthCalculator
+{
+    private const ACTIVITY_MULTIPLIERS = [
+        "sedentary" => 1.2,
+        "light"     => 1.375,
+        "moderate"  => 1.55,
+        "active"    => 1.725,
+        "extra"     => 1.9,
     ];
-    
-    return $advice[$category] ?? 'Consult with a healthcare provider for personalized advice.';
-}
 
-// BMR Calculator Functions
-function calculateBMR($weight, $height, $age, $gender) {
-    // Ensure height is in cm
-    if ($height <= 3) {
-        $height = $height * 100;
-    }
-    
-    // Mifflin-St Jeor Equation
-    if ($gender === 'male') {
-        $bmr = (10 * $weight) + (6.25 * $height) - (5 * $age) + 5;
-    } else {
-        $bmr = (10 * $weight) + (6.25 * $height) - (5 * $age) - 161;
-    }
-    
-    return round($bmr, 0);
-}
-
-function getActivityMultiplier($activity) {
-    $multipliers = [
-        'sedentary' => 1.2,
-        'light' => 1.375,
-        'moderate' => 1.55,
-        'active' => 1.725,
-        'extra' => 1.9
+    private const GOAL_ADJUSTMENTS = [
+        "maintain"   => 0,
+        "lose"       => -500,
+        "lose-fast"  => -1000,
+        "gain"       => 500,
+        "gain-fast"  => 1000,
     ];
-    
-    return $multipliers[$activity] ?? 1.2;
-}
 
-function getBMRAdvice($bmr, $activity) {
-    $dailyCalories = round($bmr * getActivityMultiplier($activity), 0);
-    return "Your BMR is $bmr calories per day. With your activity level, you need approximately $dailyCalories calories daily to maintain your current weight.";
-}
-
-// Daily Intake Calculator Functions
-function calculateDailyIntake($weight, $height, $age, $gender, $activity, $goal) {
-    $bmr = calculateBMR($weight, $height, $age, $gender);
-    $maintenanceCalories = round($bmr * getActivityMultiplier($activity), 0);
-    
-    $adjustments = [
-        'maintain' => 0,
-        'lose' => -500,      // 0.5 kg per week
-        'lose-fast' => -1000, // 1 kg per week
-        'gain' => 500,       // 0.5 kg per week
-        'gain-fast' => 1000  // 1 kg per week
+    private const CLIMATE_MULTIPLIERS = [
+        "cold"      => 0.9,
+        "temperate" => 1.0,
+        "hot"       => 1.3,
+        "very-hot"  => 1.5,
     ];
-    
-    $adjustment = $adjustments[$goal] ?? 0;
-    $targetCalories = $maintenanceCalories + $adjustment;
-    
-    // Calculate macronutrient breakdown (basic recommendation)
-    // Protein recommendation of 1.6g per kg body weight is based on research and guidelines for optimal intake for active adults (e.g., International Society of Sports Nutrition, 2017; higher than RDA for muscle maintenance and growth).
-    $protein = round($weight * 1.6, 0); // 1.6g per kg body weight
-    $proteinCals = $protein * 4;
-    
-    $fatCals = round($targetCalories * 0.25, 0); // 25% of calories from fat
-    $fat = round($fatCals / 9, 0);
-    
-    $carbCals = $targetCalories - $proteinCals - $fatCals;
-    $carbs = round($carbCals / 4, 0);
-    
-    return [
-        'calories' => $targetCalories,
-        'protein' => $protein,
-        'carbs' => $carbs,
-        'fat' => $fat,
-        'bmr' => $bmr,
-        'maintenance' => $maintenanceCalories
+
+    private const HEALTH_MULTIPLIERS = [
+        "normal"       => 1.0,
+        "fever"        => 1.3,
+        "diarrhea"     => 1.5,
+        "kidney"       => 0.8,
+        "heart"        => 0.9,
+        "pregnancy"    => 1.3,
+        "breastfeeding"=> 1.5,
     ];
-}
 
-function getIntakeAdvice($goal, $calories) {
-    $advice = [
-        'maintain' => "To maintain your current weight, aim for $calories calories per day with balanced nutrition and regular exercise.",
-        'lose' => "To lose 0.5kg per week, aim for $calories calories per day. This creates a safe caloric deficit.",
-        'lose-fast' => "To lose 1kg per week, aim for $calories calories per day. Ensure adequate nutrition and consider consulting a healthcare provider.",
-        'gain' => "To gain 0.5kg per week, aim for $calories calories per day with a focus on protein and strength training.",
-        'gain-fast' => "To gain 1kg per week, aim for $calories calories per day. Focus on nutrient-dense, high-calorie foods."
-    ];
-    
-    return $advice[$goal] ?? 'Consult with a healthcare provider for personalized nutrition advice.';
-}
+    /**
+     * @param array<string,mixed> $input
+     * @return array<string,mixed>
+     */
+    public function compute(array $input): array
+    {
+        $calculator = (string) ($input["calculator"] ?? "");
+        $unit       = (string) ($input["unit"] ?? "metric");
 
-// Water Intake Calculator Functions
-function calculateWaterIntake($weight, $age, $gender, $activity, $climate, $healthCondition) {
-    // Base water intake: 35ml per kg of body weight
-    // Reference: European Food Safety Authority (EFSA), Scientific Opinion on Dietary Reference Values for water, EFSA Journal 2010;8(3):1459. https://efsa.onlinelibrary.wiley.com/doi/10.2903/j.efsa.2010.1459
-    $baseIntake = $weight * 35;
-    
-    // Age adjustments
-    if ($age > 65) {
-        $baseIntake *= 1.1; // Older adults need more water
-    } elseif ($age < 18) {
-        $baseIntake *= 0.9; // Children need slightly less per kg
-    }
-    
-    // Gender adjustments (men typically need more)
-    if ($gender === 'male') {
-        $baseIntake *= 1.1;
-    }
-    
-    // Activity level adjustments
-    $activityMultipliers = [
-        'sedentary' => 1.0,
-        'light' => 1.2,
-        'moderate' => 1.4,
-        'active' => 1.6,
-        'extra' => 1.8
-    ];
-    $baseIntake *= $activityMultipliers[$activity] ?? 1.0;
-    
-    // Climate adjustments
-    $climateMultipliers = [
-        'cold' => 0.9,
-        'temperate' => 1.0,
-        'hot' => 1.3,
-        'very-hot' => 1.5
-    ];
-    $baseIntake *= $climateMultipliers[$climate] ?? 1.0;
-    
-    // Health condition adjustments
-    $healthMultipliers = [
-        'normal' => 1.0,
-        'fever' => 1.3,
-        'diarrhea' => 1.5,
-        'kidney' => 0.8, // May need restriction
-        'heart' => 0.9,  // May need slight restriction
-        'pregnancy' => 1.3,
-        'breastfeeding' => 1.5
-    ];
-    $baseIntake *= $healthMultipliers[$healthCondition] ?? 1.0;
-    
-    return round($baseIntake, 0);
-}
+        $weight = (float) ($input["weight"] ?? 0);
+        $height = isset($input["height"]) ? (float) $input["height"] : 0.0;
 
-function getWaterBreakdown($totalIntake) {
-    $fromFood = round($totalIntake * 0.2, 0); // 20% from food
-    $fromDrinks = $totalIntake - $fromFood;   // 80% from drinks
-    $glasses = round($fromDrinks / 250, 1);   // Assuming 250ml per glass
-    
-    return [
-        'total' => $totalIntake,
-        'fromDrinks' => $fromDrinks,
-        'fromFood' => $fromFood,
-        'glasses' => $glasses
-    ];
-}
-
-function getWaterAdvice($totalIntake, $glasses, $activity, $climate, $healthCondition) {
-    $advice = "Aim for approximately {$totalIntake}ml ({$glasses} glasses) of water daily. ";
-    
-    if ($activity === 'active' || $activity === 'extra') {
-        $advice .= "Since you're very active, drink extra water before, during, and after exercise. ";
-    }
-    
-    if ($climate === 'hot' || $climate === 'very-hot') {
-        $advice .= "Hot climate increases your water needs - drink regularly throughout the day. ";
-    }
-    
-    if ($healthCondition === 'fever') {
-        $advice .= "Fever increases fluid loss - drink extra water and consult a healthcare provider. ";
-    } elseif ($healthCondition === 'kidney' || $healthCondition === 'heart') {
-        $advice .= "Please consult your healthcare provider about appropriate fluid intake for your condition. ";
-    } elseif ($healthCondition === 'pregnancy' || $healthCondition === 'breastfeeding') {
-        $advice .= "Increased fluid needs during this time are normal - ensure adequate hydration. ";
-    }
-    
-    $advice .= "Spread intake throughout the day and listen to your body's thirst signals.";
-    
-    return $advice;
-}
-
-// Utility Functions
-function convertUnits($weight, $height, $unit) {
-    if ($unit === 'imperial') {
-        // Convert pounds to kg
-        $weight = $weight * 0.453592;
-        // Convert inches to cm
-        $height = $height * 2.54;
-    }
-    
-    return [$weight, $height];
-}
-
-function validateInput($input, $calculator) {
-    $errors = [];
-    
-    switch ($calculator) {
-        case 'bmi':
-            if (!isset($input['weight']) || !isset($input['height'])) {
-                $errors[] = 'Weight and height are required for BMI calculation';
-            }
-            break;
-            
-        case 'bmr':
-            $required = ['weight', 'height', 'age', 'gender', 'activity'];
-            foreach ($required as $field) {
-                if (!isset($input[$field])) {
-                    $errors[] = ucfirst($field) . ' is required for BMR calculation';
-                }
-            }
-            break;
-            
-        case 'intake':
-            $required = ['weight', 'height', 'age', 'gender', 'activity', 'goal'];
-            foreach ($required as $field) {
-                if (!isset($input[$field])) {
-                    $errors[] = ucfirst($field) . ' is required for daily intake calculation';
-                }
-            }
-            break;
-            
-        case 'water':
-            $required = ['weight', 'age', 'gender', 'activity', 'climate', 'healthCondition'];
-            foreach ($required as $field) {
-                if (!isset($input[$field])) {
-                    $errors[] = ucfirst($field) . ' is required for water intake calculation';
-                }
-            }
-            break;
-            
-        default:
-            $errors[] = 'Invalid calculator type';
-    }
-    
-    return $errors;
-}
-
-// Main logic
-$input = json_decode(file_get_contents('php://input'), true);
-
-// Support both JSON POST and GET parameters
-if (!$input) {
-    $input = $_GET;
-}
-
-$calculator = $input['calculator'] ?? $_GET['calculator'] ?? null;
-$unit = $input['unit'] ?? $_GET['unit'] ?? 'metric';
-
-// Check if calculator is specified
-if (!$calculator) {
-    http_response_code(400);
-    echo json_encode([
-        'success' => false,
-        'message' => 'Calculator type is required',
-        'availableCalculators' => ['bmi', 'bmr', 'intake', 'water']
-    ]);
-    exit();
-}
-
-// Validate input
-$errors = validateInput($input, $calculator);
-if (!empty($errors)) {
-    http_response_code(400);
-    echo json_encode([
-        'success' => false,
-        'message' => implode(', ', $errors),
-        'errors' => $errors
-    ]);
-    exit();
-}
-
-try {
-    $weight = floatval($input['weight']);
-    
-    // For water calculator, we don't need height
-    if ($calculator === 'water') {
-        // Convert weight if needed for water calculation
-        if ($unit === 'imperial') {
-            $weight = $weight * 0.453592; // Convert pounds to kg
+        if ($unit === "imperial") {
+            $weight = $weight * 0.453592;
+            $height = $height * 2.54;
         }
-        
-        // Validate weight only for water calculator
-        if ($weight <= 0) {
-            throw new Exception('Weight must be a positive value');
+
+        if ($weight <= 0 || ($calculator !== "water" && $height <= 0)) {
+            throw new ValidationException("Weight and height must be positive values");
         }
-        
-        if ($weight > 1000) {
-            throw new Exception('Please check your weight value - it seems unrealistic');
+        if ($weight > 1000 || ($calculator !== "water" && $height > 300)) {
+            throw new ValidationException("Please check your height and weight values - they seem unrealistic");
         }
-        
-        $height = 0; // Set height to 0 for water calculation (not needed)
-    } else {
-        // For other calculators, we need both weight and height
-        $height = floatval($input['height']);
-        
-        // Convert units if needed
-        list($weight, $height) = convertUnits($weight, $height, $unit);
-        
-        // Validate converted values
-        if ($weight <= 0 || $height <= 0) {
-            throw new Exception('Weight and height must be positive values');
-        }
-        
-        if ($weight > 1000 || $height > 300) {
-            throw new Exception('Please check your height and weight values - they seem unrealistic');
+
+        switch ($calculator) {
+            case "bmi":
+                return $this->computeBmi($weight, $height);
+            case "bmr":
+                return $this->computeBmr($weight, $height, $input);
+            case "intake":
+                return $this->computeIntake($weight, $height, $input);
+            case "water":
+                return $this->computeWater($weight, $input);
+            default:
+                throw new ValidationException(
+                    "Invalid calculator type. Available: bmi, bmr, intake, water"
+                );
         }
     }
-    
-    $result = [];
-    
-    switch ($calculator) {
-        case 'bmi':
-            $bmi = calculateBMI($weight, $height);
-            $category = getBMICategory($bmi);
-            $advice = getBMIAdvice($category);
-            
-            $result = [
-                'bmi' => $bmi,
-                'category' => $category,
-                'advice' => $advice
-            ];
-            break;
-            
-        case 'bmr':
-            $age = intval($input['age']);
-            $gender = $input['gender'];
-            $activity = $input['activity'];
-            
-            if ($age <= 0 || $age > 120) {
-                throw new Exception('Age must be between 1 and 120 years');
-            }
-            
-            $bmr = calculateBMR($weight, $height, $age, $gender);
-            $dailyCalories = round($bmr * getActivityMultiplier($activity), 0);
-            
-            $result = [
-                'bmr' => $bmr,
-                'detail' => "Daily calories needed: $dailyCalories",
-                'advice' => getBMRAdvice($bmr, $activity)
-            ];
-            break;
-            
-        case 'intake':
-            $age = intval($input['age']);
-            $gender = $input['gender'];
-            $activity = $input['activity'];
-            $goal = $input['goal'];
-            
-            if ($age <= 0 || $age > 120) {
-                throw new Exception('Age must be between 1 and 120 years');
-            }
-            
-            $intake = calculateDailyIntake($weight, $height, $age, $gender, $activity, $goal);
-            
-            $breakdown = "Protein: {$intake['protein']}g • Carbs: {$intake['carbs']}g • Fat: {$intake['fat']}g<br>";
-            $breakdown .= "BMR: {$intake['bmr']} cal • Maintenance: {$intake['maintenance']} cal";
-            
-            $result = [
-                'calories' => $intake['calories'],
-                'breakdown' => $breakdown,
-                'advice' => getIntakeAdvice($goal, $intake['calories']),
-                'macros' => [
-                    'protein' => $intake['protein'],
-                    'carbs' => $intake['carbs'],
-                    'fat' => $intake['fat']
-                ]
-            ];
-            break;
-            
-        case 'water':
-            $age = intval($input['age']);
-            $gender = $input['gender'];
-            $activity = $input['activity'];
-            $climate = $input['climate'];
-            $healthCondition = $input['healthCondition'];
-            
-            if ($age <= 0 || $age > 120) {
-                throw new Exception('Age must be between 1 and 120 years');
-            }
-            
-            // Weight is already converted above, no need to convert again
-            $waterIntake = calculateWaterIntake($weight, $age, $gender, $activity, $climate, $healthCondition);
-            $breakdown = getWaterBreakdown($waterIntake);
-            $advice = getWaterAdvice($waterIntake, $breakdown['glasses'], $activity, $climate, $healthCondition);
-            
-            $breakdownText = "Total: {$waterIntake}ml • From drinks: {$breakdown['fromDrinks']}ml • From food: {$breakdown['fromFood']}ml<br>";
-            $breakdownText .= "Approximately {$breakdown['glasses']} glasses (250ml each)";
-            
-            $result = [
-                'amount' => $waterIntake . 'ml/day',
-                'breakdown' => $breakdownText,
-                'advice' => $advice,
-                'details' => [
-                    'total' => $waterIntake,
-                    'fromDrinks' => $breakdown['fromDrinks'],
-                    'fromFood' => $breakdown['fromFood'],
-                    'glasses' => $breakdown['glasses']
-                ]
-            ];
-            break;
+
+    /**
+     * @return array<string,mixed>
+     */
+    private function computeBmi(float $weight, float $height): array
+    {
+        $h = $height > 3 ? $height / 100 : $height;
+        $bmi = round($weight / ($h * $h), 2);
+        $category = $this->getBmiCategory($bmi);
+        return [
+            "bmi"      => $bmi,
+            "category" => $category,
+            "advice"   => $this->getBmiAdvice($category),
+        ];
     }
-    
-    // Return success response
-    echo json_encode([
-        'success' => true,
-        'data' => $result,
-        'calculator' => $calculator,
-        'timestamp' => date('Y-m-d H:i:s')
-    ], JSON_PRETTY_PRINT);
-    
-} catch (Exception $e) {
-    http_response_code(400);
-    echo json_encode([
-        'success' => false,
-        'message' => $e->getMessage()
-    ]);
+
+    private function getBmiCategory(float $bmi): string
+    {
+        if ($bmi < 18.5) return "Underweight";
+        if ($bmi < 25)   return "Normal weight";
+        if ($bmi < 30)   return "Overweight";
+        return "Obese";
+    }
+
+    private function getBmiAdvice(string $category): string
+    {
+        $advice = [
+            "Underweight"   => "Consider consulting with a healthcare provider about gaining weight in a healthy way.",
+            "Normal weight" => "Great! Maintain your current lifestyle with a balanced diet and regular exercise.",
+            "Overweight"    => "Consider adopting a healthier diet and increasing physical activity.",
+            "Obese"         => "It is recommended to consult with a healthcare provider for a comprehensive weight management plan.",
+        ];
+        return $advice[$category] ?? "Consult with a healthcare provider for personalized advice.";
+    }
+
+    /**
+     * @param array<string,mixed> $input
+     * @return array<string,mixed>
+     */
+    private function computeBmr(float $weight, float $height, array $input): array
+    {
+        $age      = (int) ($input["age"] ?? 0);
+        $gender   = (string) ($input["gender"] ?? "");
+        $activity = (string) ($input["activity"] ?? "sedentary");
+
+        if ($age <= 0 || $age > 120) {
+            throw new ValidationException("Age must be between 1 and 120 years");
+        }
+
+        $bmr = $gender === "male"
+            ? (10 * $weight) + (6.25 * $height) - (5 * $age) + 5
+            : (10 * $weight) + (6.25 * $height) - (5 * $age) - 161;
+        $bmr = round($bmr, 0);
+        $dailyCalories = round($bmr * $this->activityMultiplier($activity), 0);
+
+        return [
+            "bmr"    => $bmr,
+            "detail" => "Daily calories needed: $dailyCalories",
+            "advice" => "Your BMR is $bmr calories per day. With your activity level, you need approximately $dailyCalories calories daily to maintain your current weight.",
+        ];
+    }
+
+    /**
+     * @param array<string,mixed> $input
+     * @return array<string,mixed>
+     */
+    private function computeIntake(float $weight, float $height, array $input): array
+    {
+        $age      = (int) ($input["age"] ?? 0);
+        $gender   = (string) ($input["gender"] ?? "");
+        $activity = (string) ($input["activity"] ?? "sedentary");
+        $goal     = (string) ($input["goal"] ?? "maintain");
+
+        if ($age <= 0 || $age > 120) {
+            throw new ValidationException("Age must be between 1 and 120 years");
+        }
+
+        $bmr = $gender === "male"
+            ? (10 * $weight) + (6.25 * $height) - (5 * $age) + 5
+            : (10 * $weight) + (6.25 * $height) - (5 * $age) - 161;
+        $maintenance = round($bmr * $this->activityMultiplier($activity), 0);
+        $adjustment  = self::GOAL_ADJUSTMENTS[$goal] ?? 0;
+        $targetKcal  = $maintenance + $adjustment;
+
+        $protein    = round($weight * 1.6, 0);
+        $proteinCal = $protein * 4;
+        $fatCal     = round($targetKcal * 0.25, 0);
+        $fat        = round($fatCal / 9, 0);
+        $carbCal    = $targetKcal - $proteinCal - $fatCal;
+        $carbs      = round($carbCal / 4, 0);
+
+        $adviceMap = [
+            "maintain"  => "To maintain your current weight, aim for $targetKcal calories per day with balanced nutrition and regular exercise.",
+            "lose"      => "To lose 0.5kg per week, aim for $targetKcal calories per day. This creates a safe caloric deficit.",
+            "lose-fast" => "To lose 1kg per week, aim for $targetKcal calories per day. Ensure adequate nutrition and consider consulting a healthcare provider.",
+            "gain"      => "To gain 0.5kg per week, aim for $targetKcal calories per day with a focus on protein and strength training.",
+            "gain-fast" => "To gain 1kg per week, aim for $targetKcal calories per day. Focus on nutrient-dense, high-calorie foods.",
+        ];
+
+        return [
+            "calories" => $targetKcal,
+            "advice"   => $adviceMap[$goal] ?? "Consult with a healthcare provider for personalized nutrition advice.",
+            "macros"   => [
+                "protein" => $protein,
+                "carbs"   => $carbs,
+                "fat"     => $fat,
+            ],
+            "meta" => [
+                "bmr"         => round($bmr, 0),
+                "maintenance" => $maintenance,
+            ],
+        ];
+    }
+
+    /**
+     * @param array<string,mixed> $input
+     * @return array<string,mixed>
+     */
+    private function computeWater(float $weight, array $input): array
+    {
+        $age        = (int) ($input["age"] ?? 0);
+        $gender     = (string) ($input["gender"] ?? "");
+        $activity   = (string) ($input["activity"] ?? "sedentary");
+        $climate    = (string) ($input["climate"] ?? "temperate");
+        $healthCond = (string) ($input["healthCondition"] ?? "normal");
+
+        if ($age <= 0 || $age > 120) {
+            throw new ValidationException("Age must be between 1 and 120 years");
+        }
+
+        // EFSA 2010 — 35ml/kg base
+        $intake = $weight * 35;
+        if ($age > 65)          $intake *= 1.1;
+        elseif ($age < 18)      $intake *= 0.9;
+        if ($gender === "male") $intake *= 1.1;
+        $intake *= self::ACTIVITY_MULTIPLIERS[$activity] ?? 1.0;
+        $intake *= self::CLIMATE_MULTIPLIERS[$climate]   ?? 1.0;
+        $intake *= self::HEALTH_MULTIPLIERS[$healthCond] ?? 1.0;
+        $intake = round($intake, 0);
+
+        $fromFood   = round($intake * 0.2, 0);
+        $fromDrinks = $intake - $fromFood;
+        $glasses    = round($fromDrinks / 250, 1);
+
+        return [
+            "amount"  => $intake . "ml/day",
+            "advice"  => $this->getWaterAdvice($intake, $glasses, $activity, $climate, $healthCond),
+            "details" => [
+                "total"      => $intake,
+                "fromDrinks" => $fromDrinks,
+                "fromFood"   => $fromFood,
+                "glasses"    => $glasses,
+            ],
+        ];
+    }
+
+    private function getWaterAdvice(int $total, float $glasses, string $activity, string $climate, string $health): string
+    {
+        $advice = "Aim for approximately {$total}ml ({$glasses} glasses) of water daily. ";
+        if ($activity === "active" || $activity === "extra") {
+            $advice .= "Since you are very active, drink extra water before, during, and after exercise. ";
+        }
+        if ($climate === "hot" || $climate === "very-hot") {
+            $advice .= "Hot climate increases your water needs - drink regularly throughout the day. ";
+        }
+        if ($health === "fever") {
+            $advice .= "Fever increases fluid loss - drink extra water and consult a healthcare provider. ";
+        } elseif ($health === "kidney" || $health === "heart") {
+            $advice .= "Please consult your healthcare provider about appropriate fluid intake for your condition. ";
+        } elseif ($health === "pregnancy" || $health === "breastfeeding") {
+            $advice .= "Increased fluid needs during this time are normal - ensure adequate hydration. ";
+        }
+        $advice .= "Spread intake throughout the day and listen to your body thirst signals.";
+        return $advice;
+    }
+
+    private function activityMultiplier(string $activity): float
+    {
+        return self::ACTIVITY_MULTIPLIERS[$activity] ?? 1.2;
+    }
 }
-?>
+
+ErrorHandler::wrap(static function (): void {
+    $input = Validator::readInput();
+    $input["calculator"] = $input["calculator"] ?? ($_GET["calculator"] ?? null);
+    $input["unit"]       = $input["unit"]       ?? ($_GET["unit"]       ?? "metric");
+
+    $errors = Validator::requireKeys($input, ["calculator"]);
+    if (!empty($errors)) {
+        throw new ValidationException(implode("; ", $errors));
+    }
+
+    $calc = new HealthCalculator();
+    $data = $calc->compute($input);
+
+    ErrorHandler::success(array_merge(
+        ["calculator" => (string) $input["calculator"]],
+        $data
+    ));
+});
