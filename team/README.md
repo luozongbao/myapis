@@ -65,7 +65,8 @@ Goals: **Restructure File + Restructure Pages + Fix Security** (Features/Functio
 | ISSUE-012: Design tokens + component spec | ยู | Open |
 | ISSUE-013: Move shared classes to api/_includes/ | ซ่า + เดฟ | Open |
 | ISSUE-001: Rate limiting | เดฟ + ออป | Open |
-| ISSUE-010: CSRF protection | เดฟ | Open |
+| ISSUE-010: Secrets mgmt docs | ออป | Open |
+| ISSUE-025: CSRF protection | เดฟ | Open |
 | ISSUE-002: Extract CSS | เดฟ + ยู | Open |
 | ISSUE-009: a11y | ยู + เทส | Open |
 | ISSUE-008: OpenAPI spec | ซ่า + เดฟ | Open (optional) |
