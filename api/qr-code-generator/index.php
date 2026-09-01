@@ -121,31 +121,136 @@ class QrCodeGenerator {
             return isset($f[$key]) ? trim((string)$f[$key]) : '';
         };
 
-        $firstName  = $get('first_name');
-        $lastName   = $get('last_name');
         $org        = $get('organization');
-        $title      = $get('title');
         $note       = $get('note');
 
-        if ($firstName === '' && $lastName === '' && $org === '') {
-            throw new InvalidArgumentException(
-                'vCard requires at least First Name + Last Name, or Organization'
-            );
+        // ----------------------------------------------------------------
+        // Collect dynamic name parts (like the email/phone lists).
+        // Supported types: first_name, middle_name, last_name, prefix,
+        // suffix, nickname.
+        //
+        // Legacy single-value fields (first_name, last_name) are also
+        // accepted for backwards compatibility and merged into the list.
+        // ----------------------------------------------------------------
+        $nameMap = [
+            'first_name'  => ['vcard' => 'GIVEN',      'label' => 'First Name'],
+            'middle_name' => ['vcard' => 'ADDITIONAL', 'label' => 'Middle Name'],
+            'last_name'   => ['vcard' => 'FAMILY',     'label' => 'Last Name'],
+            'prefix'      => ['vcard' => 'PREFIX',     'label' => 'Prefix'],
+            'suffix'      => ['vcard' => 'SUFFIX',     'label' => 'Suffix'],
+        ];
+        $nickMap = [
+            'nickname'    => ['vcard' => 'NICKNAME',   'label' => 'Nick Name'],
+        ];
+
+        $nameParts = [];   // ordered: prefix, first, middle, last, suffix
+        $nicknames = [];
+
+        // Legacy single-value fields go first so they end up at the top
+        // of the rendered list.
+        foreach (['prefix', 'first_name', 'middle_name', 'last_name', 'suffix'] as $legacyKey) {
+            $val = $get($legacyKey);
+            if ($val !== '') {
+                $nameParts[] = ['type' => $legacyKey, 'value' => $val];
+            }
+        }
+        if ($get('nickname') !== '') {
+            $nicknames[] = ['type' => 'nickname', 'value' => $get('nickname')];
         }
 
-        $fullName = trim($firstName . ' ' . $lastName);
+        // Merge in dynamic rows (names[][type]=first_name&names[][value]=...)
+        $nameParts  = array_merge($nameParts,  $this->collectDynamicItems($f, 'names'));
+        $nicknames  = array_merge($nicknames,  $this->collectDynamicItems($f, 'nicknames'));
+
+        // Normalise: any unknown type defaults to "first_name" so the
+        // vCard still has a GIVEN field rather than dropping the value.
+        $pickValue = function (array $row) use ($nameMap) {
+            $v = isset($row['value']) ? trim((string)$row['value']) : '';
+            if ($v === '') { return null; }
+            $t = isset($row['type']) ? strtolower(trim((string)$row['type'])) : 'first_name';
+            if (!isset($nameMap[$t])) { $t = 'first_name'; }
+            return ['type' => $t, 'value' => $v];
+        };
+        $pickNick = function (array $row) {
+            $v = isset($row['value']) ? trim((string)$row['value']) : '';
+            if ($v === '') { return null; }
+            $t = isset($row['type']) ? strtolower(trim((string)$row['type'])) : 'nickname';
+            return ['type' => $t, 'value' => $v];
+        };
+
+        $cleanedNames = [];
+        foreach ($nameParts as $row) {
+            $p = $pickValue(is_array($row) ? $row : ['value' => $row]);
+            if ($p !== null) { $cleanedNames[] = $p; }
+        }
+        $cleanedNicks = [];
+        foreach ($nicknames as $row) {
+            $p = $pickNick(is_array($row) ? $row : ['value' => $row]);
+            if ($p !== null) { $cleanedNicks[] = $p; }
+        }
+
+        // Build N field in vCard order: Family;Given;Additional;Prefix;Suffix
+        $pickOne = function ($type) use ($cleanedNames) {
+            foreach ($cleanedNames as $n) {
+                if ($n['type'] === $type) { return $n['value']; }
+            }
+            return '';
+        };
+        $family     = $pickOne('last_name');
+        $given      = $pickOne('first_name');
+        $additional = $pickOne('middle_name');
+        $prefix     = $pickOne('prefix');
+        $suffix     = $pickOne('suffix');
+
+        // Build a human-friendly full name
+        $displayOrder = ['prefix', 'first_name', 'middle_name', 'last_name', 'suffix'];
+        $fullName = '';
+        foreach ($displayOrder as $k) {
+            foreach ($cleanedNames as $n) {
+                if ($n['type'] === $k) {
+                    $fullName = $fullName === '' ? $n['value'] : $fullName . ' ' . $n['value'];
+                    break;
+                }
+            }
+        }
+
+        // Check that we have at least something useful
+        $hasName = $family !== '' || $given !== '' || $additional !== '' || $prefix !== '' || $suffix !== '';
+        $hasNicks = !empty($cleanedNicks);
+
+        if (!$hasName && $org === '' && !$hasNicks) {
+            throw new InvalidArgumentException(
+                'vCard requires at least one name part, a nickname, or Organization'
+            );
+        }
         if ($fullName === '') {
             $fullName = $org;
+        }
+        if ($fullName === '' && $hasNicks) {
+            $fullName = $cleanedNicks[0]['value'];
         }
 
         $lines = [];
         $lines[] = 'BEGIN:VCARD';
         $lines[] = 'VERSION:3.0';
-        $lines[] = 'N:' . $this->vEscape($lastName) . ';' . $this->vEscape($firstName) . ';;;';
+        $lines[] = 'N:' . $this->vEscape($family) . ';' . $this->vEscape($given) . ';' . $this->vEscape($additional) . ';' . $this->vEscape($prefix) . ';' . $this->vEscape($suffix);
         $lines[] = 'FN:' . $this->vEscape($fullName);
 
+        if (!empty($cleanedNicks)) {
+            $nickValues = array_map(function ($n) { return $n['value']; }, $cleanedNicks);
+            $lines[] = 'NICKNAME:' . $this->vEscape(implode(',', $nickValues));
+        }
+
         if ($org !== '')   { $lines[] = 'ORG:' . $this->vEscape($org); }
-        if ($title !== '') { $lines[] = 'TITLE:' . $this->vEscape($title); }
+
+        // Honour the explicit Title from a dynamic name row OR a legacy
+        // "title" field.  The first one wins so the user has full control.
+        $titleFromName = null;
+        foreach ($cleanedNames as $n) {
+            if ($n['type'] === 'title') { $titleFromName = $n['value']; break; }
+        }
+        $finalTitle = $titleFromName !== null ? $titleFromName : $get('title');
+        if ($finalTitle !== '') { $lines[] = 'TITLE:' . $this->vEscape($finalTitle); }
 
         // ----------------------------------------------------------------
         // Backwards-compatible single fields.  They are merged into the
