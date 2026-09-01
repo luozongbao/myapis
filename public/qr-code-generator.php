@@ -78,7 +78,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ['type' => $selectedType, 'ecc' => $ecc, 'size' => $size, 'qzone' => $qzone,
          'margin' => $margin, 'color' => $color, 'bgcolor' => $bgcolor,
          'file_type' => $fileType],
-        $fields
+        $fields,
+        // Forward the dynamic vCard lists (names, nicknames, emails,
+        // phones, urls, addresses).  These are submitted as bracketed
+        // arrays (e.g. names[0][value]) and must reach the API so the
+        // validation and payload building can see them.
+        [
+            'names'      => $_POST['names']      ?? [],
+            'nicknames'  => $_POST['nicknames']  ?? [],
+            'emails'     => $_POST['emails']     ?? [],
+            'phones'     => $_POST['phones']     ?? [],
+            'urls'       => $_POST['urls']       ?? [],
+            'addresses'  => $_POST['addresses']  ?? [],
+        ]
     );
 
     $ch = curl_init();
@@ -139,6 +151,32 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 $dVal = function ($row, $key, $default = '') {
     if (!is_array($row)) { return $default; }
     return isset($row[$key]) ? (string)$row[$key] : $default;
+};
+
+// Render a vCard TYPE selector: a <select> of predefined options plus a
+// "+ Custom…" entry.  Selecting the custom entry reveals a free-text input
+// that shares the same field name (only one of the two is enabled at a
+// time, so only the active control is submitted).
+$typeSelector = function ($name, array $options, $current, $placeholder = 'Custom type') {
+    $current  = (string)$current;
+    $isCustom = $current !== '' && !array_key_exists($current, $options);
+
+    $out  = '<div class="form-group type-select" style="margin: 0;">';
+    $out .= '<select name="' . htmlspecialchars($name) . '" data-type-select'
+          . ($isCustom ? ' disabled style="display:none;"' : '') . '>';
+    foreach ($options as $val => $label) {
+        $sel = (!$isCustom && $current === (string)$val) ? ' selected' : '';
+        $out .= '<option value="' . htmlspecialchars((string)$val) . '"' . $sel . '>'
+              . htmlspecialchars((string)$label) . '</option>';
+    }
+    $out .= '<option value="__custom__"' . ($isCustom ? ' selected' : '') . '>+ Custom…</option>';
+    $out .= '</select>';
+    $out .= '<input type="text" name="' . htmlspecialchars($name) . '" data-type-custom'
+          . ' placeholder="' . htmlspecialchars($placeholder) . '"'
+          . ($isCustom ? ' value="' . htmlspecialchars($current) . '"' : ' disabled style="display:none;"')
+          . '>';
+    $out .= '</div>';
+    return $out;
 };
 ?>
 <!DOCTYPE html>
@@ -701,16 +739,11 @@ $dVal = function ($row, $key, $default = '') {
                                                placeholder="name@example.com"
                                                value="<?= htmlspecialchars($dVal($row, 'value')) ?>">
                                     </div>
-                                    <div class="form-group" style="margin: 0;">
-                                        <select name="emails[<?= $i ?>][type]">
-                                            <?php
-                                            $emailTypes = ['WORK', 'HOME', 'INTERNET'];
-                                            $cur = $dVal($row, 'type', 'WORK');
-                                            foreach ($emailTypes as $t): ?>
-                                                <option value="<?= $t ?>" <?= $cur === $t ? 'selected' : '' ?>><?= $t ?></option>
-                                            <?php endforeach; ?>
-                                        </select>
-                                    </div>
+                                    <?php
+                                    $emailTypes = ['WORK' => 'WORK', 'HOME' => 'HOME', 'INTERNET' => 'INTERNET'];
+                                    $cur = $dVal($row, 'type', 'WORK');
+                                    echo $typeSelector('emails[' . $i . '][type]', $emailTypes, $cur, 'e.g. X-CORP');
+                                    ?>
                                     <button type="button" class="remove-row" data-remove title="Remove email">✕</button>
                                 </div>
                             </div>
@@ -728,16 +761,11 @@ $dVal = function ($row, $key, $default = '') {
                                                placeholder="+66 81 234 5678"
                                                value="<?= htmlspecialchars($dVal($row, 'value')) ?>">
                                     </div>
-                                    <div class="form-group" style="margin: 0;">
-                                        <select name="phones[<?= $i ?>][type]">
-                                            <?php
-                                            $phoneTypes = ['CELL,VOICE' => 'Mobile', 'WORK,VOICE' => 'Work', 'HOME,VOICE' => 'Home', 'FAX' => 'Fax', 'VOICE' => 'Voice'];
-                                            $cur = $dVal($row, 'type', 'CELL,VOICE');
-                                            foreach ($phoneTypes as $val => $label): ?>
-                                                <option value="<?= $val ?>" <?= $cur === $val ? 'selected' : '' ?>><?= $label ?></option>
-                                            <?php endforeach; ?>
-                                        </select>
-                                    </div>
+                                    <?php
+                                    $phoneTypes = ['CELL,VOICE' => 'Mobile', 'WORK,VOICE' => 'Work', 'HOME,VOICE' => 'Home', 'FAX' => 'Fax', 'VOICE' => 'Voice'];
+                                    $cur = $dVal($row, 'type', 'CELL,VOICE');
+                                    echo $typeSelector('phones[' . $i . '][type]', $phoneTypes, $cur, 'e.g. X-EXT');
+                                    ?>
                                     <button type="button" class="remove-row" data-remove title="Remove phone">✕</button>
                                 </div>
                             </div>
@@ -1108,12 +1136,14 @@ $dVal = function ($row, $key, $default = '') {
                         <div class="form-group" style="margin: 0;">
                             <input type="email" name="emails[${i}][value]" placeholder="name@example.com">
                         </div>
-                        <div class="form-group" style="margin: 0;">
-                            <select name="emails[${i}][type]">
-                                <option value="WORK">WORK</option>
+                        <div class="form-group type-select" style="margin: 0;">
+                            <select name="emails[${i}][type]" data-type-select>
+                                <option value="WORK" selected>WORK</option>
                                 <option value="HOME">HOME</option>
                                 <option value="INTERNET">INTERNET</option>
+                                <option value="__custom__">+ Custom…</option>
                             </select>
+                            <input type="text" name="emails[${i}][type]" data-type-custom placeholder="e.g. X-CORP" disabled style="display:none;">
                         </div>
                         <button type="button" class="remove-row" data-remove title="Remove email">✕</button>
                     </div>
@@ -1124,14 +1154,16 @@ $dVal = function ($row, $key, $default = '') {
                         <div class="form-group" style="margin: 0;">
                             <input type="tel" name="phones[${i}][value]" placeholder="+66 81 234 5678">
                         </div>
-                        <div class="form-group" style="margin: 0;">
-                            <select name="phones[${i}][type]">
-                                <option value="CELL,VOICE">Mobile</option>
+                        <div class="form-group type-select" style="margin: 0;">
+                            <select name="phones[${i}][type]" data-type-select>
+                                <option value="CELL,VOICE" selected>Mobile</option>
                                 <option value="WORK,VOICE">Work</option>
                                 <option value="HOME,VOICE">Home</option>
                                 <option value="FAX">Fax</option>
                                 <option value="VOICE">Voice</option>
+                                <option value="__custom__">+ Custom…</option>
                             </select>
+                            <input type="text" name="phones[${i}][type]" data-type-custom placeholder="e.g. X-EXT" disabled style="display:none;">
                         </div>
                         <button type="button" class="remove-row" data-remove title="Remove phone">✕</button>
                     </div>
@@ -1214,6 +1246,34 @@ $dVal = function ($row, $key, $default = '') {
                 list.insertAdjacentHTML('beforeend', TEMPLATES[kind](i));
                 bindRemoveHandlers();
             });
+        });
+
+        const onTypeChange = (sel) => {
+            const wrap = sel.closest('.type-select');
+            if (!wrap) { return; }
+            const input = wrap.querySelector('[data-type-custom]');
+            if (sel.value === '__custom__') {
+                sel.disabled = true;
+                sel.style.display = 'none';
+                if (input) {
+                    input.disabled = false;
+                    input.style.display = '';
+                    input.focus();
+                }
+            } else {
+                sel.disabled = false;
+                sel.style.display = '';
+                if (input) {
+                    input.disabled = true;
+                    input.style.display = 'none';
+                    input.value = '';
+                }
+            }
+        };
+
+        // Delegated listener so rows added via "+ Add another …" work too.
+        document.addEventListener('change', (e) => {
+            if (e.target.matches('[data-type-select]')) { onTypeChange(e.target); }
         });
 
         const bindRemoveHandlers = () => {

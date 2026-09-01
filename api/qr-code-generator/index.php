@@ -291,14 +291,14 @@ class QrCodeGenerator {
 
         foreach ($emails as $e) {
             if (empty($e['value'])) { continue; }
-            $type = !empty($e['type']) ? $e['type'] : 'INTERNET';
-            $lines[] = 'EMAIL;TYPE=' . $this->vEscape($type) . ':' . $this->vEscape($e['value']);
+            $type = $this->sanitizeType(!empty($e['type']) ? $e['type'] : 'INTERNET');
+            $lines[] = 'EMAIL;TYPE=' . $type . ':' . $this->vEscape($e['value']);
         }
 
         foreach ($phones as $p) {
             if (empty($p['value'])) { continue; }
-            $type = !empty($p['type']) ? $p['type'] : 'VOICE';
-            $lines[] = 'TEL;TYPE=' . $this->vEscape($type) . ':' . $this->vEscape($p['value']);
+            $type = $this->sanitizeType(!empty($p['type']) ? $p['type'] : 'VOICE');
+            $lines[] = 'TEL;TYPE=' . $type . ':' . $this->vEscape($p['value']);
         }
 
         foreach ($urls as $u) {
@@ -527,6 +527,26 @@ class QrCodeGenerator {
         $value = str_replace(['\\', "\n", "\r"], ['\\\\', '\\n', ''], $value);
         // iCalendar line breaks inside text fields
         return $value;
+    }
+
+    /**
+     * Normalise a vCard TYPE parameter value (e.g. "work,voice" or a
+     * custom type).  vCard 3.0 (RFC 2426) type values are case-insensitive
+     * tokens restricted to ALPHA / DIGIT / "-" (iana-token or "X-" x-name),
+     * and may be comma-separated.  We uppercase for convention and strip
+     * anything that is not a valid token character so custom values still
+     * produce well-formed output.
+     */
+    private function sanitizeType($type) {
+        $type = strtoupper(trim((string)$type));
+        if ($type === '') { return ''; }
+        $parts = array_map('trim', explode(',', $type));
+        $clean = [];
+        foreach ($parts as $p) {
+            $p = preg_replace('/[^A-Z0-9\-]/', '', $p);
+            if ($p !== '') { $clean[] = $p; }
+        }
+        return implode(',', $clean);
     }
 
     /**
