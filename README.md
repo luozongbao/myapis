@@ -1,4 +1,8 @@
-# 🚀 MyAPIs - Dev### 🎯 Key Features
+# 🚀 MyAPIs — Developer's Tools Collection
+
+A comprehensive collection of developer tools and APIs designed to streamline your development workflow. Each tool provides both a beautiful web interface and a robust REST API for easy integration.
+
+### 🎯 Key Features
 
 - **🌐 Modern Web Interfaces**: Beautiful, responsive designs that work on all devices
 - **🔌 REST APIs**: Well-documented APIs with JSON responses
@@ -9,9 +13,7 @@
 - **⚡ Fast & Lightweight**: Pure PHP implementation with minimal dependencies
 - **🔄 CORS Enabled**: Cross-origin request support for web applications
 - **🏗️ Clean Architecture**: Organized public/api structure for easy deployment
-- **🌐 Dynamic URLs**: Server-agnostic URLs that adapt to any hosting environmentls Collection
-
-A comprehensive collection of developer tools and APIs designed to streamline your development workflow. Each tool provides both a beautiful web interface and a robust REST API for easy integration.
+- **🌐 Dynamic URLs**: Server-agnostic URLs that adapt to any hosting environment
 
 ## 🌟 Features
 
@@ -918,7 +920,49 @@ This project is open source and available under the [MIT License](LICENSE).
 
 ---
 
-## 🚀 Latest Updates (v2.4.0)
+## 🚀 Latest Updates (v2.5.0)
+
+### 📇 Dynamic vCard Builder (QR Code Generator)
+- **Dynamic structured names** — add/remove unlimited
+  `formatted / prefix / first / middle / last / suffix` rows,
+  rendered in the correct order in the generated vCard
+- **Dynamic nicknames** — multiple `nickname[]` entries collapse
+  into a single `NICKNAME:` line in the vCard
+- **Per-row contact types** — every email row now carries its own
+  `WORK` / `HOME` / `INTERNET` selector, and every phone row carries
+  its own `CELL,VOICE` / `WORK,VOICE` / `HOME,VOICE` / `FAX` /
+  `VOICE` selector
+- **Backward compatible** — legacy single fields (`work_email`,
+  `home_phone`, etc.) still work
+- **Per-tool docs** migrated to
+  [`api/qr-code-generator/README.md`](api/qr-code-generator/README.md)
+
+### 🌐 Shared-Hosting Deployment (Hostinger / cPanel)
+- New **[🌐 Shared Hosting Deployment](#-shared-hosting-deployment-hostinger--cpanel)**
+  section: prerequisites, two project-layout strategies, hPanel
+  walkthrough, PHP-version / extension enablement, file-permission
+  cheat sheet, two clean domain-mapping strategies, troubleshooting
+  table, and hosting-specific notes for Hostinger Single / Premium /
+  Business / Cloud, SiteGround, Namecheap, and Cloudflare
+- **Analytics without `.env`** — drop a `public/config.php` that
+  calls `putenv()` (shared-hosting fallback in
+  [`docker/php/analytics.php`](docker/php/analytics.php))
+- **`public/config.php.example`** ships as a copy-and-edit template
+- All `public/` pages now include
+  [`public/analytics.php`](public/analytics.php) so the snippet is
+  present on every tool page without manual edits
+
+### ⚙️ Environment Configuration
+- [`example.env`](example.env) is now **tracked in the repo** with
+  every variable documented (ports, PHP limits, timezone, analytics
+  provider, Umami / GA4 credentials). `.env` itself stays
+  git-ignored.
+
+### 🧹 Cleanup
+- Removed the stale `docs/nginx-conf/lab01.conf` … `lab04.conf` and
+  `docs/requirements/myapi-2.0.md` files
+
+## � Previous Updates (v2.4.0)
 
 ### 📈 Analytics & Visitor Tracking
 - **Pluggable tracking provider** controlled by `ANALYTICS_PROVIDER`
@@ -936,7 +980,7 @@ This project is open source and available under the [MIT License](LICENSE).
 - **Full docs**: see the [📈 Analytics / Visitor Tracking](#-analytics--visitor-tracking)
   section below
 
-## 🚀 Latest Updates (v2.3.x)
+## � Previous Updates (v2.3.x)
 
 ### 📱 QR Code Generator (v2.3.0 + v2.3.1)
 - **6 Content Types**: Plain text, URL, vCard, Event, Wi-Fi, Phone — all powered by the [goQR.me](https://goqr.me/api/doc/create-qr-code/) API
