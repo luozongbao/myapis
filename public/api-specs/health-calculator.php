@@ -1,306 +1,26 @@
 <?php
-// Generate dynamic base URL based on current server
-function getBaseUrl($toolName) {
-    $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
-    $host = $_SERVER['HTTP_HOST'];
-    return $protocol . '://' . $host . '/api/' . $toolName . '/';
-}
-$baseUrl = getBaseUrl('health-calculator');
+/**
+ * Health Calculator API — documentation page.
+ *
+ * Shared layout (HTML head, styles, header banner, breadcrumb, container
+ * wrapper) lives in public/includes/apispec_layout.php so this file only
+ * contains the tool-specific content sections.
+ */
+
+$spec = [
+    'slug'    => 'health-calculator',
+    'title'   => '🏥 Health Calculator API',
+    'tagline' => 'Comprehensive health calculations with BMI, BMR, Daily Intake, and Water Intake',
+    'crumb'   => 'Health Calculator',
+];
+require __DIR__ . '/../includes/apispec_layout.php';
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Health Calculator API Documentation</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-                        <a href="../index.php">← Back to Main</a>
-                <span> / </span>
-                <a href="../health-calculator.php">Health Calculator</a> box-sizing: border-box;
-        }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-            line-height: 1.6;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-        }
-
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 40px;
-            text-align: center;
-        }
-
-        .header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-        }
-
-        .header p {
-            font-size: 1.2em;
-            opacity: 0.9;
-        }
-
-        .nav {
-            background: #f8f9fa;
-            padding: 20px;
-            border-bottom: 1px solid #e9ecef;
-        }
-
-        .breadcrumb {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 0.9em;
-            color: #666;
-        }
-
-        .breadcrumb a {
-            color: #667eea;
-            text-decoration: none;
-        }
-
-        .breadcrumb a:hover {
-            text-decoration: underline;
-        }
-
-        .content {
-            padding: 40px;
-        }
-
-        .section {
-            margin-bottom: 40px;
-        }
-
-        .section h2 {
-            color: #333;
-            font-size: 1.8em;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #667eea;
-        }
-
-        .section h3 {
-            color: #444;
-            font-size: 1.3em;
-            margin-bottom: 15px;
-            margin-top: 25px;
-        }
-
-        .endpoint {
-            background: #f8f9fa;
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 20px;
-            border-left: 4px solid #667eea;
-        }
-
-        .method {
-            display: inline-block;
-            background: #28a745;
-            color: white;
-            padding: 4px 12px;
-            border-radius: 4px;
-            font-weight: bold;
-            font-size: 0.9em;
-            margin-right: 10px;
-        }
-
-        .method.post {
-            background: #007bff;
-        }
-
-        .method.get {
-            background: #28a745;
-        }
-
-        .url {
-            font-family: 'Courier New', monospace;
-            background: #e9ecef;
-            padding: 8px 12px;
-            border-radius: 4px;
-            display: inline-block;
-            margin-left: 10px;
-        }
-
-        .code-block {
-            background: #2d3748;
-            color: #e2e8f0;
-            padding: 20px;
-            border-radius: 8px;
-            font-family: 'Courier New', monospace;
-            font-size: 0.9em;
-            overflow-x: auto;
-            margin: 15px 0;
-        }
-
-        .parameter-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 15px 0;
-        }
-
-        .parameter-table th,
-        .parameter-table td {
-            border: 1px solid #dee2e6;
-            padding: 12px;
-            text-align: left;
-        }
-
-        .parameter-table th {
-            background: #f8f9fa;
-            font-weight: 600;
-            color: #333;
-        }
-
-        .parameter-table td {
-            color: #555;
-        }
-
-        .required {
-            color: #dc3545;
-            font-weight: bold;
-        }
-
-        .optional {
-            color: #6c757d;
-        }
-
-        .response-box {
-            background: #f0f8f0;
-            border: 1px solid #d4edda;
-            border-radius: 8px;
-            padding: 15px;
-            margin: 15px 0;
-        }
-
-        .error-box {
-            background: #fdf2f2;
-            border: 1px solid #f5c6cb;
-            border-radius: 8px;
-            padding: 15px;
-            margin: 15px 0;
-        }
-
-        .btn {
-            display: inline-block;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 12px 24px;
-            border: none;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 600;
-            transition: transform 0.2s ease;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-        }
-
-        .btn-secondary {
-            background: #6c757d;
-        }
-
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            margin: 20px 0;
-        }
-
-        .feature-card {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 10px;
-            border-left: 4px solid #667eea;
-        }
-
-        .feature-card h4 {
-            color: #333;
-            margin-bottom: 10px;
-        }
-
-        .feature-card p {
-            color: #666;
-            font-size: 0.9em;
-        }
-
-        .try-it {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px;
-            border-radius: 10px;
-            text-align: center;
-            margin: 30px 0;
-        }
-
-        .try-it h3 {
-            margin-bottom: 15px;
-        }
-
-        .try-it p {
-            margin-bottom: 20px;
-            opacity: 0.9;
-        }
-
-        @media (max-width: 768px) {
-            .header h1 {
-                font-size: 2em;
-            }
-            
-            .content {
-                padding: 20px;
-            }
-            
-            .code-block {
-                font-size: 0.8em;
-            }
-        }
-    </style>
-<?php /** MyAPIs Analytics (Hostinger / shared-hosting friendly) */ if (file_exists(__DIR__ . "/analytics.php")) { require __DIR__ . "/analytics.php"; } ?>
-</head>
-<body>
-    <div class="container">
-        <!-- Header -->
-        <div class="header">
-            <h1>🏥 Health Calculator API</h1>
-            <p>Comprehensive health calculations with BMI, BMR, Daily Intake, and Water Intake</p>
-        </div>
-
-        <!-- Navigation -->
-        <div class="nav">
-            <div class="breadcrumb">
-                <a href="../index.php">← Back to Main</a>
-                <span>/</span>
-                <a href="./">Health Calculator</a>
-                <span>/</span>
-                <span>API Documentation</span>
-            </div>
-        </div>
-
-        <!-- Content -->
-        <div class="content">
             <!-- Overview -->
             <div class="section">
                 <h2>📖 Overview</h2>
                 <p>The Health Calculator API provides comprehensive health-related calculations including BMI (Body Mass Index), BMR (Basal Metabolic Rate), Daily Caloric Intake, and Water Intake requirements. All calculations are based on scientifically proven formulas and provide detailed recommendations.</p>
-                
+
                 <div class="features-grid">
                     <div class="feature-card">
                         <h4>🧮 BMI Calculator</h4>
@@ -324,9 +44,7 @@ $baseUrl = getBaseUrl('health-calculator');
             <!-- Base URL -->
             <div class="section">
                 <h2>🌐 Base URL</h2>
-                <div class="code-block">
-<?php echo $baseUrl; ?>
-                </div>
+                <div class="code-block"><?php echo htmlspecialchars($baseUrl); ?></div>
             </div>
 
             <!-- Authentication -->
@@ -342,13 +60,13 @@ $baseUrl = getBaseUrl('health-calculator');
                 <!-- Unified Endpoint -->
                 <div class="endpoint">
                     <h3>
-                        <span class="method post">POST</span>
+                        <span class="method get">GET</span> / <span class="method post">POST</span>
                         <span class="url">/</span>
                         Unified Health Calculator
                     </h3>
-                    <p>Calculate BMI, BMR, Daily Intake, or Water Intake based on the calculation type specified.</p>
+                    <p>The same endpoint handles all four calculators. Pass the calculator name in <code>calculator</code>; the other fields depend on which calculator you choose. Parameters may be supplied via the query string (GET) or as a JSON body (POST) — POSTed keys override query-string keys.</p>
 
-                    <h4>Request Parameters</h4>
+                    <h4>Common Parameters</h4>
                     <table class="parameter-table">
                         <thead>
                             <tr>
@@ -363,104 +81,99 @@ $baseUrl = getBaseUrl('health-calculator');
                                 <td><code>calculator</code></td>
                                 <td>string</td>
                                 <td><span class="required">Required</span></td>
-                                <td>Calculation type: "bmi", "bmr", "intake", or "water"</td>
-                            </tr>
-                            <tr>
-                                <td><code>weight</code></td>
-                                <td>number</td>
-                                <td><span class="required">Required</span></td>
-                                <td>Weight in kilograms (or pounds if unit=imperial)</td>
-                            </tr>
-                            <tr>
-                                <td><code>height</code></td>
-                                <td>number</td>
-                                <td><span class="required">Required</span></td>
-                                <td>Height in centimeters (or inches if unit=imperial). Not required for water calculator.</td>
+                                <td>One of <code>bmi</code>, <code>bmr</code>, <code>intake</code>, <code>water</code></td>
                             </tr>
                             <tr>
                                 <td><code>unit</code></td>
                                 <td>string</td>
                                 <td><span class="optional">Optional</span></td>
-                                <td>"metric" (default) or "imperial" - Unit system for weight/height conversion</td>
-                            </tr>
-                            <tr>
-                                <td><code>age</code></td>
-                                <td>number</td>
-                                <td><span class="optional">Optional*</span></td>
-                                <td>Age in years (required for BMR, Daily Intake, Water Intake)</td>
-                            </tr>
-                            <tr>
-                                <td><code>gender</code></td>
-                                <td>string</td>
-                                <td><span class="optional">Optional*</span></td>
-                                <td>"male" or "female" (required for BMR, Daily Intake, Water Intake)</td>
-                            </tr>
-                            <tr>
-                                <td><code>activity</code></td>
-                                <td>string</td>
-                                <td><span class="optional">Optional</span></td>
-                                <td>Activity level: "sedentary", "light", "moderate", "active", "extra"</td>
-                            </tr>
-                            <tr>
-                                <td><code>goal</code></td>
-                                <td>string</td>
-                                <td><span class="optional">Optional</span></td>
-                                <td>For Daily Intake: "maintain", "lose", "lose-fast", "gain", "gain-fast"</td>
-                            </tr>
-                            <tr>
-                                <td><code>climate</code></td>
-                                <td>string</td>
-                                <td><span class="optional">Optional</span></td>
-                                <td>For Water Intake: "cold", "temperate", "hot", "very-hot"</td>
-                            </tr>
-                            <tr>
-                                <td><code>health_condition</code></td>
-                                <td>string</td>
-                                <td><span class="optional">Optional</span></td>
-                                <td>For Water Intake: "pregnant", "breastfeeding", "fever", "vomiting", "diarrhea"</td>
+                                <td><code>metric</code> (default) or <code>imperial</code>. For <code>imperial</code>, <code>weight</code> is treated as pounds and <code>height</code> as inches (only relevant for non-water calculators).</td>
                             </tr>
                         </tbody>
                     </table>
 
-                    <h4>Example Request - BMI Calculation</h4>
-                    <div class="code-block">
-curl -X POST "<?php echo $baseUrl; ?>" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "calculator": "bmi",
-    "weight": 70,
-    "height": 175
-  }'
-                    </div>
+                    <h4>Calculator-Specific Parameters</h4>
+                    <table class="parameter-table">
+                        <thead>
+                            <tr>
+                                <th>Parameter</th>
+                                <th>Used by</th>
+                                <th>Required</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>weight</code></td>
+                                <td>all</td>
+                                <td><span class="required">Required</span></td>
+                                <td>Weight in kg (or lb if <code>unit=imperial</code>)</td>
+                            </tr>
+                            <tr>
+                                <td><code>height</code></td>
+                                <td>bmi, bmr, intake</td>
+                                <td><span class="required">Required*</span></td>
+                                <td>Height in cm (or in if <code>unit=imperial</code>). Ignored for water.</td>
+                            </tr>
+                            <tr>
+                                <td><code>age</code></td>
+                                <td>bmr, intake, water</td>
+                                <td><span class="required">Required*</span></td>
+                                <td>Age in years (1–120)</td>
+                            </tr>
+                            <tr>
+                                <td><code>gender</code></td>
+                                <td>bmr, intake, water</td>
+                                <td><span class="required">Required*</span></td>
+                                <td><code>male</code> or <code>female</code></td>
+                            </tr>
+                            <tr>
+                                <td><code>activity</code></td>
+                                <td>bmr, intake, water</td>
+                                <td><span class="required">Required*</span></td>
+                                <td><code>sedentary</code>, <code>light</code>, <code>moderate</code>, <code>active</code>, <code>extra</code></td>
+                            </tr>
+                            <tr>
+                                <td><code>goal</code></td>
+                                <td>intake</td>
+                                <td><span class="required">Required</span></td>
+                                <td><code>maintain</code>, <code>lose</code>, <code>lose-fast</code>, <code>gain</code>, <code>gain-fast</code></td>
+                            </tr>
+                            <tr>
+                                <td><code>climate</code></td>
+                                <td>water</td>
+                                <td><span class="required">Required</span></td>
+                                <td><code>cold</code>, <code>temperate</code>, <code>hot</code>, <code>very-hot</code></td>
+                            </tr>
+                            <tr>
+                                <td><code>healthCondition</code></td>
+                                <td>water</td>
+                                <td><span class="required">Required</span></td>
+                                <td><code>normal</code>, <code>fever</code>, <code>diarrhea</code>, <code>kidney</code>, <code>heart</code>, <code>pregnancy</code>, <code>breastfeeding</code> (note the camelCase spelling)</td>
+                            </tr>
+                        </tbody>
+                    </table>
 
-                    <h4>Example Request - Daily Intake Calculation</h4>
-                    <div class="code-block">
-curl -X POST "<?php echo $baseUrl; ?>" \
+                    <h4>Example Request — BMI</h4>
+                    <div class="code-block">curl "<?php echo htmlspecialchars($baseUrl); ?>?calculator=bmi&weight=70&height=175"</div>
+
+                    <h4>Example Request — BMR (POST JSON)</h4>
+                    <div class="code-block">curl -X POST "<?php echo htmlspecialchars($baseUrl); ?>" \
   -H "Content-Type: application/json" \
   -d '{
-    "calculator": "intake",
+    "calculator": "bmr",
     "weight": 70,
     "height": 175,
     "age": 30,
     "gender": "male",
-    "activity": "moderate",
-    "goal": "maintain"
-  }'
-                    </div>
+    "activity": "moderate"
+  }'</div>
 
-                    <h4>Example Request - Water Intake Calculation</h4>
-                    <div class="code-block">
-curl -X POST "<?php echo $baseUrl; ?>" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "calculator": "water",
-    "weight": 70,
-    "age": 30,
-    "gender": "male",
-    "activity": "moderate",
-    "climate": "temperate"
-  }'
-                    </div>
+                    <h4>Example Request — Daily Intake</h4>
+                    <div class="code-block">curl "<?php echo htmlspecialchars($baseUrl); ?>?calculator=intake&weight=70&height=175&age=30&gender=male&activity=moderate&goal=maintain"</div>
+
+                    <h4>Example Request — Water Intake</h4>
+                    <div class="code-block">curl "<?php echo htmlspecialchars($baseUrl); ?>?calculator=water&weight=70&age=30&gender=male&activity=moderate&climate=temperate&healthCondition=normal"</div>
                 </div>
             </div>
 
@@ -468,96 +181,140 @@ curl -X POST "<?php echo $baseUrl; ?>" \
             <div class="section">
                 <h2>📊 Response Format</h2>
 
-                <h3>Success Response</h3>
+                <h3>Success Response — BMI</h3>
                 <div class="response-box">
-                    <h4>BMI Response Example</h4>
-                    <div class="code-block">
-{
+                    <div class="code-block">{
   "success": true,
   "data": {
     "bmi": 22.86,
     "category": "Normal weight",
     "advice": "Great! Maintain your current lifestyle with a balanced diet and regular exercise."
   },
-  "message": "BMI calculated successfully",
+  "calculator": "bmi",
   "timestamp": "2025-09-09T12:00:00Z"
-}
-                    </div>
+}</div>
                 </div>
 
+                <h3>Success Response — BMR</h3>
                 <div class="response-box">
-                    <h4>Daily Intake Response Example</h4>
-                    <div class="code-block">
-{
+                    <div class="code-block">{
   "success": true,
   "data": {
-    "bmr": 1705,
-    "maintenanceCalories": 2643,
-    "targetCalories": 2643,
-    "macronutrients": {
-      "protein": {
-        "grams": 112,
-        "calories": 448,
-        "percentage": 17
-      },
-      "fat": {
-        "grams": 73,
-        "calories": 661,
-        "percentage": 25
-      },
-      "carbs": {
-        "grams": 384,
-        "calories": 1534,
-        "percentage": 58
-      }
-    },
-    "advice": "Based on your moderate activity level and maintenance goal..."
+    "bmr": 1649,
+    "detail": "Daily calories needed: 2556",
+    "advice": "Your BMR is 1649 calories per day. With your activity level, you need approximately 2556 calories daily to maintain your current weight."
   },
-  "message": "Daily intake calculated successfully",
+  "calculator": "bmr",
   "timestamp": "2025-09-09T12:00:00Z"
-}
-                    </div>
+}</div>
                 </div>
 
-                <h3>Error Response</h3>
-                <div class="error-box">
-                    <div class="code-block">
-{
-  "success": false,
-  "error": "Missing required parameter: weight",
-  "code": "MISSING_PARAMETER",
+                <h3>Success Response — Daily Intake</h3>
+                <div class="response-box">
+                    <div class="code-block">{
+  "success": true,
+  "data": {
+    "calories": 2556,
+    "breakdown": "Protein: 112g • Carbs: 367g • Fat: 71g<br>BMR: 1649 cal • Maintenance: 2556 cal",
+    "advice": "To maintain your current weight, aim for 2556 calories per day with balanced nutrition and regular exercise.",
+    "macros": {
+      "protein": 112,
+      "carbs":   367,
+      "fat":     71
+    }
+  },
+  "calculator": "intake",
   "timestamp": "2025-09-09T12:00:00Z"
-}
-                    </div>
+}</div>
+                </div>
+
+                <h3>Success Response — Water Intake</h3>
+                <div class="response-box">
+                    <div class="code-block">{
+  "success": true,
+  "data": {
+    "amount":    "3773ml/day",
+    "breakdown": "Total: 3773ml • From drinks: 3018ml • From food: 755ml<br>Approximately 12.1 glasses (250ml each)",
+    "advice":    "Aim for approximately 3773ml (12.1 glasses) of water daily. Spread intake throughout the day...",
+    "details": {
+      "total":      3773,
+      "fromDrinks": 3018,
+      "fromFood":   755,
+      "glasses":    12.1
+    }
+  },
+  "calculator": "water",
+  "timestamp": "2025-09-09T12:00:00Z"
+}</div>
+                </div>
+
+                <h3>Error Responses</h3>
+                <p>All error responses are JSON with HTTP 400 (or 404 in rare routing edge cases). The shape varies by trigger:</p>
+
+                <div class="error-box">
+                    <p><strong>Calculator type missing</strong></p>
+                    <div class="code-block">{
+  "success": false,
+  "message": "Calculator type is required",
+  "availableCalculators": ["bmi", "bmr", "intake", "water"]
+}</div>
+                </div>
+
+                <div class="error-box">
+                    <p><strong>Missing required field(s)</strong> — message is a comma-joined list, <code>errors</code> is the same list as an array</p>
+                    <div class="code-block">{
+  "success": false,
+  "message": "Height is required for bmr calculation, Age is required for bmr calculation, ...",
+  "errors":  ["Height is required for bmr calculation", "Age is required for bmr calculation", "..."]
+}</div>
+                </div>
+
+                <div class="error-box">
+                    <p><strong>Invalid value (out of range / unrealistic)</strong></p>
+                    <div class="code-block">{
+  "success": false,
+  "message": "Please check your height and weight values - they seem unrealistic"
+}</div>
                 </div>
             </div>
 
             <!-- Error Codes -->
             <div class="section">
-                <h2>⚠️ Error Codes</h2>
+                <h2>⚠️ Error Conditions</h2>
+                <p>The API does not return a numeric <code>code</code> field. Errors are identified by the human-readable <code>message</code> string.</p>
                 <table class="parameter-table">
                     <thead>
                         <tr>
-                            <th>Code</th>
-                            <th>Description</th>
+                            <th>Trigger</th>
+                            <th>HTTP</th>
+                            <th>Notes</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td><code>MISSING_PARAMETER</code></td>
-                            <td>Required parameter is missing</td>
+                            <td>Missing <code>calculator</code></td>
+                            <td>400</td>
+                            <td>Returns <code>availableCalculators</code> to help clients pick</td>
                         </tr>
                         <tr>
-                            <td><code>INVALID_TYPE</code></td>
-                            <td>Invalid calculation type specified</td>
+                            <td>One or more required fields missing for the chosen calculator</td>
+                            <td>400</td>
+                            <td>Returns comma-joined <code>message</code> and parallel <code>errors</code> array</td>
                         </tr>
                         <tr>
-                            <td><code>INVALID_VALUE</code></td>
-                            <td>Parameter value is invalid or out of range</td>
+                            <td>Age out of range (must be 1–120)</td>
+                            <td>400</td>
+                            <td><code>message</code>: <em>"Age must be between 1 and 120 years"</em></td>
                         </tr>
                         <tr>
-                            <td><code>CALCULATION_ERROR</code></td>
-                            <td>Error occurred during calculation</td>
+                            <td>Unrealistic weight / height</td>
+                            <td>400</td>
+                            <td><code>message</code>: <em>"Please check your height and weight values - they seem unrealistic"</em></td>
+                        </tr>
+                        <tr>
+                            <td>Negative or zero weight / height</td>
+                            <td>400</td>
+                            <td><code>message</code>: <em>"Weight and height must be positive values"</em></td>
                         </tr>
                     </tbody>
                 </table>
@@ -573,7 +330,7 @@ curl -X POST "<?php echo $baseUrl; ?>" \
             <div class="try-it">
                 <h3>🎯 Ready to Try?</h3>
                 <p>Test the Health Calculator API with our interactive web interface or start integrating it into your application.</p>
-                <a href="../health-calculator.php" class="btn">Try Web Interface</a>
+                <a href="../tools/health-calculator.php" class="btn">Try Web Interface</a>
                 <a href="/api/health-calculator/" class="btn btn-secondary">Test API Endpoint</a>
             </div>
         </div>

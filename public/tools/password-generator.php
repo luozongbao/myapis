@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Username Generator</title>
+    <title>Password Generator</title>
     <style>
         * {
             margin: 0;
@@ -73,7 +73,7 @@
             font-size: 1.1em;
         }
 
-        select, input[type="number"], input[type="text"] {
+        input[type="number"], input[type="text"] {
             width: 100%;
             padding: 12px 15px;
             border: 2px solid #e1e5e9;
@@ -82,14 +82,14 @@
             transition: border-color 0.3s ease;
         }
 
-        select:focus, input:focus {
+        input:focus {
             outline: none;
             border-color: #667eea;
         }
 
         .checkbox-group {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(165px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 15px;
             margin-top: 10px;
         }
@@ -168,43 +168,57 @@
             font-size: 0.9em;
         }
 
-        .username-grid {
+        .password-grid {
             display: grid;
-            gap: 10px;
+            gap: 15px;
         }
 
-        .username-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 15px;
+        .password-item {
+            padding: 15px;
             background: #f8f9fa;
             border: 2px solid #e1e5e9;
-            border-radius: 8px;
+            border-radius: 10px;
             transition: all 0.3s ease;
         }
 
-        .username-item:hover {
+        .password-item:hover {
             border-color: #667eea;
             background: #f0f4ff;
         }
 
-        .username-text {
-            font-family: 'Courier New', monospace;
-            font-size: 1.1em;
-            font-weight: 600;
-            color: #333;
+        .password-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
         }
 
-        .copy-btn {
+        .password-text {
+            font-family: 'Courier New', monospace;
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #333;
+            word-break: break-all;
+            user-select: all;
+        }
+
+        .password-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .copy-btn, .analyze-btn {
             padding: 6px 12px;
-            background: #667eea;
-            color: white;
             border: none;
             border-radius: 4px;
             cursor: pointer;
             font-size: 0.8em;
             transition: background 0.3s ease;
+        }
+
+        .copy-btn {
+            background: #667eea;
+            color: white;
         }
 
         .copy-btn:hover {
@@ -213,6 +227,85 @@
 
         .copy-btn.copied {
             background: #28a745;
+        }
+
+        .analyze-btn {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .analyze-btn:hover {
+            background: #138496;
+        }
+
+        .password-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .strength-indicator {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.8em;
+        }
+
+        .strength-weak {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .strength-medium {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .strength-strong {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .strength-very-strong {
+            background: #cce7ff;
+            color: #004085;
+        }
+
+        .password-analysis {
+            background: #e7f3ff;
+            border: 2px solid #b8daff;
+            color: #004085;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 10px;
+            font-size: 0.9em;
+            display: none;
+        }
+
+        .analysis-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .analysis-item {
+            text-align: center;
+            padding: 5px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 4px;
+        }
+
+        .analysis-tips {
+            margin-top: 10px;
+        }
+
+        .analysis-tips ul {
+            padding-left: 20px;
         }
 
         .loading {
@@ -264,21 +357,22 @@
             font-size: 0.9em;
         }
 
-        .theme-description {
+        .security-tips {
+            background: #d4edda;
+            border: 2px solid #c3e6cb;
+            color: #155724;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
             font-size: 0.9em;
-            color: #666;
-            margin-top: 5px;
-            font-style: italic;
         }
 
-        .option-description {
-            font-size: 0.9em;
-            color: #666;
-            margin-top: 15px;
-            padding: 12px;
-            background: #f8f9fa;
-            border-radius: 8px;
-            border-left: 4px solid #667eea;
+        .security-tips h3 {
+            margin-bottom: 10px;
+        }
+
+        .security-tips ul {
+            padding-left: 20px;
         }
 
         @media (max-width: 768px) {
@@ -302,9 +396,15 @@
             .form-section, .results-section {
                 padding: 20px;
             }
+
+            .password-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
         }
     </style>
-<?php /** MyAPIs Analytics (Hostinger / shared-hosting friendly) */ if (file_exists(__DIR__ . "/analytics.php")) { require __DIR__ . "/analytics.php"; } ?>
+<?php /** MyAPIs Analytics (Hostinger / shared-hosting friendly) */ if (file_exists(__DIR__ . "/../analytics.php")) { require __DIR__ . "/../analytics.php"; } ?>
 </head>
 <body>
     <div class="container">
@@ -312,96 +412,103 @@
             <!-- Navigation -->
             <div style="background: #f8f9fa; padding: 15px; border-radius: 15px; border-bottom: 1px solid #e9ecef; margin-bottom: 20px;">
                 <div style="display: flex; align-items: center; gap: 10px; font-size: 0.9em; color: #666; flex-wrap: wrap;">
-                    <a href="index.php" style="color: #667eea; text-decoration: none;">← Back to Main</a>
+                    <a href="../index.php" style="color: #667eea; text-decoration: none;">← Back to Main</a>
                     <span>/</span>
-                    <span>Username Generator</span>
+                    <span>Password Generator</span>
                     <div style="margin-left: auto; display: flex; gap: 10px; flex-wrap: wrap;">
-                        <a href="/api/username-generator/" style="color: #667eea; text-decoration: none; padding: 6px 12px; background: white; border-radius: 5px; border: 1px solid #ddd;">🔗 API</a>
-                        <a href="api-specs/username-generator.php" style="color: #667eea; text-decoration: none; padding: 6px 12px; background: white; border-radius: 5px; border: 1px solid #ddd;">📚 API Docs</a>
+                        <a href="/api/password-generator/" style="color: #667eea; text-decoration: none; padding: 6px 12px; background: white; border-radius: 5px; border: 1px solid #ddd;">🔗 API</a>
+                        <a href="../api-specs/password-generator.php" style="color: #667eea; text-decoration: none; padding: 6px 12px; background: white; border-radius: 5px; border: 1px solid #ddd;">📚 API Docs</a>
                     </div>
                 </div>
             </div>
             
-            <h1>🎯 Username Generator</h1>
-            <p>Create unique usernames with customizable themes and options</p>
+            <h1>🔐 Password Generator</h1>
+            <p>Generate secure passwords with customizable options and strength analysis</p>
         </div>
 
         <div class="form-section">
-            <form id="usernameForm">
-                <div class="form-group">
-                    <label>Themes (select one or more):</label>
-                    <div id="themesCheckboxGroup" class="checkbox-group">
-                        <!-- Themes will be populated here -->
-                    </div>
-                    <div id="themeDescription" class="theme-description">
-                        💡 <strong>Multi-Theme Selection:</strong> Combine multiple themes for more diverse username combinations. Words will be mixed from all selected themes.
-                    </div>
-                </div>
-
+            <form id="passwordForm">
                 <div class="form-row">
                     <div class="form-group">
                         <label for="minLength">Min Length:</label>
-                        <input type="number" id="minLength" name="min_length" value="6" min="3" max="50" required>
+                        <input type="number" id="minLength" name="min_length" value="8" min="1" max="128" required>
                     </div>
                     <div class="form-group">
                         <label for="maxLength">Max Length:</label>
-                        <input type="number" id="maxLength" name="max_length" value="20" min="3" max="50" required>
+                        <input type="number" id="maxLength" name="max_length" value="16" min="1" max="128" required>
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label for="count">Number of usernames to generate:</label>
-                    <input type="number" id="count" name="count" value="10" min="1" max="50" required>
+                    <label for="count">Number of passwords to generate:</label>
+                    <input type="number" id="count" name="count" value="5" min="1" max="100" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="customWords">Custom Words (optional):</label>
-                    <input type="text" id="customWords" name="custom_words" placeholder="Enter words separated by commas">
-                </div>
-
-                <div class="form-group">
-                    <label>Options:</label>
+                    <label>Character Types:</label>
                     <div class="checkbox-group">
+                        <div class="checkbox-item" data-checkbox="includeLowercase">
+                            <input type="checkbox" id="includeLowercase" name="include_lowercase" checked>
+                            <label for="includeLowercase">Lowercase (a-z)</label>
+                        </div>
+                        <div class="checkbox-item" data-checkbox="includeUppercase">
+                            <input type="checkbox" id="includeUppercase" name="include_uppercase" checked>
+                            <label for="includeUppercase">Uppercase (A-Z)</label>
+                        </div>
                         <div class="checkbox-item" data-checkbox="includeNumbers">
-                            <input type="checkbox" id="includeNumbers" name="include_numbers">
-                            <label for="includeNumbers">Include Numbers</label>
+                            <input type="checkbox" id="includeNumbers" name="include_numbers" checked>
+                            <label for="includeNumbers">Numbers (0-9)</label>
                         </div>
                         <div class="checkbox-item" data-checkbox="includeSymbols">
                             <input type="checkbox" id="includeSymbols" name="include_symbols">
-                            <label for="includeSymbols">Include Symbols</label>
+                            <label for="includeSymbols">Symbols (!@#$%)</label>
                         </div>
-                        <div class="checkbox-item" data-checkbox="useAllAdjectives">
-                            <input type="checkbox" id="useAllAdjectives" name="use_all_adjectives">
-                            <label for="useAllAdjectives">Use All Adjectives</label>
-                        </div>
-                        <div class="checkbox-item" data-checkbox="useGeneralAdjectives">
-                            <input type="checkbox" id="useGeneralAdjectives" name="use_general_adjectives">
-                            <label for="useGeneralAdjectives">General Adjectives</label>
-                        </div>
-                        <div class="checkbox-item" data-checkbox="capitalize">
-                            <input type="checkbox" id="capitalize" name="capitalize" checked>
-                            <label for="capitalize">Capitalize Words</label>
-                        </div>
-                        <div class="checkbox-item" data-checkbox="avoidRepetition">
-                            <input type="checkbox" id="avoidRepetition" name="avoid_repetition" checked>
-                            <label for="avoidRepetition">Avoid Repetition</label>
-                        </div>
-                    </div>
-                    <div class="option-description">
-                        💡 <strong>Use All Adjectives:</strong> Combines adjectives from all themes with your selected theme's nouns for creative combinations like "GalacticPuppy" or "CyberBunny"<br>
-                        🎨 <strong>General Adjectives:</strong> Adds colors, shapes, sizes, and common descriptive words like "RedWarrior", "BigData", or "SmoothAlgorithm"
                     </div>
                 </div>
 
+                <div class="form-group">
+                    <label>Security Options:</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item" data-checkbox="excludeAmbiguous">
+                            <input type="checkbox" id="excludeAmbiguous" name="exclude_ambiguous">
+                            <label for="excludeAmbiguous">Exclude Ambiguous</label>
+                        </div>
+                        <div class="checkbox-item" data-checkbox="noRepeatedChars">
+                            <input type="checkbox" id="noRepeatedChars" name="no_repeated_chars">
+                            <label for="noRepeatedChars">No Repeated Chars</label>
+                        </div>
+                        <div class="checkbox-item" data-checkbox="mustIncludeEach">
+                            <input type="checkbox" id="mustIncludeEach" name="must_include_each_type" checked>
+                            <label for="mustIncludeEach">Include Each Type</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="customSymbols">Custom Symbols (optional):</label>
+                    <input type="text" id="customSymbols" name="custom_symbols" placeholder="Enter custom symbols">
+                </div>
+
                 <button type="submit" class="generate-btn" id="generateBtn">
-                    🚀 Generate Usernames
+                    🛡️ Generate Secure Passwords
                 </button>
             </form>
+
+            <div class="security-tips">
+                <h3>🔒 Security Tips</h3>
+                <ul>
+                    <li>Use at least 12 characters for strong passwords</li>
+                    <li>Include all character types (uppercase, lowercase, numbers, symbols)</li>
+                    <li>Never reuse passwords across different accounts</li>
+                    <li>Consider using a password manager</li>
+                    <li>Change passwords regularly for important accounts</li>
+                </ul>
+            </div>
         </div>
 
         <div class="results-section">
             <div class="results-header">
-                <h2>Generated Usernames</h2>
+                <h2>Generated Passwords</h2>
                 <button class="copy-all-btn" id="copyAllBtn" style="display: none;">Copy All</button>
             </div>
 
@@ -411,121 +518,51 @@
 
             <div class="loading" id="loading">
                 <div class="loading-spinner"></div>
-                <p>Generating awesome usernames...</p>
+                <p>Generating secure passwords...</p>
             </div>
 
             <div id="generationInfo" class="generation-info" style="display: none;"></div>
 
-            <div class="username-grid" id="usernameGrid">
+            <div class="password-grid" id="passwordGrid">
                 <div style="text-align: center; color: #666; padding: 40px;">
-                    <p>🎯 Configure your preferences and click "Generate Usernames" to get started!</p>
+                    <p>🔐 Configure your preferences and click "Generate Secure Passwords" to get started!</p>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        let themes = {};
-
         // Initialize the app
         document.addEventListener('DOMContentLoaded', function() {
-            loadThemes();
             setupEventListeners();
         });
 
-        async function loadThemes() {
-            try {
-                const response = await fetch('/api/username-generator/?action=themes');
-                const data = await response.json();
+        function setupEventListeners() {
+            // Checkbox styling
+            document.querySelectorAll('.checkbox-item').forEach(item => {
+                const checkbox = item.querySelector('input[type="checkbox"]');
                 
-                if (data.success) {
-                    themes = data.theme_descriptions;
-                    populateThemeSelect(data.themes, data.theme_descriptions);
-                }
-            } catch (error) {
-                console.error('Failed to load themes:', error);
-            }
-        }
+                item.addEventListener('click', function(e) {
+                    if (e.target.type !== 'checkbox') {
+                        checkbox.checked = !checkbox.checked;
+                    }
+                    updateCheckboxStyle(item, checkbox.checked);
+                });
 
-        function populateThemeSelect(themeList, descriptions) {
-            const themesContainer = document.getElementById('themesCheckboxGroup');
-            themesContainer.innerHTML = '';
-            
-            themeList.forEach(theme => {
-                const checkboxItem = document.createElement('div');
-                checkboxItem.className = 'checkbox-item';
-                checkboxItem.innerHTML = `
-                    <input type="checkbox" id="theme_${theme}" name="themes" value="${theme}">
-                    <label for="theme_${theme}">${theme}</label>
-                `;
-                themesContainer.appendChild(checkboxItem);
+                // Initial state
+                updateCheckboxStyle(item, checkbox.checked);
+                
+                // Listen for direct checkbox changes
+                checkbox.addEventListener('change', function() {
+                    updateCheckboxStyle(item, this.checked);
+                });
             });
 
-            // Set Fantasy as default selected
-            const fantasyCheckbox = document.getElementById('theme_Fantasy');
-            if (fantasyCheckbox) {
-                fantasyCheckbox.checked = true;
-            }
-
-            // Setup event listeners for theme checkboxes
-            setupThemeCheckboxListeners();
-        }
-
-        function setupEventListeners() {
             // Form submission
-            document.getElementById('usernameForm').addEventListener('submit', generateUsernames);
+            document.getElementById('passwordForm').addEventListener('submit', generatePasswords);
             
             // Copy all button
-            document.getElementById('copyAllBtn').addEventListener('click', copyAllUsernames);
-            
-            // Setup option checkboxes
-            setupOptionCheckboxes();
-        }
-
-        function setupOptionCheckboxes() {
-            // Checkbox styling for options (not themes)
-            document.querySelectorAll('.checkbox-item:not([id="themesCheckboxGroup"] .checkbox-item)').forEach(item => {
-                const checkbox = item.querySelector('input[type="checkbox"]');
-                if (!checkbox) return;
-                
-                item.addEventListener('click', function(e) {
-                    if (e.target.type !== 'checkbox') {
-                        checkbox.checked = !checkbox.checked;
-                    }
-                    updateCheckboxStyle(item, checkbox.checked);
-                });
-
-                // Initial state
-                updateCheckboxStyle(item, checkbox.checked);
-                
-                // Listen for direct checkbox changes
-                checkbox.addEventListener('change', function() {
-                    updateCheckboxStyle(item, this.checked);
-                });
-            });
-        }
-
-        function setupThemeCheckboxListeners() {
-            // Setup theme checkbox styling and events
-            document.querySelectorAll('#themesCheckboxGroup .checkbox-item').forEach(item => {
-                const checkbox = item.querySelector('input[type="checkbox"]');
-                if (!checkbox) return;
-                
-                item.addEventListener('click', function(e) {
-                    if (e.target.type !== 'checkbox') {
-                        checkbox.checked = !checkbox.checked;
-                    }
-                    updateCheckboxStyle(item, checkbox.checked);
-                });
-
-                // Initial state
-                updateCheckboxStyle(item, checkbox.checked);
-                
-                // Listen for direct checkbox changes
-                checkbox.addEventListener('change', function() {
-                    updateCheckboxStyle(item, this.checked);
-                });
-            });
+            document.getElementById('copyAllBtn').addEventListener('click', copyAllPasswords);
         }
 
         function updateCheckboxStyle(item, checked) {
@@ -536,31 +573,16 @@
             }
         }
 
-        async function generateUsernames(e) {
+        async function generatePasswords(e) {
             e.preventDefault();
             
             const formData = new FormData(e.target);
             const options = {};
             
-            // Handle multiple themes
-            const selectedThemes = [];
-            document.querySelectorAll('input[name="themes"]:checked').forEach(checkbox => {
-                selectedThemes.push(checkbox.value);
-            });
-            
-            if (selectedThemes.length === 0) {
-                showError('Please select at least one theme.');
-                return;
-            }
-            
-            options.themes = selectedThemes;
-            
             // Convert form data to options object
             for (let [key, value] of formData.entries()) {
-                if (key === 'themes') {
-                    // Already handled above
-                    continue;
-                } else if (['include_numbers', 'include_symbols', 'use_all_adjectives', 'use_general_adjectives', 'capitalize', 'avoid_repetition'].includes(key)) {
+                if (['include_lowercase', 'include_uppercase', 'include_numbers', 'include_symbols', 
+                     'exclude_ambiguous', 'no_repeated_chars', 'must_include_each_type'].includes(key)) {
                     options[key] = true; // Checkbox is checked if it exists in formData
                 } else {
                     options[key] = value;
@@ -568,7 +590,8 @@
             }
 
             // Set unchecked checkboxes to false
-            ['include_numbers', 'include_symbols', 'use_all_adjectives', 'use_general_adjectives', 'capitalize', 'avoid_repetition'].forEach(key => {
+            ['include_lowercase', 'include_uppercase', 'include_numbers', 'include_symbols', 
+             'exclude_ambiguous', 'no_repeated_chars', 'must_include_each_type'].forEach(key => {
                 if (!(key in options)) {
                     options[key] = false;
                 }
@@ -579,7 +602,7 @@
             hideResults();
 
             try {
-                const response = await fetch('/api/username-generator/', {
+                const response = await fetch('/api/password-generator/', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -595,7 +618,7 @@
                     showError(data.messages ? data.messages.join(', ') : data.message);
                 }
             } catch (error) {
-                showError('Failed to connect to the username generator API. Please try again.');
+                showError('Failed to connect to the password generator API. Please try again.');
                 console.error('Error:', error);
             } finally {
                 hideLoading();
@@ -603,30 +626,38 @@
         }
 
         function displayResults(data) {
-            const grid = document.getElementById('usernameGrid');
+            const grid = document.getElementById('passwordGrid');
             const info = document.getElementById('generationInfo');
             const copyAllBtn = document.getElementById('copyAllBtn');
             
             // Show generation info
             const genInfo = data.generation_info;
-            const themesText = genInfo.themes ? genInfo.themes.join(', ') : 'N/A';
             info.innerHTML = `
-                <strong>Generated:</strong> ${data.data.count} usernames | 
-                <strong>Themes:</strong> ${themesText} (${genInfo.theme_count}) | 
+                <strong>Generated:</strong> ${data.data.count} passwords | 
                 <strong>Length:</strong> ${genInfo.length_range} | 
-                <strong>Features:</strong> ${Object.entries(genInfo.features).map(([k,v]) => `${k}: ${v}`).join(', ')}
+                <strong>Types:</strong> ${Object.entries(genInfo.character_types).filter(([k,v]) => v === 'included').map(([k,v]) => k).join(', ')}
             `;
             info.style.display = 'block';
             
             // Clear and populate grid
             grid.innerHTML = '';
             
-            data.data.usernames.forEach((username, index) => {
+            data.data.passwords.forEach((passwordData, index) => {
                 const item = document.createElement('div');
-                item.className = 'username-item';
+                item.className = 'password-item';
                 item.innerHTML = `
-                    <span class="username-text">${username}</span>
-                    <button class="copy-btn" onclick="copyUsername('${username}', this)">Copy</button>
+                    <div class="password-header">
+                        <div class="password-text">${passwordData.password}</div>
+                        <div class="password-actions">
+                            <button class="copy-btn" onclick="copyPassword('${passwordData.password}', this)">Copy</button>
+                            <button class="analyze-btn" onclick="analyzePassword('${passwordData.password}', this)">Analyze</button>
+                        </div>
+                    </div>
+                    <div class="password-info">
+                        <span>Length: ${passwordData.length}</span>
+                        <span class="strength-indicator strength-${passwordData.strength.replace(' ', '-')}">${passwordData.strength}</span>
+                    </div>
+                    <div class="password-analysis" id="analysis-${index}"></div>
                 `;
                 grid.appendChild(item);
             });
@@ -635,8 +666,8 @@
             copyAllBtn.style.display = 'block';
         }
 
-        function copyUsername(username, button) {
-            navigator.clipboard.writeText(username).then(() => {
+        function copyPassword(password, button) {
+            navigator.clipboard.writeText(password).then(() => {
                 const originalText = button.textContent;
                 button.textContent = 'Copied!';
                 button.classList.add('copied');
@@ -650,12 +681,70 @@
             });
         }
 
-        function copyAllUsernames() {
-            const usernames = Array.from(document.querySelectorAll('.username-text'))
+        async function analyzePassword(password, button) {
+            const analysisDiv = button.closest('.password-item').querySelector('.password-analysis');
+            
+            if (analysisDiv.style.display === 'block') {
+                analysisDiv.style.display = 'none';
+                button.textContent = 'Analyze';
+                return;
+            }
+
+            button.textContent = 'Analyzing...';
+            
+            try {
+                const response = await fetch(`./api/?action=analyze&password=${encodeURIComponent(password)}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    const analysis = data.analysis;
+                    const tips = data.tips;
+
+                    analysisDiv.innerHTML = `
+                        <div class="analysis-details">
+                            <div class="analysis-item">
+                                <strong>Length</strong><br>${analysis.length}
+                            </div>
+                            <div class="analysis-item">
+                                <strong>Lowercase</strong><br>${analysis.has_lowercase ? '✅' : '❌'}
+                            </div>
+                            <div class="analysis-item">
+                                <strong>Uppercase</strong><br>${analysis.has_uppercase ? '✅' : '❌'}
+                            </div>
+                            <div class="analysis-item">
+                                <strong>Numbers</strong><br>${analysis.has_numbers ? '✅' : '❌'}
+                            </div>
+                            <div class="analysis-item">
+                                <strong>Symbols</strong><br>${analysis.has_symbols ? '✅' : '❌'}
+                            </div>
+                            <div class="analysis-item">
+                                <strong>Score</strong><br>${analysis.score}/8
+                            </div>
+                        </div>
+                        <div class="analysis-tips">
+                            <strong>Tips:</strong>
+                            <ul>
+                                ${tips.map(tip => `<li>${tip}</li>`).join('')}
+                            </ul>
+                        </div>
+                    `;
+                    analysisDiv.style.display = 'block';
+                    button.textContent = 'Hide Analysis';
+                } else {
+                    showError('Failed to analyze password');
+                }
+            } catch (error) {
+                showError('Failed to analyze password');
+                console.error('Error:', error);
+            }
+        }
+
+        function copyAllPasswords() {
+            const passwords = Array.from(document.querySelectorAll('.password-text'))
                 .map(el => el.textContent)
                 .join('\n');
             
-            navigator.clipboard.writeText(usernames).then(() => {
+            navigator.clipboard.writeText(passwords).then(() => {
                 const button = document.getElementById('copyAllBtn');
                 const originalText = button.textContent;
                 button.textContent = 'All Copied!';

@@ -583,19 +583,19 @@ $typeSelector = function ($name, array $options, $current, $placeholder = 'Custo
             .dyn-row.address .row + .row { grid-template-columns: 1fr; }
         }
     </style>
-<?php /** MyAPIs Analytics (Hostinger / shared-hosting friendly) */ if (file_exists(__DIR__ . "/analytics.php")) { require __DIR__ . "/analytics.php"; } ?>
+<?php /** MyAPIs Analytics (Hostinger / shared-hosting friendly) */ if (file_exists(__DIR__ . "/../analytics.php")) { require __DIR__ . "/../analytics.php"; } ?>
 </head>
 <body>
     <div class="container">
 
         <!-- Breadcrumb -->
         <div class="breadcrumb">
-            <a href="index.php">← Back to Main</a>
+            <a href="../index.php">← Back to Main</a>
             <span>/</span>
             <span>QR Code Generator</span>
             <div class="right">
                 <a href="/api/qr-code-generator/" class="pill">🔗 API</a>
-                <a href="api-specs/qr-code-generator.php" class="pill">📚 API Docs</a>
+                <a href="../api-specs/qr-code-generator.php" class="pill">📚 API Docs</a>
             </div>
         </div>
 

@@ -1,315 +1,26 @@
 <?php
-// Generate dynamic base URL based on current server
-function getBaseUrl($toolName) {
-    $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
-    $host = $_SERVER['HTTP_HOST'];
-    return $protocol . '://' . $host . '/api/' . $toolName . '/';
-}
-$baseUrl = getBaseUrl('password-generator');
+/**
+ * Password Generator API — documentation page.
+ *
+ * Shared layout (HTML head, styles, header banner, breadcrumb, container
+ * wrapper) lives in public/includes/apispec_layout.php so this file only
+ * contains the tool-specific content sections.
+ */
+
+$spec = [
+    'slug'    => 'password-generator',
+    'title'   => '🔐 Password Generator API',
+    'tagline' => 'Generate cryptographically secure passwords with customizable complexity',
+    'crumb'   => 'Password Generator',
+];
+require __DIR__ . '/../includes/apispec_layout.php';
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Password Generator API Documentation</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-            line-height: 1.6;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-        }
-
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 40px;
-            text-align: center;
-        }
-
-        .header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-        }
-
-        .header p {
-            font-size: 1.2em;
-            opacity: 0.9;
-        }
-
-        .nav {
-            background: #f8f9fa;
-            padding: 20px;
-            border-bottom: 1px solid #e9ecef;
-        }
-
-        .breadcrumb {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 0.9em;
-            color: #666;
-        }
-
-        .breadcrumb a {
-            color: #667eea;
-            text-decoration: none;
-        }
-
-        .breadcrumb a:hover {
-            text-decoration: underline;
-        }
-
-        .content {
-            padding: 40px;
-        }
-
-        .section {
-            margin-bottom: 40px;
-        }
-
-        .section h2 {
-            color: #333;
-            font-size: 1.8em;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #667eea;
-        }
-
-        .section h3 {
-            color: #444;
-            font-size: 1.3em;
-            margin-bottom: 15px;
-            margin-top: 25px;
-        }
-
-        .endpoint {
-            background: #f8f9fa;
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 20px;
-            border-left: 4px solid #667eea;
-        }
-
-        .method {
-            display: inline-block;
-            background: #28a745;
-            color: white;
-            padding: 4px 12px;
-            border-radius: 4px;
-            font-weight: bold;
-            font-size: 0.9em;
-            margin-right: 10px;
-        }
-
-        .method.post {
-            background: #007bff;
-        }
-
-        .method.get {
-            background: #28a745;
-        }
-
-        .url {
-            font-family: 'Courier New', monospace;
-            background: #e9ecef;
-            padding: 8px 12px;
-            border-radius: 4px;
-            display: inline-block;
-            margin-left: 10px;
-        }
-
-        .code-block {
-            background: #2d3748;
-            color: #e2e8f0;
-            padding: 20px;
-            border-radius: 8px;
-            font-family: 'Courier New', monospace;
-            font-size: 0.9em;
-            overflow-x: auto;
-            margin: 15px 0;
-        }
-
-        .parameter-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 15px 0;
-        }
-
-        .parameter-table th,
-        .parameter-table td {
-            border: 1px solid #dee2e6;
-            padding: 12px;
-            text-align: left;
-        }
-
-        .parameter-table th {
-            background: #f8f9fa;
-            font-weight: 600;
-            color: #333;
-        }
-
-        .parameter-table td {
-            color: #555;
-        }
-
-        .required {
-            color: #dc3545;
-            font-weight: bold;
-        }
-
-        .optional {
-            color: #6c757d;
-        }
-
-        .response-box {
-            background: #f0f8f0;
-            border: 1px solid #d4edda;
-            border-radius: 8px;
-            padding: 15px;
-            margin: 15px 0;
-        }
-
-        .error-box {
-            background: #fdf2f2;
-            border: 1px solid #f5c6cb;
-            border-radius: 8px;
-            padding: 15px;
-            margin: 15px 0;
-        }
-
-        .btn {
-            display: inline-block;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 12px 24px;
-            border: none;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 600;
-            transition: transform 0.2s ease;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-        }
-
-        .btn-secondary {
-            background: #6c757d;
-        }
-
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            margin: 20px 0;
-        }
-
-        .feature-card {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 10px;
-            border-left: 4px solid #667eea;
-        }
-
-        .feature-card h4 {
-            color: #333;
-            margin-bottom: 10px;
-        }
-
-        .feature-card p {
-            color: #666;
-            font-size: 0.9em;
-        }
-
-        .try-it {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px;
-            border-radius: 10px;
-            text-align: center;
-            margin: 30px 0;
-        }
-
-        .try-it h3 {
-            margin-bottom: 15px;
-        }
-
-        .try-it p {
-            margin-bottom: 20px;
-            opacity: 0.9;
-        }
-
-        .security-badge {
-            display: inline-block;
-            background: #28a745;
-            color: white;
-            padding: 6px 12px;
-            border-radius: 15px;
-            font-size: 0.8em;
-            font-weight: bold;
-            margin: 5px;
-        }
-
-        @media (max-width: 768px) {
-            .header h1 {
-                font-size: 2em;
-            }
-            
-            .content {
-                padding: 20px;
-            }
-            
-            .code-block {
-                font-size: 0.8em;
-            }
-        }
-    </style>
-<?php /** MyAPIs Analytics (Hostinger / shared-hosting friendly) */ if (file_exists(__DIR__ . "/analytics.php")) { require __DIR__ . "/analytics.php"; } ?>
-</head>
-<body>
-    <div class="container">
-        <!-- Header -->
-        <div class="header">
-            <h1>🔐 Password Generator API</h1>
-            <p>Generate cryptographically secure passwords with customizable complexity</p>
-        </div>
-
-        <!-- Navigation -->
-        <div class="nav">
-            <div class="breadcrumb">
-                <a href="../index.php">← Back to Main</a>
-                <span>/</span>
-                <a href="../password-generator.php">Password Generator</a>
-                <span>/</span>
-                <span>API Documentation</span>
-            </div>
-        </div>
-
-        <!-- Content -->
-        <div class="content">
             <!-- Overview -->
             <div class="section">
                 <h2>📖 Overview</h2>
                 <p>The Password Generator API creates cryptographically secure passwords with customizable complexity options. Built with security best practices, it provides reliable password generation for applications requiring strong authentication.</p>
-                
+
                 <div class="features-grid">
                     <div class="feature-card">
                         <h4>🔒 Cryptographically Secure</h4>
@@ -339,9 +50,7 @@ $baseUrl = getBaseUrl('password-generator');
             <!-- Base URL -->
             <div class="section">
                 <h2>🌐 Base URL</h2>
-                <div class="code-block">
-<?php echo $baseUrl; ?>
-                </div>
+                <div class="code-block"><?php echo htmlspecialchars($baseUrl); ?></div>
             </div>
 
             <!-- Authentication -->
@@ -354,14 +63,14 @@ $baseUrl = getBaseUrl('password-generator');
             <div class="section">
                 <h2>📡 API Endpoints</h2>
 
-                <!-- Generate Password Endpoint -->
+                <!-- Generate Passwords Endpoint -->
                 <div class="endpoint">
                     <h3>
-                        <span class="method post">POST</span>
+                        <span class="method get">GET</span> / <span class="method post">POST</span>
                         <span class="url">/</span>
-                        Generate Password
+                        Generate Passwords
                     </h3>
-                    <p>Generate a cryptographically secure password with customizable options.</p>
+                    <p>Generate one or more passwords using the supplied options. Parameters may be supplied via the query string (GET) or as a JSON body (POST). When <code>action=analyze</code> is supplied, the same endpoint analyses a single password instead.</p>
 
                     <h4>Request Parameters</h4>
                     <table class="parameter-table">
@@ -380,28 +89,21 @@ $baseUrl = getBaseUrl('password-generator');
                                 <td>integer</td>
                                 <td><span class="optional">Optional</span></td>
                                 <td>8</td>
-                                <td>Minimum password length (1-128 characters)</td>
+                                <td>Minimum length (1–128)</td>
                             </tr>
                             <tr>
                                 <td><code>max_length</code></td>
                                 <td>integer</td>
                                 <td><span class="optional">Optional</span></td>
                                 <td>16</td>
-                                <td>Maximum password length (1-128 characters)</td>
+                                <td>Maximum length (1–128). Must be &gt;= <code>min_length</code></td>
                             </tr>
                             <tr>
                                 <td><code>count</code></td>
                                 <td>integer</td>
                                 <td><span class="optional">Optional</span></td>
                                 <td>5</td>
-                                <td>Number of passwords to generate (1-100)</td>
-                            </tr>
-                            <tr>
-                                <td><code>include_uppercase</code></td>
-                                <td>boolean</td>
-                                <td><span class="optional">Optional</span></td>
-                                <td>true</td>
-                                <td>Include uppercase letters (A-Z)</td>
+                                <td>Number of passwords to generate (1–100)</td>
                             </tr>
                             <tr>
                                 <td><code>include_lowercase</code></td>
@@ -409,6 +111,13 @@ $baseUrl = getBaseUrl('password-generator');
                                 <td><span class="optional">Optional</span></td>
                                 <td>true</td>
                                 <td>Include lowercase letters (a-z)</td>
+                            </tr>
+                            <tr>
+                                <td><code>include_uppercase</code></td>
+                                <td>boolean</td>
+                                <td><span class="optional">Optional</span></td>
+                                <td>true</td>
+                                <td>Include uppercase letters (A-Z)</td>
                             </tr>
                             <tr>
                                 <td><code>include_numbers</code></td>
@@ -422,83 +131,70 @@ $baseUrl = getBaseUrl('password-generator');
                                 <td>boolean</td>
                                 <td><span class="optional">Optional</span></td>
                                 <td>false</td>
-                                <td>Include special characters (!@#$%^&*)</td>
+                                <td>Include special characters (default set: <code>!@#$%^&amp;*()_+-=[]{}|;:,.&lt;&gt;?</code>)</td>
                             </tr>
                             <tr>
                                 <td><code>exclude_ambiguous</code></td>
                                 <td>boolean</td>
                                 <td><span class="optional">Optional</span></td>
                                 <td>false</td>
-                                <td>Exclude ambiguous characters (0,O,l,1,i,I)</td>
+                                <td>Exclude ambiguous characters (<code>0</code>, <code>O</code>, <code>1</code>, <code>l</code>, <code>I</code>, <code>|</code>, <code>`</code>) from the pool</td>
                             </tr>
                             <tr>
                                 <td><code>no_repeated_chars</code></td>
                                 <td>boolean</td>
                                 <td><span class="optional">Optional</span></td>
                                 <td>false</td>
-                                <td>Prevent repeated characters in password</td>
+                                <td>Prevent repeated characters in a single password</td>
                             </tr>
                             <tr>
                                 <td><code>must_include_each_type</code></td>
                                 <td>boolean</td>
                                 <td><span class="optional">Optional</span></td>
                                 <td>true</td>
-                                <td>Ensure at least one character from each selected type</td>
+                                <td>Ensure at least one character from each enabled type appears</td>
                             </tr>
                             <tr>
                                 <td><code>custom_symbols</code></td>
                                 <td>string</td>
                                 <td><span class="optional">Optional</span></td>
                                 <td>""</td>
-                                <td>Custom symbol set to use instead of default</td>
+                                <td>Override the default symbol pool when <code>include_symbols</code> is on</td>
+                            </tr>
+                            <tr>
+                                <td><code>action</code></td>
+                                <td>string</td>
+                                <td><span class="optional">Optional</span></td>
+                                <td>—</td>
+                                <td>Set to <code>analyze</code> to score a single password instead of generating</td>
+                            </tr>
+                            <tr>
+                                <td><code>password</code></td>
+                                <td>string</td>
+                                <td><span class="required">Required (analyze only)</span></td>
+                                <td>—</td>
+                                <td>Password to analyse when <code>action=analyze</code></td>
                             </tr>
                         </tbody>
                     </table>
 
-                    <h4>Example Request - Basic Password</h4>
-                    <div class="code-block">
-curl -X POST "<?php echo $baseUrl; ?>" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "min_length": 12,
-    "max_length": 16,
-    "include_uppercase": true,
-    "include_lowercase": true,
-    "include_numbers": true,
-    "include_symbols": false
-  }'
-                    </div>
+                    <h4>Example Request — Basic Passwords (GET)</h4>
+                    <div class="code-block">curl "<?php echo htmlspecialchars($baseUrl); ?>?min_length=12&max_length=16&count=1&include_symbols=true"</div>
 
-                    <h4>Example Request - High Security Password</h4>
-                    <div class="code-block">
-curl -X POST "<?php echo $baseUrl; ?>" \
+                    <h4>Example Request — High Security (POST JSON)</h4>
+                    <div class="code-block">curl -X POST "<?php echo htmlspecialchars($baseUrl); ?>" \
   -H "Content-Type: application/json" \
   -d '{
     "min_length": 24,
     "max_length": 24,
-    "include_uppercase": true,
-    "include_lowercase": true,
-    "include_numbers": true,
+    "count": 1,
     "include_symbols": true,
     "exclude_ambiguous": true,
     "must_include_each_type": true
-  }'
-                    </div>
+  }'</div>
 
-                    <h4>Example Request - Multiple Passwords</h4>
-                    <div class="code-block">
-curl -X POST "<?php echo $baseUrl; ?>" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "min_length": 12,
-    "max_length": 12,
-    "include_uppercase": true,
-    "include_lowercase": true,
-    "include_numbers": true,
-    "include_symbols": true,
-    "count": 5
-  }'
-                    </div>
+                    <h4>Example Request — Analyse a password</h4>
+                    <div class="code-block">curl "<?php echo htmlspecialchars($baseUrl); ?>?action=analyze&password=Kx7mN9pQw2Yv8zR3"</div>
                 </div>
             </div>
 
@@ -506,156 +202,161 @@ curl -X POST "<?php echo $baseUrl; ?>" \
             <div class="section">
                 <h2>📊 Response Format</h2>
 
-                <h3>Success Response</h3>
+                <h3>Generate Response</h3>
                 <div class="response-box">
-                    <h4>Single Password Response</h4>
-                    <div class="code-block">
-{
-  "success": true,
-  "data": {
-    "password": "Kx7mN9pQw2Yv8zR3",
-    "length": 16,
-    "strength": {
-      "score": 4,
-      "level": "Very Strong",
-      "feedback": "Excellent password with good character variety"
-    },
-    "character_sets": {
-      "uppercase": true,
-      "lowercase": true,
-      "numbers": true,
-      "symbols": false
-    },
-    "entropy": 95.42
-  },
-  "message": "Password generated successfully",
-  "timestamp": "2025-09-09T12:00:00Z"
-}
-                    </div>
-                </div>
-
-                <div class="response-box">
-                    <h4>Multiple Passwords Response</h4>
-                    <div class="code-block">
-{
+                    <div class="code-block">{
   "success": true,
   "data": {
     "passwords": [
       {
-        "password": "Kx7mN9pQw2Yv",
-        "strength": {
-          "score": 4,
-          "level": "Very Strong"
-        }
-      },
-      {
-        "password": "Zf5bH8nMv3Qp",
-        "strength": {
-          "score": 4,
-          "level": "Very Strong"
-        }
+        "password": "chocuqpj5LBD",
+        "length": 12,
+        "strength": "strong",
+        "score": 5
       }
     ],
-    "count": 2,
-    "settings": {
-      "length": 12,
-      "character_sets": {
-        "uppercase": true,
-        "lowercase": true,
-        "numbers": true,
-        "symbols": false
-      }
+    "count": 1,
+    "options_used": {
+      "min_length": 10,
+      "max_length": 12,
+      "count": 1,
+      "include_lowercase": true,
+      "include_uppercase": true,
+      "include_numbers": true,
+      "include_symbols": false,
+      "exclude_ambiguous": false,
+      "no_repeated_chars": false,
+      "must_include_each_type": true,
+      "custom_symbols": ""
     }
   },
-  "message": "Passwords generated successfully",
+  "generation_info": {
+    "length_range":     "10-12 characters",
+    "character_types": {
+      "lowercase": "included",
+      "uppercase": "included",
+      "numbers":   "included",
+      "symbols":   "excluded"
+    },
+    "security_options": {
+      "exclude_ambiguous":      "disabled",
+      "no_repeated_chars":      "disabled",
+      "must_include_each_type": "enabled"
+    }
+  },
   "timestamp": "2025-09-09T12:00:00Z"
-}
-                    </div>
+}</div>
                 </div>
 
-                <h3>Error Response</h3>
-                <div class="error-box">
-                    <div class="code-block">
-{
-  "success": false,
-  "error": "Invalid password length. Must be between 4 and 128 characters",
-  "code": "INVALID_LENGTH",
+                <h3>Analyze Response</h3>
+                <div class="response-box">
+                    <div class="code-block">{
+  "success": true,
+  "analysis": {
+    "length":        16,
+    "has_lowercase": true,
+    "has_uppercase": true,
+    "has_numbers":   true,
+    "has_symbols":   false,
+    "strength":      "strong",
+    "score":         5
+  },
+  "tips": [
+    "Great! Your password meets all security recommendations"
+  ],
   "timestamp": "2025-09-09T12:00:00Z"
-}
-                    </div>
+}</div>
+                </div>
+
+                <h3>Error Responses</h3>
+                <p>Errors come back as JSON with HTTP 400 and a free-form <code>error</code> string. Validation failures additionally expose a <code>messages</code> array.</p>
+
+                <div class="error-box">
+                    <p><strong>Option validation failed</strong></p>
+                    <div class="code-block">{
+  "success": false,
+  "error":    "Validation failed",
+  "messages": [
+    "Minimum length cannot be greater than maximum length",
+    "Count must be between 1 and 100"
+  ]
+}</div>
+                </div>
+
+                <div class="error-box">
+                    <p><strong>Missing password for analyze</strong></p>
+                    <div class="code-block">{
+  "success": false,
+  "error": "Password is required for analysis"
+}</div>
+                </div>
+
+                <div class="error-box">
+                    <p><strong>Charset collapsed to nothing</strong></p>
+                    <div class="code-block">{
+  "success": false,
+  "error":   "No character types selected"
+}</div>
                 </div>
             </div>
 
-            <!-- Password Strength -->
+            <!-- Strength scoring -->
             <div class="section">
-                <h2>💪 Password Strength Analysis</h2>
-                <p>Each generated password includes automatic strength analysis based on length, character variety, and entropy.</p>
-
+                <h2>💪 Strength Scoring</h2>
+                <p>Every generated password is re-scored through the same <code>analyzePassword()</code> algorithm used by the analyse action. The score is the sum of these rules:</p>
+                <table class="parameter-table">
+                    <thead>
+                        <tr>
+                            <th>Rule</th>
+                            <th>Points</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>length &gt;= 8</td><td>+1</td></tr>
+                        <tr><td>length &gt;= 12</td><td>+1</td></tr>
+                        <tr><td>contains lowercase</td><td>+1</td></tr>
+                        <tr><td>contains uppercase</td><td>+1</td></tr>
+                        <tr><td>contains numbers</td><td>+1</td></tr>
+                        <tr><td>contains symbols</td><td>+2</td></tr>
+                    </tbody>
+                </table>
+                <p>The numeric score (0–7) is then mapped to a lowercase <code>strength</code> label:</p>
                 <table class="parameter-table">
                     <thead>
                         <tr>
                             <th>Score</th>
-                            <th>Level</th>
-                            <th>Description</th>
+                            <th>Strength label</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>1</td>
-                            <td>Very Weak</td>
-                            <td>Short length, single character type</td>
-                        </tr>
-                        <tr>
-                            <td>2</td>
-                            <td>Weak</td>
-                            <td>Short length, limited character variety</td>
-                        </tr>
-                        <tr>
-                            <td>3</td>
-                            <td>Moderate</td>
-                            <td>Adequate length, good character variety</td>
-                        </tr>
-                        <tr>
-                            <td>4</td>
-                            <td>Strong</td>
-                            <td>Good length, multiple character types</td>
-                        </tr>
-                        <tr>
-                            <td>5</td>
-                            <td>Very Strong</td>
-                            <td>Long length, all character types, high entropy</td>
-                        </tr>
+                        <tr><td>0–2</td><td><code>weak</code></td></tr>
+                        <tr><td>3–4</td><td><code>medium</code></td></tr>
+                        <tr><td>5–6</td><td><code>strong</code></td></tr>
+                        <tr><td>7</td><td><code>very strong</code></td></tr>
                     </tbody>
                 </table>
             </div>
 
-            <!-- Error Codes -->
+            <!-- Error conditions -->
             <div class="section">
-                <h2>⚠️ Error Codes</h2>
+                <h2>⚠️ Error Conditions</h2>
+                <p>The API returns human-readable <code>error</code> strings rather than numeric codes. Common triggers:</p>
                 <table class="parameter-table">
                     <thead>
                         <tr>
-                            <th>Code</th>
-                            <th>Description</th>
+                            <th>Trigger</th>
+                            <th>HTTP</th>
+                            <th><code>error</code> text</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td><code>INVALID_LENGTH</code></td>
-                            <td>Password length is outside the valid range (4-128)</td>
-                        </tr>
-                        <tr>
-                            <td><code>NO_CHARACTER_SETS</code></td>
-                            <td>At least one character set must be enabled</td>
-                        </tr>
-                        <tr>
-                            <td><code>INVALID_COUNT</code></td>
-                            <td>Password count is outside the valid range (1-10)</td>
-                        </tr>
-                        <tr>
-                            <td><code>GENERATION_ERROR</code></td>
-                            <td>Error occurred during password generation</td>
-                        </tr>
+                        <tr><td><code>min_length</code> &lt; 1</td><td>400</td><td><em>Minimum length must be at least 1 character</em></td></tr>
+                        <tr><td><code>max_length</code> &gt; 128</td><td>400</td><td><em>Maximum length cannot exceed 128 characters</em></td></tr>
+                        <tr><td><code>min_length</code> &gt; <code>max_length</code></td><td>400</td><td><em>Minimum length cannot be greater than maximum length</em></td></tr>
+                        <tr><td><code>count</code> outside 1–100</td><td>400</td><td><em>Count must be between 1 and 100</em></td></tr>
+                        <tr><td>All four character types disabled</td><td>400</td><td><em>At least one character type must be selected</em></td></tr>
+                        <tr><td><code>action=analyze</code> without <code>password</code></td><td>400</td><td><em>Password is required for analysis</em></td></tr>
+                        <tr><td>No password produced (e.g. impossible combo)</td><td>400</td><td><em>No passwords could be generated</em></td></tr>
                     </tbody>
                 </table>
             </div>
@@ -664,11 +365,10 @@ curl -X POST "<?php echo $baseUrl; ?>" \
             <div class="section">
                 <h2>🛡️ Security Features</h2>
                 <ul style="color: #555; font-size: 1.1em; line-height: 1.8;">
-                    <li><strong>Cryptographically Secure:</strong> Uses PHP's <code>random_bytes()</code> for true randomness</li>
-                    <li><strong>No Logging:</strong> Generated passwords are not stored or logged anywhere</li>
-                    <li><strong>HTTPS Only:</strong> All communications are encrypted</li>
-                    <li><strong>High Entropy:</strong> Calculated entropy values help assess true password strength</li>
-                    <li><strong>Similar Character Exclusion:</strong> Option to exclude visually similar characters</li>
+                    <li><strong>Secure randomness:</strong> Length and characters are picked with <code>random_int()</code></li>
+                    <li><strong>No logging:</strong> Generated passwords are not persisted anywhere on the server</li>
+                    <li><strong>Character variety:</strong> By default <code>must_include_each_type</code> guarantees a mix of types</li>
+                    <li><strong>Ambiguous-character exclusion:</strong> Optional filter for visually similar glyphs</li>
                 </ul>
             </div>
 
