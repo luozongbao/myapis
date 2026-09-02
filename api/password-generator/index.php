@@ -19,6 +19,12 @@ if (api_handle_preflight()) {
 }
 api_register_exception_handler();
 
+// Rate-limit this endpoint using the policy defined in api_config.php.
+// Anonymous callers are throttled per IP; clients that supply an
+// X-API-Key are throttled per key.
+$configs = require __DIR__ . '/../includes/api_config.php';
+api_rate_limit('api:password-generator', $configs['password-generator'] ?? null);
+
 /**
  * Pure password generation / analysis logic.
  * No HTTP concerns live here so the class is trivially unit-testable.

@@ -29,4 +29,29 @@ sed \
 echo "[entrypoint] PHP config written to $OUT"
 cat "$OUT"
 
+# ---------------------------------------------------------------
+# Provision runtime storage for the in-PHP rate limiter / abuse
+# tracker. The directory lives outside the read-only project
+# mount (Nginx mounts the project :ro) so we put it under /var
+# inside the container. Persistent host volumes can be mapped
+# to these paths in docker-compose if desired.
+# ---------------------------------------------------------------
+RATELIMIT_DIR="${RATELIMIT_STORAGE_DIR:-/var/www/myapis-storage/ratelimit}"
+LOG_DIR="${MYAPIS_LOG_DIR:-/var/www/myapis-storage/logs}"
+for d in "$RATELIMIT_DIR" "$LOG_DIR"; do
+    if [ ! -d "$d" ]; then
+        mkdir -p "$d"
+    fi
+    chown -R www-data:www-data "$d" 2>/dev/null || true
+    chmod 0775 "$d" 2>/dev/null || true
+done
+
+# Point PHP at the directory via environment so the RateLimiter
+# picks it up.
+export RATELIMIT_STORAGE_DIR="$RATELIMIT_DIR"
+export MYAPIS_LOG_DIR="$LOG_DIR"
+
+echo "[entrypoint] Rate-limit storage: $RATELIMIT_DIR"
+echo "[entrypoint] Logs:             $LOG_DIR"
+
 exec "$@"

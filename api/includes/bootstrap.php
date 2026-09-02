@@ -7,16 +7,27 @@
  *   - Preflight (OPTIONS) short-circuit
  *   - JSON response helpers
  *   - Input readers (GET / POST / JSON body)
+ *   - Security helpers (headers, input hardening, HMAC, API keys)
+ *   - Rate limiting (sliding-window, file-based, no Redis required)
  *
  * Designed for backward compatibility with the existing
  * /api/<tool>/index.php endpoints — the on-the-wire format
  * (Content-Type, status codes, JSON shape) is unchanged.
+ *
+ * Security is opt-in: existing endpoints that only call
+ * api_send_headers()/api_handle_preflight() continue to work
+ * exactly as before. To enable rate limiting for an endpoint,
+ * call api_rate_limit('api:<name>') after the preflight check.
  */
 
 declare(strict_types=1);
 
+require_once __DIR__ . '/security/RateLimiter.php';
+require_once __DIR__ . '/security/Security.php';
+
 /**
- * Send CORS + content-type headers.
+ * Send CORS + content-type headers, plus the common security
+ * headers. Idempotent — safe to call multiple times.
  *
  * @param string $contentType Default: application/json
  */
@@ -25,7 +36,11 @@ function api_send_headers(string $contentType = 'application/json; charset=UTF-8
     header('Content-Type: ' . $contentType);
     header('Access-Control-Allow-Origin: *');
     header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
-    header('Access-Control-Allow-Headers: Content-Type');
+    header('Access-Control-Allow-Headers: Content-Type, X-API-Key, X-Signature, Authorization');
+    // Defensive headers — the web server already emits X-Frame-Options
+    // and similar, but emitting them here ensures shared-hosting /
+    // built-in PHP server installs are equally protected.
+    Security::sendHeaders();
 }
 
 /**
@@ -189,4 +204,145 @@ function api_register_exception_handler(): void
         error_log('[api] Uncaught exception: ' . $e->getMessage());
         api_error('Internal server error: ' . $e->getMessage(), 500);
     });
+}
+
+// =====================================================================
+// Security layer — rate limit + input hardening
+// =====================================================================
+//
+// These helpers are no-ops until the first call to
+// `api_security_init()` (typically from api_config.php or the
+// endpoint itself). Once initialised they configure the
+// RateLimiter with sensible defaults that match this stack.
+//
+// Per-tool limits can be tuned via `api_rate_limit()` or via the
+// `api_config.php` file that each endpoint may include.
+
+/**
+ * Initialise the security layer. Safe to call multiple times —
+ * only the first call has effect.
+ *
+ * @param array<string,mixed> $overrides  Per-call overrides merged
+ *                                        over the defaults / config.
+ */
+function api_security_init(array $overrides = []): void
+{
+    static $bootstrapped = false;
+    if ($bootstrapped) {
+        return;
+    }
+    $bootstrapped = true;
+
+    $defaults = [
+        'enabled'             => filter_var(getenv('SECURITY_ENABLED') ?: 'true', FILTER_VALIDATE_BOOLEAN),
+        'storage_dir'         => getenv('RATELIMIT_STORAGE_DIR') ?: null,
+        'trust_cf_connecting' => filter_var(getenv('TRUST_CF_CONNECTING_IP') ?: 'false', FILTER_VALIDATE_BOOLEAN),
+        'trust_x_forwarded'   => filter_var(getenv('TRUST_X_FORWARDED_FOR') ?: 'false', FILTER_VALIDATE_BOOLEAN),
+        'proxies'             => array_values(array_filter(array_map(
+            'trim',
+            explode(',', (string) (getenv('TRUSTED_PROXIES') ?: ''))
+        ))),
+        'default_policy'      => [
+            'limit'  => (int) (getenv('RATELIMIT_DEFAULT_LIMIT') ?: 60),
+            'window' => (int) (getenv('RATELIMIT_DEFAULT_WINDOW') ?: 60),
+        ],
+        'global_policy'       => [
+            'limit'  => (int) (getenv('RATELIMIT_GLOBAL_LIMIT') ?: 0),
+            'window' => (int) (getenv('RATELIMIT_GLOBAL_WINDOW') ?: 60),
+        ],
+        'fail_policy'         => [
+            'fail_limit' => (int) (getenv('SECURITY_FAIL_LIMIT') ?: 10),
+            'ban_window' => (int) (getenv('SECURITY_BAN_WINDOW') ?: 300),
+        ],
+        'policies'   => [],
+        'blacklist'  => array_values(array_filter(array_map(
+            'trim',
+            explode(',', (string) (getenv('SECURITY_BLACKLIST') ?: ''))
+        ))),
+        'whitelist'  => array_values(array_filter(array_map(
+            'trim',
+            explode(',', (string) (getenv('SECURITY_WHITELIST') ?: ''))
+        ))),
+    ];
+
+    RateLimiter::configure(array_replace_recursive($defaults, $overrides));
+}
+
+/**
+ * Convenience: enforce a rate limit for a named bucket. Returns
+ * true when the request is allowed; emits a 429 and exits when it
+ * is not. Also forwards X-RateLimit-* headers to the client.
+ *
+ * @param string $bucket  e.g. "api:password-generator"
+ * @param array{limit?:int,window?:int}|null $policy Override for this call
+ */
+function api_rate_limit(string $bucket, ?array $policy = null): bool
+{
+    api_security_init();
+
+    if ($policy !== null) {
+        RateLimiter::policy($bucket, $policy);
+    }
+
+    $apiKey = Security::readApiKey();
+    $identity = $apiKey !== null ? 'key:' . $apiKey : null;
+
+    if (!RateLimiter::hit($bucket, $identity)) {
+        RateLimiter::sendLimitResponse();
+        // sendLimitResponse() already calls exit, but be explicit.
+        exit;
+    }
+
+    // Allowed — emit headers so well-behaved clients can self-throttle
+    RateLimiter::sendHeaders();
+    return true;
+}
+
+/**
+ * Mark the current request as a failure. Useful for endpoints
+ * that want to trigger the auto-ban on repeated bad requests.
+ */
+function api_rate_limit_fail(string $bucket): void
+{
+    api_security_init();
+    $apiKey = Security::readApiKey();
+    $identity = $apiKey !== null ? 'key:' . $apiKey : null;
+    RateLimiter::fail($bucket, $identity);
+}
+
+/**
+ * Validate the JSON body against size/depth/content rules.
+ * Returns the decoded array, or null on failure.
+ *
+ * @return array<string,mixed>|null
+ */
+function api_safe_json_body(int $maxBytes = 65536, int $maxDepth = 8): ?array
+{
+    return Security::enforceJson($maxBytes, $maxDepth);
+}
+
+/**
+ * Verify an HMAC signature carried in `X-Signature`. Returns true
+ * when valid (or when no signature is required / no key is set).
+ *
+ * When the endpoint requires a signature but none is supplied,
+ * this returns false and the caller should emit a 401.
+ */
+function api_verify_signature(string $secret, ?string $algo = 'sha256', bool $required = false): bool
+{
+    $sig = $_SERVER['HTTP_X_SIGNATURE'] ?? null;
+    if (!is_string($sig) || $sig === '') {
+        return !$required;
+    }
+    $payload = file_get_contents('php://input') ?: '';
+    return Security::verifyHmac($payload, $secret, $sig, $algo ?? 'sha256');
+}
+
+/**
+ * Send a 401 response for missing / invalid authentication.
+ */
+function api_unauthorized(string $reason = 'Unauthorized'): void
+{
+    api_json(['success' => false, 'error' => $reason], 401);
+    exit;
 }
