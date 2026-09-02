@@ -66,11 +66,11 @@ require __DIR__ . '/../includes/apispec_layout.php';
                 <!-- Generate QR Code Endpoint -->
                 <div class="endpoint">
                     <h3>
-                        <span class="method post">POST</span>
+                        <span class="method get">GET</span> / <span class="method post">POST</span>
                         <span class="url">/</span>
                         Generate QR Code
                     </h3>
-                    <p>Generate a QR code based on the specified data type and content.</p>
+                    <p>Generate a QR code for one of six content types. Parameters can be supplied via the query string or as a JSON body; the same names are used in both. The <code>format</code> response mode decides whether you get the image bytes directly (<code>image</code>/<code>png</code>/<code>svg</code>) or a JSON wrapper with a base64-encoded payload (<code>json</code>/<code>data</code>).</p>
 
                     <h4>Request Parameters</h4>
                     <table class="parameter-table">
@@ -87,176 +87,153 @@ require __DIR__ . '/../includes/apispec_layout.php';
                             <tr>
                                 <td><code>type</code></td>
                                 <td>string</td>
-                                <td><span class="required">Required</span></td>
-                                <td>-</td>
-                                <td>QR code type: "text", "url", "vcard", "event", "wifi", "phone", "email", "sms"</td>
-                            </tr>
-                            <tr>
-                                <td><code>data</code></td>
-                                <td>object/string</td>
-                                <td><span class="required">Required</span></td>
-                                <td>-</td>
-                                <td>Data to encode (structure depends on type)</td>
-                            </tr>
-                            <tr>
-                                <td><code>size</code></td>
-                                <td>integer</td>
                                 <td><span class="optional">Optional</span></td>
-                                <td>10</td>
-                                <td>QR code size in pixels (1-50, where each unit = ~30px)</td>
+                                <td><code>text</code></td>
+                                <td>One of <code>text</code>, <code>vcard</code>, <code>event</code>, <code>url</code>, <code>wifi</code>, <code>phone</code></td>
                             </tr>
                             <tr>
                                 <td><code>format</code></td>
                                 <td>string</td>
                                 <td><span class="optional">Optional</span></td>
-                                <td>png</td>
-                                <td>Image format: "png", "gif", "jpeg", "jpg", "svg"</td>
+                                <td><code>json</code></td>
+                                <td>Response mode: <code>image</code>/<code>png</code>/<code>svg</code> for raw bytes, <code>json</code>/<code>data</code> for a JSON envelope with base64</td>
+                            </tr>
+                            <tr>
+                                <td><code>file_type</code></td>
+                                <td>string</td>
+                                <td><span class="optional">Optional</span></td>
+                                <td><code>png</code></td>
+                                <td>Output format passed to goQR.me: <code>png</code>, <code>gif</code>, <code>jpeg</code>, <code>jpg</code>, <code>svg</code>, <code>eps</code>. Anything else silently falls back to <code>png</code>. The legacy alias <code>gformat</code> is also accepted.</td>
+                            </tr>
+                            <tr>
+                                <td><code>size</code></td>
+                                <td>integer</td>
+                                <td><span class="optional">Optional</span></td>
+                                <td>300</td>
+                                <td>Pixel size (10–1000). Values outside this range are clamped.</td>
                             </tr>
                             <tr>
                                 <td><code>ecc</code></td>
                                 <td>string</td>
                                 <td><span class="optional">Optional</span></td>
-                                <td>L</td>
-                                <td>Error correction: "L" (~7%), "M" (~15%), "Q" (~25%), "H" (~30%)</td>
+                                <td><code>M</code></td>
+                                <td>Error correction level: <code>L</code>, <code>M</code>, <code>Q</code>, <code>H</code>. Anything else falls back to <code>M</code>.</td>
                             </tr>
                             <tr>
-                                <td><code>color</code></td>
-                                <td>string</td>
+                                <td><code>qzone</code></td>
+                                <td>integer</td>
                                 <td><span class="optional">Optional</span></td>
-                                <td>000000</td>
-                                <td>Foreground color in hex (without #)</td>
-                            </tr>
-                            <tr>
-                                <td><code bgcolor</code></td>
-                                <td>string</td>
-                                <td><span class="optional">Optional</span></td>
-                                <td>ffffff</td>
-                                <td>Background color in hex (without #)</td>
+                                <td>2</td>
+                                <td>Quiet zone size (0–100, clamped).</td>
                             </tr>
                             <tr>
                                 <td><code>margin</code></td>
                                 <td>integer</td>
                                 <td><span class="optional">Optional</span></td>
-                                <td>4</td>
-                                <td>Margin in pixels (0-50)</td>
+                                <td>1</td>
+                                <td>Margin (0–50, clamped).</td>
                             </tr>
                             <tr>
-                                <td><code>response_format</code></td>
+                                <td><code>charset_source</code></td>
                                 <td>string</td>
                                 <td><span class="optional">Optional</span></td>
-                                <td>image</td>
-                                <td>Response format: "image" (direct) or "json" (base64 encoded)</td>
+                                <td><code>UTF-8</code></td>
+                                <td>Source charset: <code>UTF-8</code> or <code>ISO-8859-1</code></td>
+                            </tr>
+                            <tr>
+                                <td><code>charset_target</code></td>
+                                <td>string</td>
+                                <td><span class="optional">Optional</span></td>
+                                <td><code>UTF-8</code></td>
+                                <td>Target charset: <code>UTF-8</code> or <code>ISO-8859-1</code></td>
+                            </tr>
+                            <tr>
+                                <td><code>color</code></td>
+                                <td>string</td>
+                                <td><span class="optional">Optional</span></td>
+                                <td><code>0-0-0</code></td>
+                                <td>Foreground colour as <code>R-G-B</code> with hyphen separators (e.g. <code>0-0-0</code>)</td>
+                            </tr>
+                            <tr>
+                                <td><code>bgcolor</code></td>
+                                <td>string</td>
+                                <td><span class="optional">Optional</span></td>
+                                <td><code>255-255-255</code></td>
+                                <td>Background colour as <code>R-G-B</code></td>
                             </tr>
                         </tbody>
                     </table>
 
-                    <h4>Type-Specific Data Structures</h4>
+                    <h4>Type-Specific Fields</h4>
+                    <p>Fields other than the ones above are forwarded to the payload builder for the chosen type.</p>
 
                     <table class="parameter-table">
                         <thead>
                             <tr>
                                 <th>Type</th>
-                                <th>Data Structure</th>
-                                <th>Example</th>
+                                <th>Required field(s)</th>
+                                <th>Optional fields</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td>text</td>
-                                <td><code>{"text": "Your text here"}</code></td>
-                                <td>Simple plain text</td>
+                                <td><code>text</code></td>
+                                <td><code>text</code></td>
+                                <td>—</td>
                             </tr>
                             <tr>
-                                <td>url</td>
-                                <td><code>{"url": "https://example.com"}</code></td>
-                                <td>Website URL</td>
+                                <td><code>url</code></td>
+                                <td><code>url</code> (auto-prefixes <code>https://</code> if missing)</td>
+                                <td>—</td>
                             </tr>
                             <tr>
-                                <td>vcard</td>
-                                <td><code>{"name": "John Doe", "phone": "+1234567890", "email": "john@example.com", "org": "Company"}</code></td>
-                                <td>Contact card</td>
+                                <td><code>phone</code></td>
+                                <td><code>phone</code></td>
+                                <td>—</td>
                             </tr>
                             <tr>
-                                <td>event</td>
-                                <td><code>{"summary": "Meeting", "start": "2025-12-01T10:00", "end": "2025-12-01T11:00", "location": "Office"}</code></td>
-                                <td>Calendar event</td>
+                                <td><code>wifi</code></td>
+                                <td><code>ssid</code></td>
+                                <td><code>password</code>, <code>encryption</code> (<code>WPA</code>/<code>WEP</code>/<code>nopass</code>), <code>hidden</code></td>
                             </tr>
                             <tr>
-                                <td>wifi</td>
-                                <td><code>{"ssid": "MyWiFi", "password": "secret123", "security": "WPA"}</code></td>
-                                <td>Wi-Fi credentials</td>
+                                <td><code>event</code></td>
+                                <td><code>summary</code>, <code>start</code></td>
+                                <td><code>end</code>, <code>location</code>, <code>description</code></td>
                             </tr>
                             <tr>
-                                <td>phone</td>
-                                <td><code>{"phone": "+1234567890"}</code></td>
-                                <td>Phone number</td>
-                            </tr>
-                            <tr>
-                                <td>email</td>
-                                <td><code>{"email": "user@example.com", "subject": "Hello", "body": "Message"}</code></td>
-                                <td>Email with subject</td>
-                            </tr>
-                            <tr>
-                                <td>sms</td>
-                                <td><code>{"phone": "+1234567890", "message": "Hello"}</code></td>
-                                <td>SMS message</td>
+                                <td><code>vcard</code></td>
+                                <td>at least one of: name part, nickname, <code>organization</code></td>
+                                <td>legacy fields: <code>first_name</code>, <code>middle_name</code>, <code>last_name</code>, <code>prefix</code>, <code>suffix</code>, <code>nickname</code>, <code>organization</code>, <code>title</code>, <code>note</code>, <code>work_email</code>, <code>home_email</code>, <code>work_phone</code>, <code>home_phone</code>, <code>mobile</code>, <code>fax</code>, <code>website</code>, <code>address</code>, <code>city</code>, <code>region</code>, <code>postcode</code>, <code>country</code>. Dynamic lists: <code>names[][type/value]</code>, <code>nicknames[][type/value]</code>, <code>emails[][type/value]</code>, <code>phones[][type/value]</code>, <code>urls[][value]</code>, <code>addresses[][...]</code></td>
                             </tr>
                         </tbody>
                     </table>
 
-                    <h4>Example Request - Text QR Code</h4>
-                    <div class="code-block">curl -X POST "<?php echo htmlspecialchars($baseUrl); ?>" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "type": "text",
-    "data": {
-      "text": "Hello, World!"
-    },
-    "size": 10,
-    "format": "png",
-    "response_format": "json"
-  }'</div>
+                    <h4>Example Request — Text</h4>
+                    <div class="code-block">curl "<?php echo htmlspecialchars($baseUrl); ?>?type=text&text=Hello%20World&format=image"</div>
 
-                    <h4>Example Request - URL QR Code</h4>
-                    <div class="code-block">curl -X POST "<?php echo htmlspecialchars($baseUrl); ?>" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "type": "url",
-    "data": {
-      "url": "https://github.com"
-    },
-    "size": 15,
-    "ecc": "M",
-    "color": "0066cc"
-  }'</div>
+                    <h4>Example Request — URL</h4>
+                    <div class="code-block">curl "<?php echo htmlspecialchars($baseUrl); ?>?type=url&url=https://github.com&size=300&ecc=M&format=json"</div>
 
-                    <h4>Example Request - vCard QR Code</h4>
-                    <div class="code-block">curl -X POST "<?php echo htmlspecialchars($baseUrl); ?>" \
+                    <h4>Example Request — Wi-Fi</h4>
+                    <div class="code-block">curl "<?php echo htmlspecialchars($baseUrl); ?>?type=wifi&ssid=MyWiFi&password=pass123&encryption=WPA&format=json"</div>
+
+                    <h4>Example Request — Event</h4>
+                    <div class="code-block">curl "<?php echo htmlspecialchars($baseUrl); ?>?type=event&summary=Meeting&start=2025-12-01T10:00&end=2025-12-01T11:00&location=Office&format=json"</div>
+
+                    <h4>Example Request — Phone</h4>
+                    <div class="code-block">curl "<?php echo htmlspecialchars($baseUrl); ?>?type=phone&phone=+1234567890&format=image"</div>
+
+                    <h4>Example Request — vCard (POST JSON)</h4>
+                    <div class="code-block">curl -X POST "<?php echo htmlspecialchars($baseUrl); ?>?format=json" \
   -H "Content-Type: application/json" \
   -d '{
     "type": "vcard",
-    "data": {
-      "name": "John Doe",
-      "phone": "+1234567890",
-      "email": "john@example.com",
-      "org": "Acme Corp"
-    },
-    "size": 12,
-    "ecc": "Q"
-  }'</div>
-
-                    <h4>Example Request - WiFi QR Code</h4>
-                    <div class="code-block">curl -X POST "<?php echo htmlspecialchars($baseUrl); ?>" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "type": "wifi",
-    "data": {
-      "ssid": "MyHomeWiFi",
-      "password": "MyPassword123",
-      "security": "WPA"
-    },
-    "size": 10,
-    "format": "png"
+    "first_name": "John",
+    "last_name":  "Doe",
+    "organization": "Acme Corp",
+    "emails":    [{"type": "WORK", "value": "john@acme.com"}],
+    "phones":    [{"type": "CELL,VOICE", "value": "+1234567890"}]
   }'</div>
                 </div>
             </div>
@@ -265,38 +242,66 @@ require __DIR__ . '/../includes/apispec_layout.php';
             <div class="section">
                 <h2>📊 Response Format</h2>
 
-                <h3>Success Response (JSON)</h3>
+                <h3>JSON envelope (<code>format=json</code> or <code>format=data</code>)</h3>
                 <div class="response-box">
                     <div class="code-block">{
-  "success": true,
-  "data": {
-    "qr_code": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA...",
-    "type": "url",
-    "size": 15,
-    "format": "png",
-    "content": "https://github.com",
-    "dimensions": {
-      "width": 450,
-      "height": 450
-    }
-  },
-  "message": "QR code generated successfully",
-  "timestamp": "2025-09-09T12:00:00Z"
+  "success":   true,
+  "message":   "QR code generated successfully",
+  "type":      "wifi",
+  "payload":   "WIFI:T:WPA;S:MyWiFi;P:pass123;H:false;",
+  "qr_url":    "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA...",
+  "goqr_url":  "https://api.qrserver.com/v1/create-qr-code/?data=WIFI%3AT%3AWPA%3B...",
+  "file_type": "png",
+  "params": {
+    "size":           300,
+    "ecc":            "M",
+    "format":         "png",
+    "qzone":          2,
+    "margin":         1,
+    "charset-source": "UTF-8",
+    "charset-target": "UTF-8",
+    "color":          "0-0-0",
+    "bgcolor":        "255-255-255"
+  }
+}</div>
+                </div>
+                <p>The <code>qr_url</code> field is a fully-qualified <code>data:</code> URL (MIME + base64) so you can drop it straight into an <code>&lt;img src&gt;</code> tag. <code>goqr_url</code> is the underlying goQR.me URL for debugging.</p>
+
+                <h3>Direct image (<code>format=image</code> / <code>png</code> / <code>svg</code>)</h3>
+                <p>The API returns the raw image bytes with the appropriate <code>Content-Type</code> header (<code>image/png</code>, <code>image/svg+xml</code>, etc.) and <code>Content-Disposition: inline; filename="qr-code.&lt;ext&gt;"</code>.</p>
+
+                <h3>Error Response</h3>
+                <p>All errors come back as JSON with HTTP 400 (bad request) or 500 (upstream failure).</p>
+
+                <div class="error-box">
+                    <p><strong>Unsupported <code>type</code></strong></p>
+                    <div class="code-block">{
+  "error":   "Bad request",
+  "message": "Unsupported type 'banana'. Allowed: text, vcard, event, url, wifi, phone"
 }</div>
                 </div>
 
-                <h3>Success Response (Direct Image)</h3>
-                <div class="response-box">
-                    <p>When <code>response_format</code> is set to "image", the API returns the QR code image directly with the appropriate Content-Type header.</p>
+                <div class="error-box">
+                    <p><strong>Missing required field for a type</strong></p>
+                    <div class="code-block">{
+  "error":   "Bad request",
+  "message": "vCard requires at least one name part, a nickname, or Organization"
+}</div>
                 </div>
 
-                <h3>Error Response</h3>
                 <div class="error-box">
+                    <p><strong>Invalid <code>format</code> response mode</strong></p>
                     <div class="code-block">{
-  "success": false,
-  "error": "Invalid QR code type",
-  "code": "INVALID_TYPE",
-  "timestamp": "2025-09-09T12:00:00Z"
+  "error":   "Invalid format parameter",
+  "message": "Supported formats: image, json, svg"
+}</div>
+                </div>
+
+                <div class="error-box">
+                    <p><strong>Upstream failure</strong> (goQR.me unreachable / non-200)</p>
+                    <div class="code-block">{
+  "error":   "Internal server error",
+  "message": "Failed to fetch QR code from goQR.me: HTTP 502"
 }</div>
                 </div>
             </div>
@@ -346,27 +351,27 @@ require __DIR__ . '/../includes/apispec_layout.php';
                 <div class="categories-grid">
                     <div class="category-item">
                         <h4>🔗 Marketing &amp; URLs</h4>
-                        <p>Link to websites, landing pages, app downloads, or promotional content with scannable QR codes.</p>
+                        <p>Link to websites, landing pages, app downloads, or promotional content.</p>
                     </div>
                     <div class="category-item">
                         <h4>📇 Contact Sharing</h4>
-                        <p>Share contact information instantly with vCard QR codes for business cards or networking events.</p>
+                        <p>vCard QR codes for business cards or networking events.</p>
                     </div>
                     <div class="category-item">
                         <h4>📅 Event Management</h4>
-                        <p>Add events to calendars with QR codes containing event details, dates, and locations.</p>
+                        <p>Embed events into calendars with summary, start, end and location.</p>
                     </div>
                     <div class="category-item">
                         <h4>📶 Wi-Fi Access</h4>
-                        <p>Share Wi-Fi credentials without typing. Guests scan and connect automatically.</p>
+                        <p>Share WPA/WEP/nopass credentials for guests to auto-connect.</p>
                     </div>
                     <div class="category-item">
-                        <h4>📞 Quick Contact</h4>
-                        <p>Enable one-tap calling or messaging with phone and SMS QR codes.</p>
+                        <h4>📞 Quick Call</h4>
+                        <p>Encode a phone number so a scan starts a call on most phones.</p>
                     </div>
                     <div class="category-item">
-                        <h4>✉️ Email Integration</h4>
-                        <p>Pre-fill email forms with recipient, subject, and body for quick communication.</p>
+                        <h4>📝 Plain Text</h4>
+                        <p>Encode arbitrary text snippets, serial numbers, or short messages.</p>
                     </div>
                 </div>
             </div>
@@ -375,81 +380,86 @@ require __DIR__ . '/../includes/apispec_layout.php';
             <div class="section">
                 <h2>✨ Best Practices</h2>
                 <ul style="color: #555; font-size: 1.1em; line-height: 1.8; margin-left: 20px;">
-                    <li><strong>Size Selection:</strong> Use size 10-15 for most web display, 20+ for print materials</li>
-                    <li><strong>Error Correction:</strong> Use H level when overlaying logos or in harsh environments</li>
-                    <li><strong>Testing:</strong> Always test QR codes with multiple scanner apps before deployment</li>
-                    <li><strong>Contrast:</strong> Ensure sufficient contrast between foreground and background colors</li>
-                    <li><strong>Quiet Zone:</strong> Maintain adequate margin (default 4px) for reliable scanning</li>
-                    <li><strong>Data Limits:</strong> Keep data concise; QR codes become dense and harder to scan with too much data</li>
+                    <li><strong>Sizing:</strong> Use 300px for most web display, 600–1000px for print. Defaults are tuned for typical web use.</li>
+                    <li><strong>Error correction:</strong> Use <code>H</code> when overlaying logos or printing on curved/harsh surfaces.</li>
+                    <li><strong>Colours:</strong> Always keep the background lighter than the foreground and use high contrast.</li>
+                    <li><strong>Quiet zone:</strong> Keep <code>qzone</code> ≥ 2 so scanners can latch onto the code reliably.</li>
+                    <li><strong>Output type:</strong> Use <code>format=image</code> (or <code>png</code>/<code>svg</code>) when you only want the bytes; use <code>format=json</code> when you need the raw payload string alongside the image.</li>
+                    <li><strong>Payload inspection:</strong> The <code>payload</code> field in JSON responses is the raw string that was encoded — useful for debugging or generating equivalent codes yourself.</li>
                 </ul>
             </div>
 
             <!-- Error Codes -->
             <div class="section">
                 <h2>⚠️ Error Codes</h2>
+                <p>The API does not return a numeric <code>code</code> field. Every error has the shape <code>{ "error": "&lt;title&gt;", "message": "&lt;details&gt;" }</code> with an appropriate HTTP status:</p>
                 <table class="parameter-table">
                     <thead>
                         <tr>
-                            <th>Code</th>
-                            <th>Description</th>
+                            <th>HTTP status</th>
+                            <th><code>error</code></th>
+                            <th>When</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td><code>INVALID_TYPE</code></td>
-                            <td>Specified QR code type is not supported</td>
+                            <td><code>400</code></td>
+                            <td><code>Bad request</code></td>
+                            <td>Unsupported <code>type</code>, or a required type-specific field is missing / malformed</td>
                         </tr>
                         <tr>
-                            <td><code>MISSING_DATA</code></td>
-                            <td>Required data parameter is missing</td>
+                            <td><code>400</code></td>
+                            <td><code>Invalid format parameter</code></td>
+                            <td><code>format</code> is not one of <code>image</code>, <code>json</code>, <code>svg</code>, <code>png</code>, <code>data</code></td>
                         </tr>
                         <tr>
-                            <td><code>INVALID_DATA</code></td>
-                            <td>Data structure is invalid for the specified type</td>
-                        </tr>
-                        <tr>
-                            <td><code>INVALID_SIZE</code></td>
-                            <td>Size is outside valid range (1-50)</td>
-                        </tr>
-                        <tr>
-                            <td><code>INVALID_FORMAT</code></td>
-                            <td>Image format is not supported</td>
-                        </tr>
-                        <tr>
-                            <td><code>INVALID_ECC</code></td>
-                            <td>Error correction level is invalid</td>
-                        </tr>
-                        <tr>
-                            <td><code>QR_GENERATION_ERROR</code></td>
-                            <td>Error occurred during QR code generation</td>
+                            <td><code>500</code></td>
+                            <td><code>Internal server error</code></td>
+                            <td>goQR.me call failed (non-200 response, network error, malformed payload)</td>
                         </tr>
                     </tbody>
                 </table>
+                <p>Note: an unsupported <code>file_type</code> (e.g. <code>bmp</code>) is <em>not</em> an error — the server silently falls back to <code>png</code> so old clients keep working.</p>
             </div>
 
             <!-- Integration Examples -->
             <div class="section">
                 <h2>🔗 Integration Examples</h2>
 
-                <h3>HTML Display</h3>
-                <div class="code-block">&lt;img src="data:image/png;base64,{base64_data}" alt="QR Code" /&gt;</div>
+                <h3>HTML display</h3>
+                <p>Just point an <code>&lt;img&gt;</code> tag at the JSON endpoint's <code>qr_url</code> field:</p>
+                <div class="code-block">&lt;img src="https://your-host/api/qr-code-generator/?type=url&url=https://example.com&format=json"
+     alt="QR code" /&gt;</div>
 
-                <h3>JavaScript Fetch</h3>
-                <div class="code-block">fetch('<?php echo htmlspecialchars($baseUrl); ?>', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-  },
+                <h3>JavaScript fetch (JSON)</h3>
+                <div class="code-block">fetch('/api/qr-code-generator/?type=url&url=https://example.com&format=json')
+  .then(r =&gt; r.json())
+  .then(data =&gt; {
+    document.getElementById('qr').src = data.qr_url;   // data:image/png;base64,...
+    console.log('Encoded payload:', data.payload);     // "https://example.com"
+  });</div>
+
+                <h3>JavaScript fetch (raw bytes)</h3>
+                <div class="code-block">fetch('/api/qr-code-generator/?type=wifi&ssid=Demo&encryption=nopass&format=image')
+  .then(r =&gt; r.blob())
+  .then(blob =&gt; {
+    document.getElementById('qr').src = URL.createObjectURL(blob);
+  });</div>
+
+                <h3>POST JSON body</h3>
+                <div class="code-block">fetch('/api/qr-code-generator/?format=json', {
+  method:  'POST',
+  headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({
-    type: 'url',
-    data: { url: 'https://example.com' },
-    response_format: 'json'
+    type:    'vcard',
+    first_name: 'John',
+    last_name:  'Doe',
+    organization: 'Acme Corp',
+    emails: [{ type: 'WORK', value: 'john@acme.com' }]
   })
 })
-.then(response =&gt; response.json())
-.then(data =&gt; {
-  document.getElementById('qr').src = data.data.qr_code;
-});</div>
+  .then(r =&gt; r.json())
+  .then(data =&gt; console.log(data.qr_url));</div>
             </div>
 
             <!-- Rate Limits -->

@@ -68,11 +68,11 @@ require __DIR__ . '/../includes/apispec_layout.php';
                 <!-- Generate QR Code Endpoint -->
                 <div class="endpoint">
                     <h3>
-                        <span class="method post">POST</span>
+                        <span class="method get">GET</span> / <span class="method post">POST</span>
                         <span class="url">/</span>
                         Generate PromptPay QR Code
                     </h3>
-                    <p>Generate a PromptPay QR code for the specified recipient and optional amount.</p>
+                    <p>Generate a PromptPay QR code for the specified recipient and optional amount. Parameters can be supplied as a query string or as a JSON POST body (the same names are used in both).</p>
 
                     <h4>Request Parameters</h4>
                     <table class="parameter-table">
@@ -81,6 +81,7 @@ require __DIR__ . '/../includes/apispec_layout.php';
                                 <th>Parameter</th>
                                 <th>Type</th>
                                 <th>Required</th>
+                                <th>Default</th>
                                 <th>Description</th>
                             </tr>
                         </thead>
@@ -89,83 +90,80 @@ require __DIR__ . '/../includes/apispec_layout.php';
                                 <td><code>target</code></td>
                                 <td>string</td>
                                 <td><span class="required">Required</span></td>
-                                <td>PromptPay target (phone number, tax ID, or e-wallet ID)</td>
+                                <td>—</td>
+                                <td>Mobile number (Thai national or <code>+66</code>), 13-digit Tax ID, or 15-digit e-Wallet ID</td>
                             </tr>
                             <tr>
                                 <td><code>amount</code></td>
                                 <td>number</td>
                                 <td><span class="optional">Optional</span></td>
-                                <td>Payment amount in Thai Baht (THB)</td>
+                                <td><code>null</code></td>
+                                <td>Payment amount in Thai Baht (THB). Omit or leave blank to leave the QR amount open for the payer to fill in.</td>
                             </tr>
                             <tr>
                                 <td><code>size</code></td>
                                 <td>integer</td>
                                 <td><span class="optional">Optional</span></td>
-                                <td>QR code size in pixels (50-1000, default: 300)</td>
+                                <td>300</td>
+                                <td>Pixel size passed to goQR.me (10–1000, clamped).</td>
                             </tr>
                             <tr>
                                 <td><code>format</code></td>
                                 <td>string</td>
                                 <td><span class="optional">Optional</span></td>
-                                <td>Output format: <code>"image"</code>, <code>"json"</code>, or <code>"base64"</code> / <code>"data"</code> (default: <code>"image"</code>)</td>
+                                <td><code>image</code></td>
+                                <td>Response mode: <code>image</code> returns raw PNG bytes; <code>json</code> returns a JSON envelope with metadata; <code>base64</code> returns a slim JSON wrapper containing only the image data URI.</td>
                             </tr>
                         </tbody>
                     </table>
 
-                    <h4>ID Format Guidelines</h4>
+                    <h4>Target auto-detection</h4>
+                    <p>The server inspects <code>target</code> to pick the PromptPay merchant-account prefix and reports the result as <code>target_type</code> in JSON responses:</p>
                     <table class="parameter-table">
                         <thead>
                             <tr>
-                                <th>ID Type</th>
+                                <th>Detected <code>target_type</code></th>
                                 <th>Format</th>
                                 <th>Example</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td>Mobile Number</td>
-                                <td>+66XXXXXXXXX or 0XXXXXXXXX</td>
-                                <td>+66812345678 or 0812345678</td>
+                                <td><code>phone</code></td>
+                                <td>10-digit Thai mobile (<code>0XXXXXXXXX</code>) or <code>+66XXXXXXXXX</code></td>
+                                <td><code>0812345678</code></td>
                             </tr>
                             <tr>
-                                <td>Tax ID</td>
-                                <td>13-digit number</td>
-                                <td>1234567890123</td>
+                                <td><code>tax</code></td>
+                                <td>13-digit Tax ID</td>
+                                <td><code>1234567890123</code></td>
                             </tr>
                             <tr>
-                                <td>e-Wallet ID</td>
-                                <td>15-digit number</td>
-                                <td>123456789012345</td>
+                                <td><code>ewallet</code></td>
+                                <td>15-digit e-Wallet ID</td>
+                                <td><code>123456789012345</code></td>
                             </tr>
                         </tbody>
                     </table>
 
-                    <h4>Example Request - Mobile Number with Amount</h4>
+                    <h4>Example Request — GET (JSON)</h4>
+                    <div class="code-block">curl "<?php echo htmlspecialchars($baseUrl); ?>?target=0812345678&amount=100.50&size=300&format=json"</div>
+
+                    <h4>Example Request — POST (image bytes)</h4>
                     <div class="code-block">curl -X POST "<?php echo htmlspecialchars($baseUrl); ?>" \
   -H "Content-Type: application/json" \
   -d '{
     "target": "0812345678",
     "amount": 100.50,
-    "size": 300,
-    "format": "json"
-  }'</div>
+    "size": 300
+  }' --output qr.png</div>
 
-                    <h4>Example Request - Tax ID without Amount</h4>
+                    <h4>Example Request — Tax ID without amount (base64)</h4>
                     <div class="code-block">curl -X POST "<?php echo htmlspecialchars($baseUrl); ?>" \
   -H "Content-Type: application/json" \
   -d '{
     "target": "1234567890123",
     "size": 400,
-    "format": "json"
-  }'</div>
-
-                    <h4>Example Request - e-Wallet ID with Large Amount</h4>
-                    <div class="code-block">curl -X POST "<?php echo htmlspecialchars($baseUrl); ?>" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "target": "123456789012345",
-    "amount": 2500,
-    "size": 500,
     "format": "base64"
   }'</div>
                 </div>
@@ -175,100 +173,108 @@ require __DIR__ . '/../includes/apispec_layout.php';
             <div class="section">
                 <h2>📊 Response Format</h2>
 
-                <h3>Success Response (Base64 Format)</h3>
+                <h3><code>format=json</code></h3>
+                <p>Full JSON envelope with the raw EMV payload string alongside the encoded image:</p>
                 <div class="response-box">
                     <div class="code-block">{
-  "success": true,
-  "data": {
-    "qr_code": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA...",
-    "promptpay_id": "0812345678",
-    "amount": 100.50,
-    "currency": "THB",
-    "emv_qr_data": "00020101021129370016A000000677010111011300...",
-    "size": 300,
-    "format": "base64"
-  },
-  "message": "PromptPay QR code generated successfully",
-  "timestamp": "2025-09-09T12:00:00Z"
+  "success":     true,
+  "message":     "QR code generated successfully",
+  "payload":     "00020101021229370016A000000677010111011300668123456785802TH53037645406100.506304F88B",
+  "qr_url":      "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA...",
+  "target":      "0812345678",
+  "amount":      100.5,
+  "target_type": "phone",
+  "qr_size":     300
+}</div>
+                </div>
+                <p><code>amount</code> is <code>null</code> when the caller did not provide one. <code>target_type</code> is one of <code>phone</code>, <code>tax</code>, or <code>ewallet</code>.</p>
+
+                <h3><code>format=base64</code></h3>
+                <p>Slimmer JSON wrapper containing only the image data URI and the EMV payload. Note that this shape uses the key <code>image_base64</code> and <code>size</code> (not <code>qr_size</code>):</p>
+                <div class="response-box">
+                    <div class="code-block">{
+  "success":      true,
+  "image_base64": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA...",
+  "payload":      "00020101021229370016A000000677010111011300668123456785802TH53037645406100.506304F88B",
+  "target":       "0812345678",
+  "amount":       100.5,
+  "size":         300
 }</div>
                 </div>
 
-                <h3>Success Response (Data Format)</h3>
-                <div class="response-box">
-                    <div class="code-block">{
-  "success": true,
-  "data": {
-    "emv_qr_data": "00020101021129370016A00000067701011101130081234567803021.02540TH63041234",
-    "promptpay_id": "0812345678",
-    "amount": null,
-    "currency": "THB",
-    "size": 300,
-    "format": "data"
-  },
-  "message": "PromptPay QR data generated successfully",
-  "timestamp": "2025-09-09T12:00:00Z"
-}</div>
-                </div>
+                <h3><code>format=image</code> (default)</h3>
+                <p>The response body is the raw PNG bytes with <code>Content-Type: image/png</code> and <code>Content-Disposition: inline; filename="promptpay-qr.png"</code>. No JSON envelope is sent.</p>
 
                 <h3>Error Response</h3>
+                <p>All errors are JSON with HTTP 400 and the shape <code>{ "error": "...", "message": "..." }</code>:</p>
+
                 <div class="error-box">
+                    <p><strong>Missing target</strong></p>
                     <div class="code-block">{
-  "success": false,
-  "error": "Invalid PromptPay ID format",
-  "code": "INVALID_ID",
-  "timestamp": "2025-09-09T12:00:00Z"
+  "error":   "Missing required parameter: target",
+  "message": "Please provide a phone number, tax ID, or e-wallet ID"
 }</div>
                 </div>
+
+                <div class="error-box">
+                    <p><strong>Unsupported <code>format</code></strong></p>
+                    <div class="code-block">{
+  "error":   "Invalid format parameter",
+  "message": "Supported formats: image, json, base64"
+}</div>
+                </div>
+
+                <p class="info-box"><strong>Note:</strong> A target that doesn't match any of the three recognised patterns is <em>not</em> rejected — the server just generates a QR with the literal string and reports <code>"target_type": "phone"</code>. Strict ID validation is the caller's responsibility.</p>
             </div>
 
             <!-- EMV QR Code Structure -->
             <div class="section">
                 <h2>🔧 EMV QR Code Structure</h2>
-                <p>The generated QR codes follow the EMV® QR Code Specification for Payment Systems. The data format includes:</p>
+                <p>The generated QR codes follow the EMV® QR Code Specification for Payment Systems. The <code>payload</code> field in JSON responses is the exact TLV string the server encoded.</p>
 
                 <table class="parameter-table">
                     <thead>
                         <tr>
-                            <th>Field</th>
-                            <th>Description</th>
-                            <th>Example Value</th>
+                            <th>TLV Tag</th>
+                            <th>Meaning</th>
+                            <th>Example</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td>Payload Format Indicator</td>
-                            <td>Version of the QR code format</td>
-                            <td>01</td>
+                            <td><code>00</code></td>
+                            <td>Payload Format Indicator (always <code>01</code>)</td>
+                            <td><code>00020101</code></td>
                         </tr>
                         <tr>
-                            <td>Point of Initiation Method</td>
-                            <td>Static or dynamic QR code</td>
-                            <td>11 (Static), 12 (Dynamic)</td>
+                            <td><code>01</code></td>
+                            <td>Point of Initiation Method — <code>11</code> static, <code>12</code> dynamic (dynamic is used whenever an amount is supplied)</td>
+                            <td><code>0112</code></td>
                         </tr>
                         <tr>
-                            <td>Merchant Account Information</td>
-                            <td>PromptPay identification data</td>
-                            <td>Contains PromptPay ID</td>
+                            <td><code>29</code></td>
+                            <td>Merchant Account Information (PromptPay ID, prefixed with the AID <code>A000000677010111</code>)</td>
+                            <td><code>29370016A00000067701011101130066812345678</code></td>
                         </tr>
                         <tr>
-                            <td>Transaction Amount</td>
-                            <td>Payment amount (if specified)</td>
-                            <td>100.50</td>
+                            <td><code>54</code></td>
+                            <td>Transaction Amount (only when supplied)</td>
+                            <td><code>540100.50</code></td>
                         </tr>
                         <tr>
-                            <td>Transaction Currency</td>
-                            <td>ISO 4217 currency code</td>
-                            <td>764 (THB)</td>
+                            <td><code>53</code></td>
+                            <td>Transaction Currency (always <code>764</code> = THB)</td>
+                            <td><code>5303764</code></td>
                         </tr>
                         <tr>
-                            <td>Country Code</td>
-                            <td>ISO 3166-1 country code</td>
-                            <td>TH</td>
+                            <td><code>58</code></td>
+                            <td>Country Code (always <code>TH</code>)</td>
+                            <td><code>5802TH</code></td>
                         </tr>
                         <tr>
-                            <td>CRC</td>
-                            <td>Checksum for data integrity</td>
-                            <td>4-digit checksum</td>
+                            <td><code>63</code></td>
+                            <td>CRC checksum</td>
+                            <td><code>6304F88B</code></td>
                         </tr>
                     </tbody>
                 </table>
@@ -279,56 +285,44 @@ require __DIR__ . '/../includes/apispec_layout.php';
                 <h2>📋 Usage Guidelines</h2>
 
                 <div class="warning-box">
-                    <strong>Important:</strong> Always validate PromptPay IDs before generating QR codes. Invalid IDs may result in failed payments.
+                    <strong>Important:</strong> Validate PromptPay IDs in your own code before calling the API. The server only rejects an empty/missing <code>target</code> — any other input is accepted verbatim.
                 </div>
 
                 <h3>Best Practices</h3>
                 <ul style="color: #555; font-size: 1.1em; line-height: 1.8; margin-left: 20px;">
-                    <li><strong>ID Validation:</strong> Ensure mobile numbers and tax IDs are valid Thai formats</li>
-                    <li><strong>Amount Precision:</strong> Use up to 2 decimal places for amounts</li>
-                    <li><strong>QR Code Size:</strong> Use appropriate sizes for display medium (300px for web, 500px+ for print)</li>
-                    <li><strong>Error Handling:</strong> Always check the response for errors before displaying QR codes</li>
-                    <li><strong>Testing:</strong> Test QR codes with actual PromptPay apps before production use</li>
+                    <li><strong>ID validation:</strong> Strip whitespace and <code>+66</code> prefixes yourself; check digit length matches 10 (phone), 13 (tax), or 15 (ewallet).</li>
+                    <li><strong>Amount precision:</strong> Up to 2 decimal places (e.g. <code>100.50</code>).</li>
+                    <li><strong>Sizing:</strong> 300px is good for web, 500–1000px for print.</li>
+                    <li><strong>Testing:</strong> Always scan the QR with a real PromptPay app before going to production.</li>
                 </ul>
 
                 <h3>Mobile Number Formats</h3>
                 <ul style="color: #555; font-size: 1.1em; line-height: 1.8; margin-left: 20px;">
-                    <li>Thai mobile numbers start with 06, 08, or 09</li>
-                    <li>Can include +66 country code or start with 0</li>
-                    <li>Total length: 10 digits (with 0) or 11 digits (with +66)</li>
+                    <li>Thai mobile numbers start with <code>06</code>, <code>08</code>, or <code>09</code>.</li>
+                    <li>You can pass either <code>0XXXXXXXXX</code> or <code>+66XXXXXXXXX</code>; the server normalises to the <code>66</code> prefix internally.</li>
+                    <li>Total length: 10 digits (with leading <code>0</code>) or 11 digits (with <code>+66</code>).</li>
                 </ul>
             </div>
 
             <!-- Error Codes -->
             <div class="section">
                 <h2>⚠️ Error Codes</h2>
+                <p>There is no numeric <code>code</code> field. Every error response is JSON with HTTP 400 and the shape <code>{ "error": "&lt;title&gt;", "message": "&lt;details&gt;" }</code>:</p>
                 <table class="parameter-table">
                     <thead>
                         <tr>
-                            <th>Code</th>
-                            <th>Description</th>
+                            <th><code>error</code></th>
+                            <th>When</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td><code>INVALID_ID</code></td>
-                            <td>PromptPay ID format is invalid</td>
+                            <td><code>Missing required parameter: target</code></td>
+                            <td>No <code>target</code> was supplied at all</td>
                         </tr>
                         <tr>
-                            <td><code>INVALID_AMOUNT</code></td>
-                            <td>Amount is negative or exceeds maximum limit</td>
-                        </tr>
-                        <tr>
-                            <td><code>INVALID_SIZE</code></td>
-                            <td>QR code size is outside valid range (50-1000px)</td>
-                        </tr>
-                        <tr>
-                            <td><code>QR_GENERATION_ERROR</code></td>
-                            <td>Error occurred during QR code generation</td>
-                        </tr>
-                        <tr>
-                            <td><code>MISSING_PARAMETER</code></td>
-                            <td>Required parameter is missing</td>
+                            <td><code>Invalid format parameter</code></td>
+                            <td><code>format</code> is not one of <code>image</code>, <code>json</code>, <code>base64</code></td>
                         </tr>
                     </tbody>
                 </table>
@@ -338,26 +332,27 @@ require __DIR__ . '/../includes/apispec_layout.php';
             <div class="section">
                 <h2>🔗 Integration Examples</h2>
 
-                <h3>HTML Image Display</h3>
-                <div class="code-block">&lt;img src="data:image/png;base64,{base64_data}" alt="PromptPay QR Code" /&gt;</div>
+                <h3>HTML image display</h3>
+                <p>Point an <code>&lt;img&gt;</code> tag straight at the endpoint with the default <code>image</code> format:</p>
+                <div class="code-block">&lt;img src="/api/promptpay-qr-generator/?target=0812345678&amp;amount=100.50&amp;size=400"
+     alt="PromptPay QR" /&gt;</div>
 
-                <h3>JavaScript Integration</h3>
-                <div class="code-block">fetch('<?php echo htmlspecialchars($baseUrl); ?>', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  body: JSON.stringify({
-    id: '0812345678',
-    amount: 100.50
-  })
-})
-.then(response => response.json())
-.then(data => {
-  if (data.success) {
-    document.getElementById('qr-image').src = data.data.qr_code;
-  }
-});</div>
+                <h3>JavaScript fetch (JSON)</h3>
+                <div class="code-block">fetch('/api/promptpay-qr-generator/?target=0812345678&amount=100.50&format=json')
+  .then(r =&gt; r.json())
+  .then(data =&gt; {
+    if (data.success) {
+      document.getElementById('qr').src = data.qr_url;  // data:image/png;base64,...
+      console.log('Detected:', data.target_type);       // "phone"
+      console.log('Payload:',  data.payload);           // raw EMV TLV string
+    }
+  });</div>
+
+                <h3>JavaScript fetch (raw PNG)</h3>
+                <div class="code-block">fetch('/api/promptpay-qr-generator/?target=0812345678')
+  .then(r =&gt; r.blob())
+  .then(blob =&gt; URL.createObjectURL(blob))
+  .then(url =&gt; document.getElementById('qr').src = url);</div>
             </div>
 
             <!-- Rate Limits -->

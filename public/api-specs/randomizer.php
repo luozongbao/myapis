@@ -64,167 +64,64 @@ require __DIR__ . '/../includes/apispec_layout.php';
                 <!-- Unified Random Generator Endpoint -->
                 <div class="endpoint">
                     <h3>
-                        <span class="method post">POST</span>
-                        <span class="url">/</span>
+                        <span class="method get">GET</span> / <span class="method post">POST</span>
+                        <span class="url">/?type=...</span>
                         Random Generator
                     </h3>
-                    <p>Generate random data based on the specified type. Supports numbers, dice, coins, cards, lists, and weighted selection.</p>
+                    <p>All five randomizer types are served from the same URL. Pick a value for <code>type</code> and supply any extra parameters as either query-string (GET) or JSON-body (POST) fields. Both work the same way.</p>
 
-                    <h4>Request Parameters</h4>
+                    <h4>Type Values</h4>
                     <table class="parameter-table">
                         <thead>
                             <tr>
-                                <th>Parameter</th>
                                 <th>Type</th>
-                                <th>Required</th>
-                                <th>Default</th>
-                                <th>Description</th>
+                                <th>What it does</th>
+                                <th>Extra params</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td><code>type</code></td>
-                                <td>string</td>
-                                <td><span class="required">Required</span></td>
-                                <td>-</td>
-                                <td>Generator type: "number", "dice", "coin", "card", "list", "weighted"</td>
+                                <td><code>number</code></td>
+                                <td>One integer in <code>[min, max]</code></td>
+                                <td><code>min</code> (1), <code>max</code> (100)</td>
                             </tr>
                             <tr>
-                                <td><code>count</code></td>
-                                <td>integer</td>
-                                <td><span class="optional">Optional</span></td>
-                                <td>1</td>
-                                <td>Number of results to generate (1-100)</td>
+                                <td><code>dice</code></td>
+                                <td>Roll <code>count</code> dice with <code>sides</code> faces</td>
+                                <td><code>sides</code> (6, 2–100), <code>count</code> (1, 1–10)</td>
                             </tr>
                             <tr>
-                                <td><code>min</code></td>
-                                <td>number</td>
-                                <td><span class="optional">Optional*</span></td>
-                                <td>1</td>
-                                <td>Minimum value (for type=number)</td>
+                                <td><code>coin</code></td>
+                                <td>Flip <code>count</code> coins</td>
+                                <td><code>count</code> (1, 1–10)</td>
                             </tr>
                             <tr>
-                                <td><code>max</code></td>
-                                <td>number</td>
-                                <td><span class="optional">Optional*</span></td>
-                                <td>100</td>
-                                <td>Maximum value (for type=number)</td>
+                                <td><code>card</code></td>
+                                <td>Draw <code>count</code> random cards</td>
+                                <td><code>count</code> (1, 1–52 or 1–54 with jokers), <code>with_jokers</code> (false)</td>
                             </tr>
                             <tr>
-                                <td><code>decimal</code></td>
-                                <td>integer</td>
-                                <td><span class="optional">Optional</span></td>
-                                <td>0</td>
-                                <td>Decimal places (0-10, for type=number)</td>
-                            </tr>
-                            <tr>
-                                <td><code>unique</code></td>
-                                <td>boolean</td>
-                                <td><span class="optional">Optional</span></td>
-                                <td>false</td>
-                                <td>Ensure all results are unique (for type=number)</td>
-                            </tr>
-                            <tr>
-                                <td><code>count_dice</code></td>
-                                <td>integer</td>
-                                <td><span class="optional">Optional</span></td>
-                                <td>1</td>
-                                <td>Number of dice to roll (1-20, for type=dice)</td>
-                            </tr>
-                            <tr>
-                                <td><code>dice_sides</code></td>
-                                <td>integer</td>
-                                <td><span class="optional">Optional</span></td>
-                                <td>6</td>
-                                <td>Number of sides on each die (2-100, for type=dice)</td>
-                            </tr>
-                            <tr>
-                                <td><code>card_deck</code></td>
-                                <td>string</td>
-                                <td><span class="optional">Optional</span></td>
-                                <td>standard</td>
-                                <td>Deck type: "standard" (52 cards) or "poker" (52 cards with jokers)</td>
-                            </tr>
-                            <tr>
-                                <td><code>card_jokers</code></td>
-                                <td>boolean</td>
-                                <td><span class="optional">Optional</span></td>
-                                <td>false</td>
-                                <td>Include jokers in the deck</td>
-                            </tr>
-                            <tr>
-                                <td><code>items</code></td>
-                                <td>array</td>
-                                <td><span class="optional">Optional*</span></td>
-                                <td>-</td>
-                                <td>Array of items for list or weighted selection</td>
-                            </tr>
-                            <tr>
-                                <td><code>weights</code></td>
-                                <td>array</td>
-                                <td><span class="optional">Optional*</span></td>
-                                <td>-</td>
-                                <td>Array of weights corresponding to items (for type=weighted)</td>
+                                <td><code>all</code></td>
+                                <td>Bundle of one number, one dice roll, one coin flip and one card draw</td>
+                                <td>—</td>
                             </tr>
                         </tbody>
                     </table>
 
-                    <h4>Example Request - Random Number</h4>
-                    <div class="code-block">curl -X POST "<?php echo htmlspecialchars($baseUrl); ?>" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "type": "number",
-    "min": 1,
-    "max": 100,
-    "count": 5,
-    "unique": true
-  }'</div>
+                    <h4>Example Request — Number</h4>
+                    <div class="code-block">curl "<?php echo htmlspecialchars($baseUrl); ?>?type=number&min=1&max=10"</div>
 
-                    <h4>Example Request - Random Dice</h4>
-                    <div class="code-block">curl -X POST "<?php echo htmlspecialchars($baseUrl); ?>" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "type": "dice",
-    "count_dice": 3,
-    "dice_sides": 6,
-    "count": 5
-  }'</div>
+                    <h4>Example Request — Dice</h4>
+                    <div class="code-block">curl "<?php echo htmlspecialchars($baseUrl); ?>?type=dice&sides=6&count=2"</div>
 
-                    <h4>Example Request - Coin Flip</h4>
-                    <div class="code-block">curl -X POST "<?php echo htmlspecialchars($baseUrl); ?>" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "type": "coin",
-    "count": 10
-  }'</div>
+                    <h4>Example Request — Coin</h4>
+                    <div class="code-block">curl "<?php echo htmlspecialchars($baseUrl); ?>?type=coin&count=3"</div>
 
-                    <h4>Example Request - Card Draw</h4>
-                    <div class="code-block">curl -X POST "<?php echo htmlspecialchars($baseUrl); ?>" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "type": "card",
-    "count": 5,
-    "card_deck": "standard"
-  }'</div>
+                    <h4>Example Request — Card</h4>
+                    <div class="code-block">curl "<?php echo htmlspecialchars($baseUrl); ?>?type=card&count=2&with_jokers=true"</div>
 
-                    <h4>Example Request - List Randomization</h4>
-                    <div class="code-block">curl -X POST "<?php echo htmlspecialchars($baseUrl); ?>" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "type": "list",
-    "items": ["apple", "banana", "cherry", "date", "elderberry"],
-    "count": 3
-  }'</div>
-
-                    <h4>Example Request - Weighted Selection</h4>
-                    <div class="code-block">curl -X POST "<?php echo htmlspecialchars($baseUrl); ?>" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "type": "weighted",
-    "items": ["rare", "common", "legendary"],
-    "weights": [5, 80, 15],
-    "count": 10
-  }'</div>
+                    <h4>Example Request — All</h4>
+                    <div class="code-block">curl "<?php echo htmlspecialchars($baseUrl); ?>?type=all"</div>
                 </div>
             </div>
 
@@ -235,118 +132,154 @@ require __DIR__ . '/../includes/apispec_layout.php';
                 <h3>Number Response</h3>
                 <div class="response-box">
                     <div class="code-block">{
-  "success": true,
-  "data": {
-    "type": "number",
-    "results": [42, 17, 89, 3, 56],
-    "min": 1,
-    "max": 100,
-    "count": 5,
-    "unique": true
-  },
-  "message": "Random numbers generated successfully",
-  "timestamp": "2025-09-09T12:00:00Z"
+  "type":      "number",
+  "result":    10,
+  "range":     { "min": 1, "max": 10 },
+  "timestamp": "2025-09-09T12:00:00Z",
+  "success":   true,
+  "api_info": {
+    "version":         "1.0",
+    "endpoint":        "/randomizer/api/",
+    "supported_types": ["number", "dice", "coin", "card", "all"]
+  }
 }</div>
                 </div>
 
                 <h3>Dice Response</h3>
                 <div class="response-box">
                     <div class="code-block">{
-  "success": true,
-  "data": {
-    "type": "dice",
-    "results": [
-      { "rolls": [3, 5, 2], "total": 10 },
-      { "rolls": [6, 1, 4], "total": 11 },
-      { "rolls": [2, 3, 5], "total": 10 }
-    ],
-    "count_dice": 3,
-    "dice_sides": 6,
-    "count": 3
-  },
-  "message": "Dice rolled successfully",
-  "timestamp": "2025-09-09T12:00:00Z"
+  "type":        "dice",
+  "result":      [5, 5],
+  "total":       10,
+  "dice_config": { "sides": 6, "count": 2 },
+  "timestamp":   "2025-09-09T12:00:00Z",
+  "success":     true,
+  "api_info":    { "...": "..." }
 }</div>
+                    <p>When <code>count=1</code> the <code>result</code> is a single integer instead of an array.</p>
                 </div>
 
-                <h3>Coin Flip Response</h3>
+                <h3>Coin Response</h3>
                 <div class="response-box">
                     <div class="code-block">{
-  "success": true,
-  "data": {
-    "type": "coin",
-    "results": ["heads", "tails", "heads", "heads", "tails"],
-    "count": 5,
-    "statistics": {
-      "heads": 3,
-      "tails": 2
+  "type":       "coin",
+  "result":     ["Tails", "Heads", "Heads"],
+  "statistics": { "heads": 2, "tails": 1 },
+  "count":      3,
+  "timestamp":  "2025-09-09T12:00:00Z",
+  "success":    true,
+  "api_info":   { "...": "..." }
+}</div>
+                    <p>When <code>count=1</code> the <code>result</code> is a single string (<code>"Heads"</code> or <code>"Tails"</code>).</p>
+                </div>
+
+                <h3>Card Response</h3>
+                <div class="response-box">
+                    <div class="code-block">{
+  "type":      "card",
+  "result": [
+    {
+      "rank":    "8",
+      "suit":    "Hearts",
+      "symbol":  "♥",
+      "display": "8 of Hearts",
+      "short":   "8♥",
+      "color":   "red"
+    },
+    {
+      "rank":    "4",
+      "suit":    "Hearts",
+      "symbol":  "♥",
+      "display": "4 of Hearts",
+      "short":   "4♥",
+      "color":   "red"
     }
+  ],
+  "deck_info": {
+    "total_cards": 52,
+    "with_jokers": false,
+    "cards_drawn": 2
   },
-  "message": "Coins flipped successfully",
-  "timestamp": "2025-09-09T12:00:00Z"
+  "timestamp": "2025-09-09T12:00:00Z",
+  "success":   true,
+  "api_info":  { "...": "..." }
 }</div>
+                    <p>When <code>count=1</code> the <code>result</code> is a single card object. With <code>with_jokers=true</code> the deck has 54 cards (52 + 2 jokers).</p>
                 </div>
 
-                <h3>Card Draw Response</h3>
+                <h3>All Response</h3>
                 <div class="response-box">
                     <div class="code-block">{
-  "success": true,
-  "data": {
-    "type": "card",
-    "results": [
-      { "rank": "A", "suit": "♠", "name": "Ace of Spades", "value": 1 },
-      { "rank": "K", "suit": "♥", "name": "King of Hearts", "value": 13 },
-      { "rank": "7", "suit": "♦", "name": "7 of Diamonds", "value": 7 },
-      { "rank": "Q", "suit": "♣", "name": "Queen of Clubs", "value": 12 },
-      { "rank": "5", "suit": "♠", "name": "5 of Spades", "value": 5 }
-    ],
-    "count": 5,
-    "deck": "standard"
+  "type": "all",
+  "results": {
+    "number": { "type": "number", "result": 33, "...": "..." },
+    "dice":   { "type": "dice",   "result": 4,   "...": "..." },
+    "coin":   { "type": "coin",   "result": "...", "...": "..." },
+    "card":   { "type": "card",   "result": { "...": "..." }, "...": "..." }
   },
-  "message": "Cards drawn successfully",
-  "timestamp": "2025-09-09T12:00:00Z"
-}</div>
-                </div>
-
-                <h3>List Randomization Response</h3>
-                <div class="response-box">
-                    <div class="code-block">{
-  "success": true,
-  "data": {
-    "type": "list",
-    "results": ["cherry", "apple", "elderberry"],
-    "count": 3,
-    "original": ["apple", "banana", "cherry", "date", "elderberry"]
-  },
-  "message": "List randomized successfully",
-  "timestamp": "2025-09-09T12:00:00Z"
-}</div>
-                </div>
-
-                <h3>Weighted Selection Response</h3>
-                <div class="response-box">
-                    <div class="code-block">{
-  "success": true,
-  "data": {
-    "type": "weighted",
-    "results": ["common", "common", "rare", "common", "legendary", "common", "common", "common", "rare", "common"],
-    "count": 10,
-    "weights": [5, 80, 15]
-  },
-  "message": "Weighted selection completed",
-  "timestamp": "2025-09-09T12:00:00Z"
+  "timestamp": "2025-09-09T12:00:00Z",
+  "success":   true,
+  "api_info":  { "...": "..." }
 }</div>
                 </div>
 
                 <h3>Error Response</h3>
+                <p>The API returns HTTP 400 with a free-form <code>error</code> string and the same <code>api_info</code> block.</p>
                 <div class="error-box">
                     <div class="code-block">{
-  "success": false,
-  "error": "Invalid generator type",
-  "code": "INVALID_TYPE",
-  "timestamp": "2025-09-09T12:00:00Z"
+  "success":   false,
+  "error":     "Invalid type. Supported types: number, dice, coin, card, all",
+  "timestamp": "2025-09-09T12:00:00Z",
+  "api_info":  { "version": "1.0", "endpoint": "/randomizer/api/", "supported_types": ["number", "dice", "coin", "card", "all"] }
 }</div>
                 </div>
+                <p>Other triggers and their messages:</p>
+                <table class="parameter-table">
+                    <thead>
+                        <tr>
+                            <th>Trigger</th>
+                            <th>HTTP</th>
+                            <th><code>error</code> text</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>type</code> missing or unsupported</td>
+                            <td>400</td>
+                            <td><em>Invalid type. Supported types: number, dice, coin, card, all</em></td>
+                        </tr>
+                        <tr>
+                            <td><code>min &gt; max</code></td>
+                            <td>400</td>
+                            <td><em>Minimum value cannot be greater than maximum value</em></td>
+                        </tr>
+                        <tr>
+                            <td>dice <code>sides</code> outside 2–100</td>
+                            <td>400</td>
+                            <td><em>Dice sides must be between 2 and 100</em></td>
+                        </tr>
+                        <tr>
+                            <td>dice <code>count</code> outside 1–10</td>
+                            <td>400</td>
+                            <td><em>Dice count must be between 1 and 10</em></td>
+                        </tr>
+                        <tr>
+                            <td>coin <code>count</code> outside 1–10</td>
+                            <td>400</td>
+                            <td><em>Coin count must be between 1 and 10</em></td>
+                        </tr>
+                        <tr>
+                            <td>card <code>count</code> outside 1–52 (or 1–54 with jokers)</td>
+                            <td>400</td>
+                            <td><em>Card count must be between 1 and 52</em> (or <em>1 and 54</em>)</td>
+                        </tr>
+                        <tr>
+                            <td>Any other unexpected failure</td>
+                            <td>500</td>
+                            <td><em>Internal server error</em></td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
 
             <!-- Generator Types -->
@@ -354,51 +287,19 @@ require __DIR__ . '/../includes/apispec_layout.php';
                 <h2>🎯 Generator Types</h2>
 
                 <h3>🔢 Number Generator</h3>
-                <p>Generate random numbers within a specified range. Supports integers and decimals with optional uniqueness constraint.</p>
-                <ul style="margin-left: 20px; color: #555; line-height: 1.8;">
-                    <li>Range: any numeric min/max values</li>
-                    <li>Decimal places: 0-10</li>
-                    <li>Unique mode ensures no duplicates</li>
-                </ul>
+                <p>Single integer between <code>min</code> and <code>max</code> (inclusive). Defaults: min=1, max=100.</p>
 
                 <h3>🎲 Dice Roller</h3>
-                <p>Roll multiple dice with configurable number of sides. Perfect for tabletop games and simulations.</p>
-                <ul style="margin-left: 20px; color: #555; line-height: 1.8;">
-                    <li>Roll 1-20 dice at once</li>
-                    <li>Support for 2-100 sided dice</li>
-                    <li>Returns individual rolls and totals</li>
-                </ul>
+                <p>Roll <code>count</code> dice (1–10) with <code>sides</code> faces (2–100). Defaults: sides=6, count=1.</p>
 
                 <h3>🪙 Coin Flip</h3>
-                <p>Flip one or more coins with statistical breakdown.</p>
-                <ul style="margin-left: 20px; color: #555; line-height: 1.8;">
-                    <li>Returns "heads" or "tails" for each flip</li>
-                    <li>Includes count statistics in response</li>
-                </ul>
+                <p>Flip <code>count</code> coins (1–10). Returns the per-flip result and a heads/tails tally. Default count=1.</p>
 
                 <h3>🃏 Card Draw</h3>
-                <p>Draw random cards from standard 52-card deck with optional jokers.</p>
-                <ul style="margin-left: 20px; color: #555; line-height: 1.8;">
-                    <li>Standard 52-card deck (no jokers)</li>
-                    <li>Option to include jokers (54 cards)</li>
-                    <li>Returns rank, suit, and value</li>
-                </ul>
+                <p>Draw <code>count</code> cards from a 52-card deck, optionally extended to 54 with <code>with_jokers=true</code>. Each card carries <code>rank</code>, <code>suit</code>, <code>symbol</code>, <code>display</code>, <code>short</code> and <code>color</code>.</p>
 
-                <h3>📋 List Randomizer</h3>
-                <p>Randomly select or shuffle items from an array.</p>
-                <ul style="margin-left: 20px; color: #555; line-height: 1.8;">
-                    <li>Select N random items without replacement</li>
-                    <li>Shuffle entire array</li>
-                    <li>Perfect for giveaways and random selection</li>
-                </ul>
-
-                <h3>⚖️ Weighted Selection</h3>
-                <p>Select items with weighted probabilities. Each item has a relative weight determining selection chance.</p>
-                <ul style="margin-left: 20px; color: #555; line-height: 1.8;">
-                    <li>Weights are relative (not percentages)</li>
-                    <li>Higher weight = higher probability</li>
-                    <li>Great for loot boxes, gacha systems, A/B testing</li>
-                </ul>
+                <h3>🎁 All-in-One</h3>
+                <p>Returns one number (1–100), one dice roll (6-sided), one coin flip and one card draw in a single response.</p>
             </div>
 
             <!-- Use Cases -->
@@ -433,47 +334,10 @@ require __DIR__ . '/../includes/apispec_layout.php';
                 </div>
             </div>
 
-            <!-- Error Codes -->
+            <!-- Error Conditions -->
             <div class="section">
-                <h2>⚠️ Error Codes</h2>
-                <table class="parameter-table">
-                    <thead>
-                        <tr>
-                            <th>Code</th>
-                            <th>Description</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><code>INVALID_TYPE</code></td>
-                            <td>Specified generator type is not supported</td>
-                        </tr>
-                        <tr>
-                            <td><code>INVALID_RANGE</code></td>
-                            <td>Min value is greater than or equal to max value</td>
-                        </tr>
-                        <tr>
-                            <td><code>INVALID_COUNT</code></td>
-                            <td>Count is outside valid range or exceeds unique possibilities</td>
-                        </tr>
-                        <tr>
-                            <td><code>INVALID_DICE</code></td>
-                            <td>Dice count or sides outside valid range</td>
-                        </tr>
-                        <tr>
-                            <td><code>INVALID_ITEMS</code></td>
-                            <td>Items array is empty or invalid</td>
-                        </tr>
-                        <tr>
-                            <td><code>WEIGHTS_MISMATCH</code></td>
-                            <td>Weights array length doesn't match items array length</td>
-                        </tr>
-                        <tr>
-                            <td><code>GENERATION_ERROR</code></td>
-                            <td>Error occurred during random generation</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <h2>⚠️ Error Conditions</h2>
+                <p>The API returns the same human-readable <code>error</code> string shown above — no numeric error codes. Triggers are summarised in the table inside the <em>Response Format → Error Response</em> section.</p>
             </div>
 
             <!-- Rate Limits -->
