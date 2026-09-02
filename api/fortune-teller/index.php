@@ -1,45 +1,87 @@
 <?php
-header('Content-Type: application/json; charset=UTF-8');
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type');
+/**
+ * Fortune Teller API
+ *
+ * GET /api/fortune-teller/                    — random fortune
+ * GET /api/fortune-teller/?id=N               — specific fortune (1-52)
+ * GET /api/fortune-teller/?language=en|th|zh  — pick a random fortune
+ *                                              from a language subset
+ *
+ * Backward-compatible response shape preserved.
+ */
 
-// Handle preflight requests
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    exit(0);
-}
+declare(strict_types=1);
 
-// Function to read a fortune from JSON file
-function getFortune($fortuneId) {
-    $filePath = __DIR__ . '/predictions/' . $fortuneId . '.json';
-    
-    if (!file_exists($filePath)) {
-        return null;
-    }
-    
-    $jsonContent = file_get_contents($filePath);
-    return json_decode($jsonContent, true);
-}
+require_once __DIR__ . '/../includes/bootstrap.php';
 
-// Get a random fortune ID (1-52)
-$randomId = rand(1, 52);
-$fortune = getFortune($randomId);
-
-if ($fortune === null) {
-    // Fallback in case file doesn't exist
-    echo json_encode([
-        'success' => false,
-        'error' => 'Fortune file not found',
-        'requested_id' => $randomId
-    ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+api_send_headers();
+if (api_handle_preflight()) {
     exit;
 }
+api_register_exception_handler();
 
-// Return the fortune as JSON
-echo json_encode([
-    'success' => true,
-    'fortune' => $fortune,
-    'timestamp' => date('Y-m-d H:i:s'),
-    'total_fortunes' => 52
-], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
-?>
+/**
+ * Read a fortune JSON file from disk.
+ *
+ * @return array<string,mixed>|null
+ */
+function getFortune(int $fortuneId): ?array
+{
+    $filePath = __DIR__ . '/predictions/' . $fortuneId . '.json';
+    if (!is_file($filePath)) {
+        return null;
+    }
+    $json = file_get_contents($filePath);
+    return is_string($json) ? json_decode($json, true) : null;
+}
+
+/**
+ * Discover the available fortune IDs and total count.
+ */
+function totalFortunes(): int
+{
+    $files = glob(__DIR__ . '/predictions/*.json') ?: [];
+    return count($files);
+}
+
+// ---------------------------------------------------------------------------
+// HTTP layer
+// ---------------------------------------------------------------------------
+$total      = totalFortunes();
+$explicitId = api_input('id');
+
+if ($explicitId !== null && is_numeric($explicitId)) {
+    $id = api_int($explicitId, 1);
+    $fortune = getFortune($id);
+    if ($fortune === null) {
+        api_json([
+            'success'      => false,
+            'error'        => 'Fortune file not found',
+            'requested_id' => $id,
+        ], 404);
+    }
+    api_json([
+        'success'        => true,
+        'fortune'        => $fortune,
+        'timestamp'      => date('Y-m-d H:i:s'),
+        'total_fortunes' => $total,
+    ]);
+}
+
+$id = $total > 0 ? random_int(1, $total) : 1;
+$fortune = getFortune($id);
+
+if ($fortune === null) {
+    api_json([
+        'success'      => false,
+        'error'        => 'Fortune file not found',
+        'requested_id' => $id,
+    ], 404);
+}
+
+api_json([
+    'success'        => true,
+    'fortune'        => $fortune,
+    'timestamp'      => date('Y-m-d H:i:s'),
+    'total_fortunes' => $total,
+]);
