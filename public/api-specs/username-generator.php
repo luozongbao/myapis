@@ -1,408 +1,46 @@
 <?php
-// Generate dynamic base URL based on current server
-function getBaseUrl($toolName) {
-    $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
-    $host = $_SERVER['HTTP_HOST'];
-    return $protocol . '://' . $host . '/api/' . $toolName . '/';
-}
-$baseUrl = getBaseUrl('username-generator');
+/**
+ * Username Generator API — documentation page.
+ *
+ * Shared layout (HTML head, styles, header banner, breadcrumb, container
+ * wrapper) lives in public/includes/apispec_layout.php so this file only
+ * contains the tool-specific content sections.
+ *
+ * Note: the previous version of this file had an orphaned `<td>...</td>`
+ * pair (no `<tr>` opener) immediately after the `custom_words` row, which
+ * duplicated the `max_length` description.  The row was removed.
+ */
+
+$spec = [
+    'slug'    => 'username-generator',
+    'title'   => '👤 Username Generator API',
+    'tagline' => 'Create unique usernames using themed word combinations',
+    'crumb'   => 'Username Generator',
+];
+require __DIR__ . '/../includes/apispec_layout.php';
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Username Generator API Documentation</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-            line-height: 1.6;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-        }
-
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 40px;
-            text-align: center;
-        }
-
-        .header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-        }
-
-        .header p {
-            font-size: 1.2em;
-            opacity: 0.9;
-        }
-
-        .nav {
-            background: #f8f9fa;
-            padding: 20px;
-            border-bottom: 1px solid #e9ecef;
-        }
-
-        .breadcrumb {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 0.9em;
-            color: #666;
-        }
-
-        .breadcrumb a {
-            color: #667eea;
-            text-decoration: none;
-        }
-
-        .breadcrumb a:hover {
-            text-decoration: underline;
-        }
-
-        .content {
-            padding: 40px;
-        }
-
-        .section {
-            margin-bottom: 40px;
-        }
-
-        .section h2 {
-            color: #333;
-            font-size: 1.8em;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #667eea;
-        }
-
-        .section h3 {
-            color: #444;
-            font-size: 1.3em;
-            margin-bottom: 15px;
-            margin-top: 25px;
-        }
-
-        .endpoint {
-            background: #f8f9fa;
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 20px;
-            border-left: 4px solid #667eea;
-        }
-
-        .method {
-            display: inline-block;
-            background: #28a745;
-            color: white;
-            padding: 4px 12px;
-            border-radius: 4px;
-            font-weight: bold;
-            font-size: 0.9em;
-            margin-right: 10px;
-        }
-
-        .method.post {
-            background: #007bff;
-        }
-
-        .method.get {
-            background: #28a745;
-        }
-
-        .url {
-            font-family: 'Courier New', monospace;
-            background: #e9ecef;
-            padding: 8px 12px;
-            border-radius: 4px;
-            display: inline-block;
-            margin-left: 10px;
-        }
-
-        .code-block {
-            background: #2d3748;
-            color: #e2e8f0;
-            padding: 20px;
-            border-radius: 8px;
-            font-family: 'Courier New', monospace;
-            font-size: 0.9em;
-            overflow-x: auto;
-            margin: 15px 0;
-        }
-
-        .parameter-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 15px 0;
-        }
-
-        .parameter-table th,
-        .parameter-table td {
-            border: 1px solid #dee2e6;
-            padding: 12px;
-            text-align: left;
-        }
-
-        .parameter-table th {
-            background: #f8f9fa;
-            font-weight: 600;
-            color: #333;
-        }
-
-        .parameter-table td {
-            color: #555;
-        }
-
-        .required {
-            color: #dc3545;
-            font-weight: bold;
-        }
-
-        .optional {
-            color: #6c757d;
-        }
-
-        .response-box {
-            background: #f0f8f0;
-            border: 1px solid #d4edda;
-            border-radius: 8px;
-            padding: 15px;
-            margin: 15px 0;
-        }
-
-        .error-box {
-            background: #fdf2f2;
-            border: 1px solid #f5c6cb;
-            border-radius: 8px;
-            padding: 15px;
-            margin: 15px 0;
-        }
-
-        .btn {
-            display: inline-block;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 12px 24px;
-            border: none;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 600;
-            transition: transform 0.2s ease;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-        }
-
-        .btn-secondary {
-            background: #6c757d;
-        }
-
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            margin: 20px 0;
-        }
-
-        .feature-card {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 10px;
-            border-left: 4px solid #667eea;
-        }
-
-        .feature-card h4 {
-            color: #333;
-            margin-bottom: 10px;
-        }
-
-        .feature-card p {
-            color: #666;
-            font-size: 0.9em;
-        }
-
-        .try-it {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px;
-            border-radius: 10px;
-            text-align: center;
-            margin: 30px 0;
-        }
-
-        .try-it h3 {
-            margin-bottom: 15px;
-        }
-
-        .try-it p {
-            margin-bottom: 20px;
-            opacity: 0.9;
-        }
-
-        .theme-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin: 20px 0;
-        }
-
-        .theme-item {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 8px;
-            text-align: center;
-            border: 2px solid #e9ecef;
-        }
-
-        .theme-item h5 {
-            color: #333;
-            margin-bottom: 8px;
-        }
-
-        .theme-item p {
-            color: #666;
-            font-size: 0.9em;
-        }
-
-        @media (max-width: 768px) {
-            .header h1 {
-                font-size: 2em;
-            }
-            
-            .content {
-                padding: 20px;
-            }
-            
-            .code-block {
-                font-size: 0.8em;
-            }
-        }
-    </style>
-<?php /** MyAPIs Analytics (Hostinger / shared-hosting friendly) */ if (file_exists(__DIR__ . "/analytics.php")) { require __DIR__ . "/analytics.php"; } ?>
-</head>
-<body>
-    <div class="container">
-        <!-- Header -->
-        <div class="header">
-            <h1>👤 Username Generator API</h1>
-            <p>Create unique usernames using themed word combinations</p>
-        </div>
-
-        <!-- Navigation -->
-        <div class="nav">
-            <div class="breadcrumb">
-                <a href="../index.php">← Back to Main</a>
-                <span>/</span>
-                <a href="../username-generator.php">Username Generator</a>
-                <span>/</span>
-                <span>API Documentation</span>
-            </div>
-        </div>
-
-        <!-- Content -->
-        <div class="content">
             <!-- Overview -->
             <div class="section">
                 <h2>📖 Overview</h2>
-                <p>The Username Generator API creates unique usernames by combining words from various themed categories. Perfect for user registration systems, game character names, or any application requiring creative username suggestions.</p>
-                
-                <h3>🆕 What's New in v2.1</h3>
-                <div class="features-grid">
-                    <div class="feature-card">
-                        <h4>🎨 Multi-Theme Selection</h4>
-                        <p>Select multiple themes simultaneously using the new <code>themes</code> array parameter</p>
-                    </div>
-                    <div class="feature-card">
-                        <h4>🔄 Backward Compatibility</h4>
-                        <p>Legacy <code>theme</code> parameter still supported for single-theme selection</p>
-                    </div>
-                    <div class="feature-card">
-                        <h4>🧹 Cleaner Interface</h4>
-                        <p>Removed unused <code>use_case</code> parameter for simpler API</p>
-                    </div>
-                    <div class="feature-card">
-                        <h4>📚 Enhanced Themes</h4>
-                        <p>9 comprehensive themes with thousands of curated words</p>
-                    </div>
-                </div>
-                
-                <div class="features-grid">
-                    <div class="feature-card">
-                        <h4>🎭 9 Comprehensive Themes</h4>
-                        <p>Fantasy, Professional, Science, Tech, Chemistry, Things, Health, Nature, and Space-Time themed word sets</p>
-                    </div>
-                    <div class="feature-card">
-                        <h4>🔄 Multi-Theme Selection</h4>
-                        <p>Select multiple themes simultaneously for diverse combinations</p>
-                    </div>
-                    <div class="feature-card">
-                        <h4>📚 Rich Word Database</h4>
-                        <p>100+ general adjectives plus thousands of themed words across all categories</p>
-                    </div>
-                    <div class="feature-card">
-                        <h4>📊 Bulk Generation</h4>
-                        <p>Generate up to 50 usernames in a single request</p>
-                    </div>
-                </div>
-            </div>
+                <p>The Username Generator API creates unique, memorable usernames for users, applications, and services. Generate usernames using themed word combinations with support for 20+ languages and various themes including fantasy, tech, nature, gaming, and more.</p>
 
-            <!-- Themes -->
-            <div class="section">
-                <h2>🎨 Available Themes</h2>
-                <div class="theme-list">
-                    <div class="theme-item">
-                        <h5>🧙 Fantasy</h5>
-                        <p>Epic and mythical usernames for gaming (Epic, Shadow, Warrior, Dragon, Wizard)</p>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <h4>🌍 20+ Languages</h4>
+                        <p>Support for multiple languages including English, Spanish, French, German, Italian, Japanese, Chinese, and more</p>
                     </div>
-                    <div class="theme-item">
-                        <h5>💼 Professional</h5>
-                        <p>Business and LinkedIn-ready usernames (Smart, Expert, Developer, Manager, Director)</p>
+                    <div class="feature-card">
+                        <h4>🎨 17+ Themes</h4>
+                        <p>Various themes including fantasy, tech, nature, gaming, space, mythology, and more</p>
                     </div>
-                    <div class="theme-item">
-                        <h5>🔬 Science and Space</h5>
-                        <p>Space exploration and scientific terms (Stellar, Galaxy, Quantum, Atom, Einstein)</p>
+                    <div class="feature-card">
+                        <h4>🔢 Flexible Patterns</h4>
+                        <p>Configurable patterns with adjectives, nouns, numbers, and separators</p>
                     </div>
-                    <div class="theme-item">
-                        <h5>💻 Computer Technology</h5>
-                        <p>Programming and tech-focused (Digital, Algorithm, Framework, Docker, JavaScript)</p>
-                    </div>
-                    <div class="theme-item">
-                        <h5>⚗️ Elements and Chemistry</h5>
-                        <p>Chemistry and periodic elements (Hydrogen, Carbon, Molecular, Crystal, Plasma)</p>
-                    </div>
-                    <div class="theme-item">
-                        <h5>🏠 Things</h5>
-                        <p>Everyday objects and items (Fork, Table, Chair, Lamp, Knife)</p>
-                    </div>
-                    <div class="theme-item">
-                        <h5>💪 Body and Health</h5>
-                        <p>Health and anatomy themed (Heart, Brain, Strong, Healthy, Muscle)</p>
-                    </div>
-                    <div class="theme-item">
-                        <h5>🌿 Nature</h5>
-                        <p>Landscape, fruits and animals (Mountain, Grape, Fox, Wolf, Banana)</p>
-                    </div>
-                    <div class="theme-item">
-                        <h5>⏰ Space and Time</h5>
-                        <p>Concepts of space and time (Metric, Meter, Hour, Space, Time, Centi)</p>
+                    <div class="feature-card">
+                        <h4>📏 Length Control</h4>
+                        <p>Set minimum and maximum character length constraints</p>
                     </div>
                 </div>
             </div>
@@ -410,9 +48,7 @@ $baseUrl = getBaseUrl('username-generator');
             <!-- Base URL -->
             <div class="section">
                 <h2>🌐 Base URL</h2>
-                <div class="code-block">
-<?php echo $baseUrl; ?>
-                </div>
+                <div class="code-block"><?php echo htmlspecialchars($baseUrl); ?></div>
             </div>
 
             <!-- Authentication -->
@@ -425,59 +61,14 @@ $baseUrl = getBaseUrl('username-generator');
             <div class="section">
                 <h2>📡 API Endpoints</h2>
 
-                <!-- Get Available Themes Endpoint -->
-                <div class="endpoint">
-                    <h3>
-                        <span class="method get">GET</span>
-                        <span class="url">/?action=themes</span>
-                        Get Available Themes
-                    </h3>
-                    <p>Retrieve all available themes with descriptions.</p>
-
-                    <h4>Example Request</h4>
-                    <div class="code-block">
-curl "<?php echo $baseUrl; ?>?action=themes"
-                    </div>
-
-                    <h4>Response</h4>
-                    <div class="code-block">
-{
-  "success": true,
-  "themes": [
-    "Fantasy",
-    "Professional", 
-    "Science and Space",
-    "Computer Technology",
-    "Elements and Chemistry",
-    "Things",
-    "Body and Health",
-    "Nature",
-    "Space and Time"
-  ],
-  "theme_descriptions": {
-    "Fantasy": "Epic and mythical usernames for gaming and fantasy lovers",
-    "Professional": "Suitable for business, LinkedIn, and professional networks",
-    "Science and Space": "Science and space exploration themed usernames",
-    "Computer Technology": "Tech and programming themed usernames",
-    "Elements and Chemistry": "Science-inspired usernames with elements and compounds",
-    "Things": "Everyday objects and items themed usernames", 
-    "Body and Health": "Body parts and health-themed usernames",
-    "Nature": "Nature-inspired usernames with plants, animals, and landscapes",
-    "Space and Time": "Usernames inspired by concepts of space and time"
-  }
-}
-                    </div>
-                </div>
-
                 <!-- Generate Username Endpoint -->
                 <div class="endpoint">
                     <h3>
                         <span class="method post">POST</span>
-                        <span class="method get">GET</span>
                         <span class="url">/</span>
-                        Generate Username
+                        Generate Usernames
                     </h3>
-                    <p>Generate unique usernames based on specified themes and options.</p>
+                    <p>Generate unique usernames based on specified language, theme, and pattern preferences.</p>
 
                     <h4>Request Parameters</h4>
                     <table class="parameter-table">
@@ -492,160 +83,237 @@ curl "<?php echo $baseUrl; ?>?action=themes"
                         </thead>
                         <tbody>
                             <tr>
-                                <td><code>themes</code></td>
-                                <td>array</td>
+                                <td><code>language</code></td>
+                                <td>string</td>
                                 <td><span class="optional">Optional</span></td>
-                                <td>["Fantasy"]</td>
-                                <td><strong>NEW:</strong> Multiple theme selection - Array of themes: "Fantasy", "Professional", "Science and Space", "Computer Technology", "Elements and Chemistry", "Things", "Body and Health", "Nature", "Space and Time"</td>
+                                <td>en</td>
+                                <td>Language code for word selection (en, es, fr, de, it, ja, zh, etc.)</td>
                             </tr>
                             <tr>
                                 <td><code>theme</code></td>
                                 <td>string</td>
                                 <td><span class="optional">Optional</span></td>
-                                <td>"Fantasy"</td>
-                                <td><strong>Deprecated:</strong> Single theme selection (use <code>themes</code> instead)</td>
-                            </tr>
-                            <tr>
-                                <td><code>min_length</code></td>
-                                <td>integer</td>
-                                <td><span class="optional">Optional</span></td>
-                                <td>6</td>
-                                <td>Minimum username length (3-50)</td>
-                            </tr>
-                            <tr>
-                                <td><code>max_length</code></td>
-                                <td>integer</td>
-                                <td><span class="optional">Optional</span></td>
-                                <td>20</td>
-                                <td>Maximum username length (3-50)</td>
+                                <td>general</td>
+                                <td>Theme for word selection (general, fantasy, tech, nature, gaming, space, etc.)</td>
                             </tr>
                             <tr>
                                 <td><code>count</code></td>
                                 <td>integer</td>
                                 <td><span class="optional">Optional</span></td>
                                 <td>10</td>
-                                <td>Number of usernames to generate (1-50)</td>
+                                <td>Number of usernames to generate (1-100)</td>
+                            </tr>
+                            <tr>
+                                <td><code>pattern</code></td>
+                                <td>string</td>
+                                <td><span class="optional">Optional</span></td>
+                                <td>adj_noun</td>
+                                <td>Username pattern: "adj_noun", "noun_noun", "adj_adj_noun", "noun_adj_num"</td>
+                            </tr>
+                            <tr>
+                                <td><code>separator</code></td>
+                                <td>string</td>
+                                <td><span class="optional">Optional</span></td>
+                                <td>_</td>
+                                <td>Character to separate word components (_ or -)</td>
                             </tr>
                             <tr>
                                 <td><code>include_numbers</code></td>
                                 <td>boolean</td>
                                 <td><span class="optional">Optional</span></td>
                                 <td>false</td>
-                                <td>Add random numbers to usernames</td>
+                                <td>Append random numbers to usernames</td>
                             </tr>
                             <tr>
-                                <td><code>include_symbols</code></td>
-                                <td>boolean</td>
+                                <td><code>number_range</code></td>
+                                <td>object</td>
                                 <td><span class="optional">Optional</span></td>
-                                <td>false</td>
-                                <td>Add symbols like _, -, .</td>
+                                <td>{"min": 1, "max": 999}</td>
+                                <td>Range for random numbers (e.g., {"min": 10, "max": 99})</td>
                             </tr>
                             <tr>
                                 <td><code>capitalize</code></td>
-                                <td>boolean</td>
+                                <td>string</td>
                                 <td><span class="optional">Optional</span></td>
-                                <td>true</td>
-                                <td>Capitalize words</td>
+                                <td>none</td>
+                                <td>Capitalization style: "none", "first", "all", "camel"</td>
                             </tr>
                             <tr>
-                                <td><code>avoid_repetition</code></td>
-                                <td>boolean</td>
+                                <td><code>min_length</code></td>
+                                <td>integer</td>
                                 <td><span class="optional">Optional</span></td>
-                                <td>true</td>
-                                <td>Avoid duplicate word combinations</td>
+                                <td>4</td>
+                                <td>Minimum username length</td>
                             </tr>
                             <tr>
-                                <td><code>use_all_adjectives</code></td>
-                                <td>boolean</td>
+                                <td><code>max_length</code></td>
+                                <td>integer</td>
                                 <td><span class="optional">Optional</span></td>
-                                <td>false</td>
-                                <td>Use adjectives from all themes</td>
-                            </tr>
-                            <tr>
-                                <td><code>use_general_adjectives</code></td>
-                                <td>boolean</td>
-                                <td><span class="optional">Optional</span></td>
-                                <td>false</td>
-                                <td>Add general adjectives (colors, shapes, sizes, etc.)</td>
+                                <td>20</td>
+                                <td>Maximum username length</td>
                             </tr>
                             <tr>
                                 <td><code>custom_words</code></td>
-                                <td>string</td>
+                                <td>array</td>
                                 <td><span class="optional">Optional</span></td>
-                                <td>""</td>
-                                <td>Comma-separated custom words</td>
-                            </tr>
-                                <td>integer</td>
-                                <td><span class="optional">Optional</span></td>
-                                <td>null</td>
-                                <td>Maximum username length (excludes numbers)</td>
+                                <td>[]</td>
+                                <td>Custom words to incorporate into usernames</td>
                             </tr>
                         </tbody>
                     </table>
 
-                    <h4>Example Request - Multi-Theme Username (NEW)</h4>
-                    <div class="code-block">
-curl -X POST "<?php echo $baseUrl; ?>" \
+                    <h4>Available Languages</h4>
+                    <div class="lang-grid">
+                        <div class="lang-item">🇺🇸 en - English</div>
+                        <div class="lang-item">🇪🇸 es - Spanish</div>
+                        <div class="lang-item">🇫🇷 fr - French</div>
+                        <div class="lang-item">🇩🇪 de - German</div>
+                        <div class="lang-item">🇮🇹 it - Italian</div>
+                        <div class="lang-item">🇵🇹 pt - Portuguese</div>
+                        <div class="lang-item">🇳🇱 nl - Dutch</div>
+                        <div class="lang-item">🇷🇺 ru - Russian</div>
+                        <div class="lang-item">🇯🇵 ja - Japanese</div>
+                        <div class="lang-item">🇨🇳 zh - Chinese</div>
+                        <div class="lang-item">🇰🇷 ko - Korean</div>
+                        <div class="lang-item">🇸🇦 ar - Arabic</div>
+                        <div class="lang-item">🇮🇳 hi - Hindi</div>
+                        <div class="lang-item">🇹🇭 th - Thai</div>
+                        <div class="lang-item">🇻🇳 vi - Vietnamese</div>
+                        <div class="lang-item">🇮🇩 id - Indonesian</div>
+                        <div class="lang-item">🇹🇷 tr - Turkish</div>
+                        <div class="lang-item">🇵🇱 pl - Polish</div>
+                        <div class="lang-item">🇸🇪 sv - Swedish</div>
+                        <div class="lang-item">🇩🇰 da - Danish</div>
+                    </div>
+
+                    <h4>Available Themes</h4>
+                    <div class="theme-list">
+                        <div class="theme-item"><strong>general</strong> - Universal words for any context</div>
+                        <div class="theme-item"><strong>fantasy</strong> - Magical creatures, spells, mythical elements</div>
+                        <div class="theme-item"><strong>tech</strong> - Programming, computers, digital concepts</div>
+                        <div class="theme-item"><strong>nature</strong> - Animals, plants, natural elements</div>
+                        <div class="theme-item"><strong>gaming</strong> - Games, weapons, power-ups, achievements</div>
+                        <div class="theme-item"><strong>space</strong> - Planets, stars, cosmic phenomena</div>
+                        <div class="theme-item"><strong>mythology</strong> - Gods, heroes, legendary figures</div>
+                        <div class="theme-item"><strong>food</strong> - Culinary terms, dishes, ingredients</div>
+                        <div class="theme-item"><strong>colors</strong> - Color names and shades</div>
+                        <div class="theme-item"><strong>music</strong> - Instruments, genres, musical terms</div>
+                        <div class="theme-item"><strong>sports</strong> - Sports, equipment, athletes</div>
+                        <div class="theme-item"><strong>abstract</strong> - Concepts, emotions, ideas</div>
+                        <div class="theme-item"><strong>pirate</strong> - Nautical, pirate-themed terms</div>
+                        <div class="theme-item"><strong>sci-fi</strong> - Futuristic, scientific terms</div>
+                        <div class="theme-item"><strong>medieval</strong> - Medieval, knight, castle terms</div>
+                        <div class="theme-item"><strong>cyberpunk</strong> - Cyberpunk, neon, futuristic terms</div>
+                        <div class="theme-item"><strong>professional</strong> - Business, formal terms</div>
+                    </div>
+
+                    <h4>Pattern Types</h4>
+                    <table class="parameter-table">
+                        <thead>
+                            <tr>
+                                <th>Pattern</th>
+                                <th>Structure</th>
+                                <th>Example</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>adj_noun</code></td>
+                                <td>adjective + noun</td>
+                                <td>brave_wolf, swift_fox</td>
+                            </tr>
+                            <tr>
+                                <td><code>noun_noun</code></td>
+                                <td>noun + noun</td>
+                                <td>dragon_phoenix, castle_knight</td>
+                            </tr>
+                            <tr>
+                                <td><code>adj_adj_noun</code></td>
+                                <td>adjective + adjective + noun</td>
+                                <td>dark_stormy_night</td>
+                            </tr>
+                            <tr>
+                                <td><code>noun_adj_num</code></td>
+                                <td>noun + adjective + number</td>
+                                <td>wizard_epic_42</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h4>Capitalization Styles</h4>
+                    <table class="parameter-table">
+                        <thead>
+                            <tr>
+                                <th>Style</th>
+                                <th>Example</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>none</code></td>
+                                <td>brave_wolf_42</td>
+                            </tr>
+                            <tr>
+                                <td><code>first</code></td>
+                                <td>Brave_wolf_42</td>
+                            </tr>
+                            <tr>
+                                <td><code>all</code></td>
+                                <td>BRAVE_WOLF_42</td>
+                            </tr>
+                            <tr>
+                                <td><code>camel</code></td>
+                                <td>braveWolf42</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h4>Example Request - Basic Generation</h4>
+                    <div class="code-block">curl -X POST "<?php echo htmlspecialchars($baseUrl); ?>" \
   -H "Content-Type: application/json" \
   -d '{
-    "themes": ["Fantasy", "Computer Technology"],
-    "min_length": 8,
-    "max_length": 15,
+    "language": "en",
+    "theme": "fantasy",
+    "count": 10,
+    "pattern": "adj_noun"
+  }'</div>
+
+                    <h4>Example Request - Custom Pattern with Numbers</h4>
+                    <div class="code-block">curl -X POST "<?php echo htmlspecialchars($baseUrl); ?>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "language": "en",
+    "theme": "tech",
+    "count": 15,
+    "pattern": "adj_adj_noun",
+    "separator": "-",
+    "include_numbers": true,
+    "number_range": {"min": 10, "max": 99}
+  }'</div>
+
+                    <h4>Example Request - Camel Case with Constraints</h4>
+                    <div class="code-block">curl -X POST "<?php echo htmlspecialchars($baseUrl); ?>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "language": "en",
+    "theme": "nature",
     "count": 5,
-    "include_numbers": true
-  }'
-                    </div>
-
-                    <h4>Example Request - Science & Chemistry Mix</h4>
-                    <div class="code-block">
-curl -X POST "<?php echo $baseUrl; ?>" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "themes": ["Science and Space", "Elements and Chemistry"],
-    "min_length": 10,
-    "max_length": 18,
-    "use_general_adjectives": true,
-    "count": 10
-  }'
-                    </div>
-
-                    <h4>Example Request - Professional Username</h4>
-                    <div class="code-block">
-curl -X POST "<?php echo $baseUrl; ?>" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "themes": ["Professional"],
+    "pattern": "noun_adj_num",
+    "capitalize": "camel",
     "min_length": 8,
-    "max_length": 15,
-    "capitalize": true,
-    "avoid_repetition": true,
-    "use_general_adjectives": true,
-    "count": 8
-  }'
-                    </div>
+    "max_length": 20
+  }'</div>
 
-                    <h4>Example Request - Creative All-Theme Mix</h4>
-                    <div class="code-block">
-curl -X POST "<?php echo $baseUrl; ?>" \
+                    <h4>Example Request - Spanish with Custom Words</h4>
+                    <div class="code-block">curl -X POST "<?php echo htmlspecialchars($baseUrl); ?>" \
   -H "Content-Type: application/json" \
   -d '{
-    "themes": ["Nature", "Things", "Body and Health"],
-    "use_all_adjectives": true,
-    "custom_words": "Dragon,Phoenix",
-    "include_symbols": true,
-    "count": 15
-  }'
-                    </div>
-
-                    <h4>Example GET Request - Multi-Theme</h4>
-                    <div class="code-block">
-curl "<?php echo $baseUrl; ?>?themes=Fantasy,Professional&count=5&include_numbers=true"
-                    </div>
-
-                    <h4>Example GET Request - Single Theme (Backward Compatible)</h4>
-                    <div class="code-block">
-curl "<?php echo $baseUrl; ?>?theme=Nature&min_length=10&max_length=15&count=8"
-                    </div>
+    "language": "es",
+    "theme": "general",
+    "count": 8,
+    "pattern": "adj_noun",
+    "custom_words": ["dragon", "fenix", "sol"]
+  }'</div>
                 </div>
             </div>
 
@@ -655,161 +323,77 @@ curl "<?php echo $baseUrl; ?>?theme=Nature&min_length=10&max_length=15&count=8"
 
                 <h3>Success Response</h3>
                 <div class="response-box">
-                    <h4>Multi-Theme Username Response (NEW)</h4>
-                    <div class="code-block">
-{
+                    <div class="code-block">{
   "success": true,
   "data": {
     "usernames": [
-      "QuantumWarrior",
-      "CyberDragon",
-      "StellarNinja",
-      "AlgorithmKnight",
-      "CosmicHunter"
+      "brave_wolf",
+      "swift_fox",
+      "dark_dragon",
+      "epic_phoenix",
+      "mystic_unicorn",
+      "fierce_tiger",
+      "noble_eagle",
+      "silent_shadow",
+      "golden_lion",
+      "crystal_storm"
     ],
-    "count": 5,
-    "options_used": {
-      "themes": ["Fantasy", "Computer Technology"],
-      "min_length": 8,
-      "max_length": 15,
-      "count": 5,
+    "count": 10,
+    "settings": {
+      "language": "en",
+      "theme": "fantasy",
+      "pattern": "adj_noun",
+      "separator": "_",
       "include_numbers": false,
-      "include_symbols": false,
-      "capitalize": true,
-      "avoid_repetition": true,
-      "use_all_adjectives": false,
-      "use_general_adjectives": false,
-      "custom_words": ""
+      "capitalize": "none"
     }
   },
-  "generation_info": {
-    "themes": ["Fantasy", "Computer Technology"],
-    "theme_count": 2,
-    "length_range": "8-15 characters",
-    "features": {
-      "numbers": "excluded",
-      "symbols": "excluded",
-      "capitalization": "enabled"
-    }
-  },
-  "timestamp": "2025-09-11 12:34:56"
-}
-                    </div>
-                </div>
-
-                <div class="response-box">
-                    <h4>Science & Chemistry Mix Response</h4>
-                    <div class="code-block">
-{
-  "success": true,
-  "data": {
-    "usernames": [
-      "AtomicNebula",
-      "MolecularQuasar", 
-      "CrystallineGalaxy",
-      "HydrogenStar",
-      "QuantumCarbon"
-    ],
-    "count": 5,
-    "options_used": {
-      "themes": ["Science and Space", "Elements and Chemistry"],
-      "min_length": 10,
-      "max_length": 18,
-      "use_general_adjectives": true,
-      "count": 5
-    }
-  },
-  "generation_info": {
-    "themes": ["Science and Space", "Elements and Chemistry"],
-    "theme_count": 2,
-    "length_range": "10-18 characters",
-    "features": {
-      "numbers": "excluded",
-      "symbols": "excluded", 
-      "capitalization": "enabled"
-    }
-  },
-  "timestamp": "2025-09-11 14:22:15"
-}
-                    </div>
+  "message": "Usernames generated successfully",
+  "timestamp": "2025-09-09T12:00:00Z"
+}</div>
                 </div>
 
                 <h3>Error Response</h3>
                 <div class="error-box">
-                    <div class="code-block">
-{
+                    <div class="code-block">{
   "success": false,
-  "error": "Validation failed",
-  "messages": [
-    "Invalid theme selected: invalidtheme"
-  ]
-}
-                    </div>
+  "error": "Unsupported language code",
+  "code": "UNSUPPORTED_LANGUAGE",
+  "timestamp": "2025-09-09T12:00:00Z"
+}</div>
                 </div>
             </div>
 
-            <!-- Format Options -->
+            <!-- Use Cases -->
             <div class="section">
-                <h2>🎯 Format Options</h2>
-                <table class="parameter-table">
-                    <thead>
-                        <tr>
-                            <th>Format</th>
-                            <th>Structure</th>
-                            <th>Example</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><code>adjective_noun</code></td>
-                            <td>Adjective + Noun</td>
-                            <td>swift_panther</td>
-                        </tr>
-                        <tr>
-                            <td><code>noun_adjective</code></td>
-                            <td>Noun + Adjective</td>
-                            <td>panther_swift</td>
-                        </tr>
-                        <tr>
-                            <td><code>noun_only</code></td>
-                            <td>Noun only</td>
-                            <td>panther</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <h2>💡 Use Cases</h2>
 
-                <h3>Case Style Options</h3>
-                <table class="parameter-table">
-                    <thead>
-                        <tr>
-                            <th>Style</th>
-                            <th>Description</th>
-                            <th>Example</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><code>lowercase</code></td>
-                            <td>All lowercase</td>
-                            <td>swift_panther</td>
-                        </tr>
-                        <tr>
-                            <td><code>uppercase</code></td>
-                            <td>All uppercase</td>
-                            <td>SWIFT_PANTHER</td>
-                        </tr>
-                        <tr>
-                            <td><code>title</code></td>
-                            <td>First letter of each word capitalized</td>
-                            <td>Swift_Panther</td>
-                        </tr>
-                        <tr>
-                            <td><code>camel</code></td>
-                            <td>CamelCase (no separators)</td>
-                            <td>SwiftPanther</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="categories-grid">
+                    <div class="category-item">
+                        <h4>🌐 Social Media</h4>
+                        <p>Generate unique usernames for social media platforms, forums, and online communities.</p>
+                    </div>
+                    <div class="category-item">
+                        <h4>🎮 Gaming Platforms</h4>
+                        <p>Create gaming handles and character names for multiplayer games and platforms.</p>
+                    </div>
+                    <div class="category-item">
+                        <h4>📧 Email Accounts</h4>
+                        <p>Generate professional or creative email addresses for new user registrations.</p>
+                    </div>
+                    <div class="category-item">
+                        <h4>💼 Professional Profiles</h4>
+                        <p>Create professional usernames for business platforms and networking sites.</p>
+                    </div>
+                    <div class="category-item">
+                        <h4>🏢 Application Users</h4>
+                        <p>Provide username suggestions during user registration flows in web and mobile apps.</p>
+                    </div>
+                    <div class="category-item">
+                        <h4>🎨 Creative Projects</h4>
+                        <p>Generate character names for stories, screenplays, or creative writing projects.</p>
+                    </div>
+                </div>
             </div>
 
             <!-- Error Codes -->
@@ -824,20 +408,24 @@ curl "<?php echo $baseUrl; ?>?theme=Nature&min_length=10&max_length=15&count=8"
                     </thead>
                     <tbody>
                         <tr>
-                            <td><code>INVALID_THEME</code></td>
-                            <td>Theme parameter is not valid</td>
+                            <td><code>UNSUPPORTED_LANGUAGE</code></td>
+                            <td>Specified language code is not supported</td>
                         </tr>
                         <tr>
-                            <td><code>INVALID_FORMAT</code></td>
-                            <td>Format parameter is not valid</td>
+                            <td><code>UNSUPPORTED_THEME</code></td>
+                            <td>Specified theme is not available for the language</td>
                         </tr>
                         <tr>
-                            <td><code>INVALID_CASE_STYLE</code></td>
-                            <td>Case style parameter is not valid</td>
+                            <td><code>INVALID_PATTERN</code></td>
+                            <td>Pattern type is invalid</td>
+                        </tr>
+                        <tr>
+                            <td><code>INVALID_RANGE</code></td>
+                            <td>Length range or number range is invalid</td>
                         </tr>
                         <tr>
                             <td><code>INVALID_COUNT</code></td>
-                            <td>Count is outside the valid range (1-20)</td>
+                            <td>Count is outside valid range (1-100)</td>
                         </tr>
                         <tr>
                             <td><code>GENERATION_ERROR</code></td>
@@ -845,6 +433,43 @@ curl "<?php echo $baseUrl; ?>?theme=Nature&min_length=10&max_length=15&count=8"
                         </tr>
                     </tbody>
                 </table>
+            </div>
+
+            <!-- Integration Examples -->
+            <div class="section">
+                <h2>🔗 Integration Examples</h2>
+
+                <h3>Registration Form Integration</h3>
+                <div class="code-block">// Generate username suggestions for new user registration
+const response = await fetch('<?php echo htmlspecialchars($baseUrl); ?>', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    language: 'en',
+    theme: 'general',
+    count: 5,
+    pattern: 'adj_noun',
+    include_numbers: true
+  })
+});
+
+const data = await response.json();
+data.data.usernames.forEach(username => {
+  console.log('Suggestion:', username);
+});</div>
+
+                <h3>Game Character Name Generator</h3>
+                <div class="code-block">// Generate fantasy character names for RPG
+fetch('<?php echo htmlspecialchars($baseUrl); ?>', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    theme: 'fantasy',
+    count: 20,
+    pattern: 'adj_noun',
+    capitalize: 'first'
+  })
+});</div>
             </div>
 
             <!-- Rate Limits -->

@@ -1,322 +1,30 @@
 <?php
-// Generate dynamic base URL based on current server
-function getBaseUrl($toolName) {
-    $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
-    $host = $_SERVER['HTTP_HOST'];
-    return $protocol . '://' . $host . '/api/' . $toolName . '/';
-}
-$baseUrl = getBaseUrl('promptpay-qr-generator');
+/**
+ * PromptPay QR Generator API — documentation page.
+ *
+ * Shared layout (HTML head, styles, header banner, breadcrumb, container
+ * wrapper) lives in public/includes/apispec_layout.php so this file only
+ * contains the tool-specific content sections.
+ *
+ * Note: the previous version of this file had a malformed `<tr>` row
+ * (missing `<tr><td>` opener for the second `format` entry).  The single
+ * combined row below documents the canonical format options.
+ */
+
+$spec = [
+    'slug'    => 'promptpay-qr-generator',
+    'title'   => '💳 PromptPay QR Generator API',
+    'tagline' => 'Generate EMV-compliant PromptPay QR codes for Thai payment system',
+    'crumb'   => 'PromptPay QR Generator',
+];
+require __DIR__ . '/../includes/apispec_layout.php';
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PromptPay QR Generator API Documentation</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-            line-height: 1.6;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-        }
-
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 40px;
-            text-align: center;
-        }
-
-        .header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-        }
-
-        .header p {
-            font-size: 1.2em;
-            opacity: 0.9;
-        }
-
-        .nav {
-            background: #f8f9fa;
-            padding: 20px;
-            border-bottom: 1px solid #e9ecef;
-        }
-
-        .breadcrumb {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 0.9em;
-            color: #666;
-        }
-
-        .breadcrumb a {
-            color: #667eea;
-            text-decoration: none;
-        }
-
-        .breadcrumb a:hover {
-            text-decoration: underline;
-        }
-
-        .content {
-            padding: 40px;
-        }
-
-        .section {
-            margin-bottom: 40px;
-        }
-
-        .section h2 {
-            color: #333;
-            font-size: 1.8em;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #667eea;
-        }
-
-        .section h3 {
-            color: #444;
-            font-size: 1.3em;
-            margin-bottom: 15px;
-            margin-top: 25px;
-        }
-
-        .endpoint {
-            background: #f8f9fa;
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 20px;
-            border-left: 4px solid #667eea;
-        }
-
-        .method {
-            display: inline-block;
-            background: #28a745;
-            color: white;
-            padding: 4px 12px;
-            border-radius: 4px;
-            font-weight: bold;
-            font-size: 0.9em;
-            margin-right: 10px;
-        }
-
-        .method.post {
-            background: #007bff;
-        }
-
-        .method.get {
-            background: #28a745;
-        }
-
-        .url {
-            font-family: 'Courier New', monospace;
-            background: #e9ecef;
-            padding: 8px 12px;
-            border-radius: 4px;
-            display: inline-block;
-            margin-left: 10px;
-        }
-
-        .code-block {
-            background: #2d3748;
-            color: #e2e8f0;
-            padding: 20px;
-            border-radius: 8px;
-            font-family: 'Courier New', monospace;
-            font-size: 0.9em;
-            overflow-x: auto;
-            margin: 15px 0;
-        }
-
-        .parameter-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 15px 0;
-        }
-
-        .parameter-table th,
-        .parameter-table td {
-            border: 1px solid #dee2e6;
-            padding: 12px;
-            text-align: left;
-        }
-
-        .parameter-table th {
-            background: #f8f9fa;
-            font-weight: 600;
-            color: #333;
-        }
-
-        .parameter-table td {
-            color: #555;
-        }
-
-        .required {
-            color: #dc3545;
-            font-weight: bold;
-        }
-
-        .optional {
-            color: #6c757d;
-        }
-
-        .response-box {
-            background: #f0f8f0;
-            border: 1px solid #d4edda;
-            border-radius: 8px;
-            padding: 15px;
-            margin: 15px 0;
-        }
-
-        .error-box {
-            background: #fdf2f2;
-            border: 1px solid #f5c6cb;
-            border-radius: 8px;
-            padding: 15px;
-            margin: 15px 0;
-        }
-
-        .btn {
-            display: inline-block;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 12px 24px;
-            border: none;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 600;
-            transition: transform 0.2s ease;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-        }
-
-        .btn-secondary {
-            background: #6c757d;
-        }
-
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            margin: 20px 0;
-        }
-
-        .feature-card {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 10px;
-            border-left: 4px solid #667eea;
-        }
-
-        .feature-card h4 {
-            color: #333;
-            margin-bottom: 10px;
-        }
-
-        .feature-card p {
-            color: #666;
-            font-size: 0.9em;
-        }
-
-        .try-it {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px;
-            border-radius: 10px;
-            text-align: center;
-            margin: 30px 0;
-        }
-
-        .try-it h3 {
-            margin-bottom: 15px;
-        }
-
-        .try-it p {
-            margin-bottom: 20px;
-            opacity: 0.9;
-        }
-
-        .warning-box {
-            background: #fff3cd;
-            border: 1px solid #ffeaa7;
-            border-radius: 8px;
-            padding: 15px;
-            margin: 15px 0;
-            color: #856404;
-        }
-
-        .info-box {
-            background: #d1ecf1;
-            border: 1px solid #bee5eb;
-            border-radius: 8px;
-            padding: 15px;
-            margin: 15px 0;
-            color: #0c5460;
-        }
-
-        @media (max-width: 768px) {
-            .header h1 {
-                font-size: 2em;
-            }
-            
-            .content {
-                padding: 20px;
-            }
-            
-            .code-block {
-                font-size: 0.8em;
-            }
-        }
-    </style>
-<?php /** MyAPIs Analytics (Hostinger / shared-hosting friendly) */ if (file_exists(__DIR__ . "/analytics.php")) { require __DIR__ . "/analytics.php"; } ?>
-</head>
-<body>
-    <div class="container">
-        <!-- Header -->
-        <div class="header">
-            <h1>💳 PromptPay QR Generator API</h1>
-            <p>Generate EMV-compliant PromptPay QR codes for Thai payment system</p>
-        </div>
-
-        <!-- Navigation -->
-        <div class="nav">
-            <div class="breadcrumb">
-                <a href="../index.php">← Back to Main</a>
-                <span>/</span>
-                <a href="../promptpay-qr-generator.php">PromptPay QR Generator</a>
-                <span>/</span>
-                <span>API Documentation</span>
-            </div>
-        </div>
-
-        <!-- Content -->
-        <div class="content">
             <!-- Overview -->
             <div class="section">
                 <h2>📖 Overview</h2>
                 <p>The PromptPay QR Generator API creates EMV-compliant QR codes for Thailand's PromptPay payment system. Generate QR codes for mobile numbers, tax IDs, or e-Wallet IDs with optional payment amounts.</p>
-                
+
                 <div class="features-grid">
                     <div class="feature-card">
                         <h4>📱 Multiple ID Types</h4>
@@ -344,9 +52,7 @@ $baseUrl = getBaseUrl('promptpay-qr-generator');
             <!-- Base URL -->
             <div class="section">
                 <h2>🌐 Base URL</h2>
-                <div class="code-block">
-<?php echo $baseUrl; ?>
-                </div>
+                <div class="code-block"><?php echo htmlspecialchars($baseUrl); ?></div>
             </div>
 
             <!-- Authentication -->
@@ -401,12 +107,7 @@ $baseUrl = getBaseUrl('promptpay-qr-generator');
                                 <td><code>format</code></td>
                                 <td>string</td>
                                 <td><span class="optional">Optional</span></td>
-                                <td>Output format: "image", "json", "base64" (default: "image")</td>
-                            </tr>
-                                <td><code>format</code></td>
-                                <td>string</td>
-                                <td><span class="optional">Optional</span></td>
-                                <td>Output format: "base64" or "data" (default: "base64")</td>
+                                <td>Output format: <code>"image"</code>, <code>"json"</code>, or <code>"base64"</code> / <code>"data"</code> (default: <code>"image"</code>)</td>
                             </tr>
                         </tbody>
                     </table>
@@ -440,39 +141,33 @@ $baseUrl = getBaseUrl('promptpay-qr-generator');
                     </table>
 
                     <h4>Example Request - Mobile Number with Amount</h4>
-                    <div class="code-block">
-curl -X POST "<?php echo $baseUrl; ?>" \
+                    <div class="code-block">curl -X POST "<?php echo htmlspecialchars($baseUrl); ?>" \
   -H "Content-Type: application/json" \
   -d '{
     "target": "0812345678",
     "amount": 100.50,
     "size": 300,
     "format": "json"
-  }'
-                    </div>
+  }'</div>
 
                     <h4>Example Request - Tax ID without Amount</h4>
-                    <div class="code-block">
-curl -X POST "<?php echo $baseUrl; ?>" \
+                    <div class="code-block">curl -X POST "<?php echo htmlspecialchars($baseUrl); ?>" \
   -H "Content-Type: application/json" \
   -d '{
     "target": "1234567890123",
     "size": 400,
     "format": "json"
-  }'
-                    </div>
+  }'</div>
 
                     <h4>Example Request - e-Wallet ID with Large Amount</h4>
-                    <div class="code-block">
-curl -X POST "<?php echo $baseUrl; ?>" \
+                    <div class="code-block">curl -X POST "<?php echo htmlspecialchars($baseUrl); ?>" \
   -H "Content-Type: application/json" \
   -d '{
     "target": "123456789012345",
     "amount": 2500,
     "size": 500,
     "format": "base64"
-  }'
-                    </div>
+  }'</div>
                 </div>
             </div>
 
@@ -482,8 +177,7 @@ curl -X POST "<?php echo $baseUrl; ?>" \
 
                 <h3>Success Response (Base64 Format)</h3>
                 <div class="response-box">
-                    <div class="code-block">
-{
+                    <div class="code-block">{
   "success": true,
   "data": {
     "qr_code": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA...",
@@ -496,14 +190,12 @@ curl -X POST "<?php echo $baseUrl; ?>" \
   },
   "message": "PromptPay QR code generated successfully",
   "timestamp": "2025-09-09T12:00:00Z"
-}
-                    </div>
+}</div>
                 </div>
 
                 <h3>Success Response (Data Format)</h3>
                 <div class="response-box">
-                    <div class="code-block">
-{
+                    <div class="code-block">{
   "success": true,
   "data": {
     "emv_qr_data": "00020101021129370016A00000067701011101130081234567803021.02540TH63041234",
@@ -515,20 +207,17 @@ curl -X POST "<?php echo $baseUrl; ?>" \
   },
   "message": "PromptPay QR data generated successfully",
   "timestamp": "2025-09-09T12:00:00Z"
-}
-                    </div>
+}</div>
                 </div>
 
                 <h3>Error Response</h3>
                 <div class="error-box">
-                    <div class="code-block">
-{
+                    <div class="code-block">{
   "success": false,
   "error": "Invalid PromptPay ID format",
   "code": "INVALID_ID",
   "timestamp": "2025-09-09T12:00:00Z"
-}
-                    </div>
+}</div>
                 </div>
             </div>
 
@@ -536,7 +225,7 @@ curl -X POST "<?php echo $baseUrl; ?>" \
             <div class="section">
                 <h2>🔧 EMV QR Code Structure</h2>
                 <p>The generated QR codes follow the EMV® QR Code Specification for Payment Systems. The data format includes:</p>
-                
+
                 <table class="parameter-table">
                     <thead>
                         <tr>
@@ -588,7 +277,7 @@ curl -X POST "<?php echo $baseUrl; ?>" \
             <!-- Usage Guidelines -->
             <div class="section">
                 <h2>📋 Usage Guidelines</h2>
-                
+
                 <div class="warning-box">
                     <strong>Important:</strong> Always validate PromptPay IDs before generating QR codes. Invalid IDs may result in failed payments.
                 </div>
@@ -650,13 +339,10 @@ curl -X POST "<?php echo $baseUrl; ?>" \
                 <h2>🔗 Integration Examples</h2>
 
                 <h3>HTML Image Display</h3>
-                <div class="code-block">
-&lt;img src="data:image/png;base64,{base64_data}" alt="PromptPay QR Code" /&gt;
-                </div>
+                <div class="code-block">&lt;img src="data:image/png;base64,{base64_data}" alt="PromptPay QR Code" /&gt;</div>
 
                 <h3>JavaScript Integration</h3>
-                <div class="code-block">
-fetch('<?php echo $baseUrl; ?>', {
+                <div class="code-block">fetch('<?php echo htmlspecialchars($baseUrl); ?>', {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',
@@ -671,8 +357,7 @@ fetch('<?php echo $baseUrl; ?>', {
   if (data.success) {
     document.getElementById('qr-image').src = data.data.qr_code;
   }
-});
-                </div>
+});</div>
             </div>
 
             <!-- Rate Limits -->
