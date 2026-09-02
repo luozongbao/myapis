@@ -1,9 +1,88 @@
 # 📋 MyAPIs Release Notes
 
-## Current Release: Version 2.6.0
+## Current Release: Version 2.6.1
 
 **Release Date**: September 2, 2026
 **Status**: Stable Release
+
+---
+
+## 📈 Version 2.6.1 - vCard Name Dropdown Coordination
+*Released: September 2, 2026*
+
+### 🌟 Highlights
+- **No-duplicate vCard name parts** in the QR Code Generator —
+  the five name-part types (First / Middle / Last / Prefix /
+  Suffix) now share a single pool so the same type can't be
+  picked twice across multiple name rows
+- **Auto-restore on removal** — when a name row is deleted (or
+  its type is changed), the freed-up type automatically becomes
+  available in every other row's dropdown again
+- **Smart default for new rows** — adding a new name row picks
+  the first **enabled** type from the pool instead of always
+  defaulting to `first_name`, so users see the next sensible
+  choice pre-selected
+- **Pure-client-side, zero backend impact** — coordination
+  happens entirely in the existing inline `<script>` block of
+  `public/tools/qr-code-generator.php`; no new files, no API
+  changes, no schema changes
+
+### 🔧 How It Works
+
+The vCard **Name** section now keeps the five type options in
+a canonical pool (`NAME_TYPES`) on the client. Each row's
+`<select>` is tagged with `data-name-type-select`, and a single
+`syncNameSelects()` function rebuilds the options of every
+name-row select whenever:
+
+- the page first loads
+- a name row is added (`+ Add another name part`)
+- a name row is removed (`✕`)
+- the user picks a different type in any row
+
+Options that are already in use elsewhere are rendered
+`<option disabled>` so they remain visible (for context) but
+cannot be chosen. The select belonging to the row that already
+holds the type keeps it enabled and selected.
+
+When the user clicks **+ Add another name part**, the handler
+reads the types currently in use, picks the first entry from
+`NAME_TYPES` that isn't taken, and sets it as the new row's
+value before running the sync — so the default is always the
+next sensible, still-enabled type.
+
+### 📁 Updated Files
+
+- `public/tools/qr-code-generator.php`
+  - Server-rendered name `<select>` now carries
+    `data-name-type-select`
+  - JS template for newly-added name rows emits the same
+    attribute
+  - New `NAME_TYPES` pool + `syncNameSelects()` function
+  - `+ Add another name part` handler chooses the first free
+    type as the default for the new row
+  - `✕ Remove` handler triggers `syncNameSelects()` so
+    freed-up options reappear
+  - Delegated `change` listener keeps every dropdown in sync
+    when a user changes type manually
+
+### ✅ Verification
+
+- Manual smoke test on `public/tools/qr-code-generator.php`:
+  - Row 1 = `first_name` → Row 2's dropdown shows `first_name`
+    as a disabled option
+  - Add Row 3 → defaults to `middle_name` (first free type)
+  - Change Row 2 to `prefix` → Row 1 + Row 3 dropdowns disable
+    `prefix`
+  - Delete Row 1 → `first_name` becomes enabled again in Rows 2
+    and 3
+- Sticky-form behaviour preserved — on a POST submission that
+  re-renders the form, `syncNameSelects()` runs on init so any
+  duplicate selections from a malicious payload would be
+  re-coordinated (and the resulting POSTed values stay as the
+  user already typed them)
+- No backend / API changes; existing payloads still validate
+  unchanged
 
 ---
 
