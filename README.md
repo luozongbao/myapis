@@ -530,7 +530,129 @@ Each tool has its own API endpoint and documentation:
 - **Fortune Teller API**: `GET /api/fortune-teller/` - Get random fortune predictions
 - **Random Generator API**: `POST /api/randomizer/` - Generate random numbers, dice, etc.
 
-## 🛠️ Usage Examples
+## � Security
+
+The stack ships with a defence-in-depth setup that works **without
+Composer** and runs on plain PHP-FPM + Nginx. No Redis or Memcached is
+required — every piece of state lives on local disk.
+
+### Rate limiting (built-in, sliding-window)
+
+Every `/api/<tool>/` endpoint is rate-limited automatically. The
+limiter is implemented in [RateLimiter.php](api/includes/security/RateLimiter.php)
+and stores per-bucket state in tiny JSON files under
+`storage/ratelimit/`. Key features:
+
+- **Sliding window** with millisecond resolution
+- **Per-IP** throttling for anonymous traffic
+- **Per-API-key** throttling when clients send `X-API-Key`
+- **Auto-ban** when an IP accumulates too many failures (default 10
+  failures → 5 minute ban)
+- **Custom policies** per endpoint, defined in
+  [api_config.php](api/includes/api_config.php)
+- **`X-RateLimit-Limit` / `Remaining` / `Reset`** + **`Retry-After`**
+  headers on every response
+- **HTTP 429** with JSON body when the budget is exhausted
+
+Default budgets:
+
+| Endpoint | Limit | Window |
+|---|---|---|
+| `randomizer`, `fortune-teller` | 120 | 60 s |
+| `password-generator`, `username-generator`, `health-calculator` | 60 | 60 s |
+| `qr-code-generator`, `promptpay-qr-generator` | 30 | 60 s |
+
+Tune any of them via env vars (see [`example.env`](example.env))
+or by editing `api/includes/api_config.php`.
+
+### Security response headers
+
+Emitted both by Nginx (`docker/nginx/default.conf`) and PHP
+([Security.php](api/includes/security/Security.php)):
+
+- `X-Content-Type-Options: nosniff`
+- `X-Frame-Options: SAMEORIGIN`
+- `X-XSS-Protection: 1; mode=block`
+- `Referrer-Policy: strict-origin-when-cross-origin`
+- `Permissions-Policy: geolocation=(), microphone=(), camera=(), payment=()`
+- `Strict-Transport-Security` (only when TLS is configured)
+
+### Input validation & abuse detection
+
+[Security.php](api/includes/security/Security.php) provides:
+
+- `Security::safeString()` — strips control chars, length-bounds,
+  optional regex whitelist
+- `Security::safeInt()`   — typed coercion with min/max
+- `Security::safeEnum()`  — whitelist-based enum coercion
+- `Security::containsMalicious()` — pattern probe for SQL injection,
+  path traversal, XSS, shell injection, PHP injection probes
+
+Endpoints can call `api_safe_json_body()` to enforce a max body
+size and JSON depth before processing the payload.
+
+### Nginx-level hardening
+
+`docker/nginx/default.conf` adds:
+
+- Connection limits via `limit_conn_zone`
+- Request rate limits via `limit_req_zone`
+- Buffer-size hardening against slowloris / large-header DoS
+- FastCGI timeouts
+- 429 status mapping for over-limit responses
+
+### Optional API keys (HMAC-ready)
+
+The bootstrap exposes `Security::generateApiKey()`,
+`Security::hmac()` and `Security::verifyHmac()` for endpoints that
+need stronger auth. To require an HMAC signature on a particular
+endpoint:
+
+```php
+if (!api_verify_signature('YOUR_SHARED_SECRET')) {
+    api_unauthorized('Invalid signature');
+}
+```
+
+Clients send the hex digest of the request body via the
+`X-Signature` header.
+
+### Whitelisting / blacklisting
+
+Set in `.env`:
+
+```env
+SECURITY_BLACKLIST=1.2.3.4,5.6.7.8
+SECURITY_WHITELIST=10.0.0.5
+```
+
+Blacklisted clients always receive `429`. Whitelisted clients
+bypass all limits — useful for internal monitoring tools or your
+own back-office scripts.
+
+### Reverse-proxy / Cloudflare
+
+If you run the stack behind a trusted proxy:
+
+```env
+TRUST_CF_CONNECTING_IP=true   # Cloudflare
+# or
+TRUST_X_FORWARDED_FOR=true
+TRUSTED_PROXIES=10.0.0.0/8,172.16.0.0/12
+```
+
+The rate limiter then buckets by the real client IP rather than
+the proxy IP. **Do not enable these flags without listing your
+proxy IPs in `TRUSTED_PROXIES`** — otherwise clients can spoof
+their IP via the `X-Forwarded-For` header.
+
+### Turning security off (not recommended)
+
+```env
+SECURITY_ENABLED=false
+```
+
+## �🛠️ Usage Examples
 
 ### Health Calculator
 ```bash

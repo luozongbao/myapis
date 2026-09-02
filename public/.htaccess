@@ -62,10 +62,20 @@ RewriteCond %{REQUEST_URI} ^/api-specs/([^/]+)/?$
 RewriteCond %{DOCUMENT_ROOT}/api-specs/%1.php -f
 RewriteRule ^api-specs/([^/]+)/?$ api-specs/$1.php [L,QSA]
 
-# Clean URLs for tools - Remove .php extension
+# Tools routing - Clean URLs for /tools/<name> (no extension)
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteCond %{DOCUMENT_ROOT}/$1.php -f
+RewriteCond %{REQUEST_URI} ^/tools/([^/]+)/?$
+RewriteCond %{DOCUMENT_ROOT}/tools/$1.php -f
+RewriteRule ^tools/([^/]+)/?$ tools/$1.php [L,QSA]
+
+# Clean URLs for top-level tools - Remove .php extension
+# (only when the request is not already inside /tools/ or /api/)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI} !^/api/
+RewriteCond %{REQUEST_URI} !^/tools/
+RewriteCond %{REQUEST_DOCUMENT_ROOT}/$1.php -f
 RewriteRule ^([^/]+)/?$ $1.php [L,QSA]
 
 # Clean URLs for specs - Handle tool-specs pattern
