@@ -19,6 +19,10 @@ if (api_handle_preflight()) {
 }
 api_register_exception_handler();
 
+// Rate-limit this endpoint using the policy defined in api_config.php.
+$configs = require __DIR__ . '/../includes/api_config.php';
+api_rate_limit('api:username-generator', $configs['username-generator'] ?? null);
+
 /**
  * Pure username generation logic — no HTTP concerns.
  */

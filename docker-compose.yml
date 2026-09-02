@@ -29,6 +29,11 @@ services:
       - ./:/var/www/html
       # Mount the ini template so it can be rendered with current env values
       - ./docker/php/php.ini.tpl:/usr/local/etc/php/php.ini.tpl:ro
+      # Persistent storage for the in-PHP rate limiter + logs.
+      # Lives outside the read-only project mount so writes are
+      # safe and survive container restarts.
+      - myapis-ratelimit:/var/www/myapis-storage/ratelimit
+      - myapis-logs:/var/www/myapis-storage/logs
     environment:
       TZ: ${TZ:-UTC}
       APP_ENV: ${APP_ENV:-development}
@@ -42,6 +47,21 @@ services:
       UMAMI_SCRIPT_URL: ${UMAMI_SCRIPT_URL:-}
       UMAMI_WEBSITE_ID: ${UMAMI_WEBSITE_ID:-}
       GA4_MEASUREMENT_ID: ${GA4_MEASUREMENT_ID:-}
+      # ---- Security / rate limiting (see api/includes/security) ----
+      SECURITY_ENABLED: ${SECURITY_ENABLED:-true}
+      RATELIMIT_DEFAULT_LIMIT: ${RATELIMIT_DEFAULT_LIMIT:-60}
+      RATELIMIT_DEFAULT_WINDOW: ${RATELIMIT_DEFAULT_WINDOW:-60}
+      RATELIMIT_GLOBAL_LIMIT: ${RATELIMIT_GLOBAL_LIMIT:-600}
+      RATELIMIT_GLOBAL_WINDOW: ${RATELIMIT_GLOBAL_WINDOW:-60}
+      SECURITY_FAIL_LIMIT: ${SECURITY_FAIL_LIMIT:-10}
+      SECURITY_BAN_WINDOW: ${SECURITY_BAN_WINDOW:-300}
+      SECURITY_BLACKLIST: ${SECURITY_BLACKLIST:-}
+      SECURITY_WHITELIST: ${SECURITY_WHITELIST:-}
+      TRUST_CF_CONNECTING_IP: ${TRUST_CF_CONNECTING_IP:-false}
+      TRUST_X_FORWARDED_FOR: ${TRUST_X_FORWARDED_FOR:-false}
+      TRUSTED_PROXIES: ${TRUSTED_PROXIES:-}
+      RATELIMIT_STORAGE_DIR: ${RATELIMIT_STORAGE_DIR:-/var/www/myapis-storage/ratelimit}
+      MYAPIS_LOG_DIR: ${MYAPIS_LOG_DIR:-/var/www/myapis-storage/logs}
     networks:
       - myapis-net
     healthcheck:
@@ -122,6 +142,9 @@ networks:
 # ----------------------------------------------------------------
 # Volumes (used by the optional Umami Analytics stack below)
 # ----------------------------------------------------------------
-# Uncomment this block when you enable the umami-db service.
-# volumes:
-#   umami-db-data:
+volumes:
+  # Persistent storage for the in-PHP rate limiter + logs.
+  myapis-ratelimit:
+  myapis-logs:
+  # Uncomment when you enable the umami-db service.
+  # umami-db-data:

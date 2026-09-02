@@ -24,6 +24,11 @@ if (api_handle_preflight()) {
 }
 api_register_exception_handler();
 
+// Rate-limit this endpoint. PromptPay QR generation produces
+// images on every call, so we apply a stricter budget.
+$configs = require __DIR__ . '/../includes/api_config.php';
+api_rate_limit('api:promptpay-qr-generator', $configs['promptpay-qr-generator'] ?? null);
+
 try {
     $target = trim((string) (api_input('target') ?? ''));
     $amount = trim((string) (api_input('amount') ?? ''));

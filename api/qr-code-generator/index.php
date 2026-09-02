@@ -24,6 +24,11 @@ if (api_handle_preflight()) {
 }
 api_register_exception_handler();
 
+// Rate-limit this endpoint. QR generation proxies to goQR.me, so we
+// apply a stricter budget than pure-CPU endpoints.
+$configs = require __DIR__ . '/../includes/api_config.php';
+api_rate_limit('api:qr-code-generator', $configs['qr-code-generator'] ?? null);
+
 try {
     $type   = strtolower(trim((string) (api_input('type') ?? 'text')));
     $format = strtolower(trim((string) (api_input('format') ?? 'json')));

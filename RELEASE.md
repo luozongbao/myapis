@@ -1,9 +1,265 @@
 # 📋 MyAPIs Release Notes
 
-## Current Release: Version 2.5.0
+## Current Release: Version 2.6.0
 
 **Release Date**: September 2, 2026
 **Status**: Stable Release
+
+---
+
+## 📈 Version 2.6.0 - Security Layer (Rate Limit + Headers + HMAC)
+*Released: September 2, 2026*
+
+### 🌟 Highlights
+- **Defence-in-depth security layer** for the entire stack —
+  rate limiting, response-header hardening, abuse detection,
+  optional API-key + HMAC signing — all implemented in **pure
+  PHP**, **no Composer / Redis / Memcached** required
+- **Sliding-window rate limiter** with per-IP and per-API-key
+  bucketing, auto-ban on abuse, and millisecond resolution state
+  persisted in tiny JSON files (`storage/ratelimit/`)
+- **Nginx-level rate limits** + connection caps + buffer
+  hardening + an optional HTTPS server block template
+- **Backwards-compatible** — every existing endpoint continues
+  to work; security features default to safe values
+
+### 🌟 New Features
+
+#### 🚦 `RateLimiter.php` — Sliding-Window Rate Limiter (file-backed)
+
+[`api/includes/security/RateLimiter.php`](api/includes/security/RateLimiter.php)
+
+- Sliding-window algorithm with millisecond resolution
+- Per-bucket state files (SHA-1 of `(route, identity)`) at
+  `storage/ratelimit/bucket__<sha1>.json`
+- Atomic writes via `flock(LOCK_EX)` + temp file + `rename()`
+- Per-IP bucket by default; per-API-key bucket when the caller
+  sends an `X-API-Key` header
+- **Auto-ban** when a bucket accumulates too many failures
+  (`SECURITY_FAIL_LIMIT` / `SECURITY_BAN_WINDOW` env vars,
+  default 10 failures → 5 minute ban)
+- HTTP 429 response with:
+  - `X-RateLimit-Limit` / `X-RateLimit-Remaining` / `X-RateLimit-Reset`
+  - `Retry-After` (seconds)
+  - JSON body `{"success":false,"error":"Too many requests",...}`
+- Optional global bucket (`RATELIMIT_GLOBAL_LIMIT` /
+  `RATELIMIT_GLOBAL_WINDOW`) that counts every hit across all
+  routes for a single identity
+- Garbage-collection helper (`RateLimiter::gc()`) for stale
+  buckets — wired into a cron-friendly command line entry point
+
+#### 🛡️ `Security.php` — Defensive Headers, Input Sanitisation, HMAC
+
+[`api/includes/security/Security.php`](api/includes/security/Security.php)
+
+- `Security::sendHeaders()` emits a full suite of defensive
+  response headers idempotently:
+  - `X-Content-Type-Options: nosniff`
+  - `X-Frame-Options: SAMEORIGIN`
+  - `X-XSS-Protection: 1; mode=block`
+  - `Referrer-Policy: strict-origin-when-cross-origin`
+  - `Permissions-Policy: geolocation=(), microphone=(), camera=(), payment=()`
+  - `Strict-Transport-Security` (only emitted when TLS is
+    configured)
+- `Security::safeString()` / `safeInt()` / `safeEnum()` — typed
+  coercion with bounds, regex whitelist, and null-byte stripping
+- `Security::containsMalicious()` — pattern probe for SQL
+  injection, path traversal, XSS, shell injection and PHP
+  injection probes
+- `Security::enforceJson()` — caps JSON body size (default
+  64 KiB) and nesting depth (default 8)
+- `Security::generateApiKey()` — cryptographically secure API
+  key generator
+- `Security::hmac()` / `verifyHmac()` — constant-time signature
+  comparison via `hash_equals`
+- `Security::clientFingerprint()` — SHA-1 of IP + UA + Accept +
+  Accept-Language (useful for forensics / additional rate
+  buckets)
+
+#### 🪝 Bootstrap Helpers
+
+[`api/includes/bootstrap.php`](api/includes/bootstrap.php)
+
+New helpers wired into every endpoint:
+
+- `api_security_init()` — reads `.env`, configures the
+  `RateLimiter` once per request (static-cached)
+- `api_rate_limit($bucket, $policy)` — the main entry point
+  called by every endpoint right after the preflight
+- `api_rate_limit_fail($bucket)` — explicit failure counter
+  (e.g. for failed signature verification)
+- `api_safe_json_body()` — JSON body validator that returns
+  `null` on overflow / invalid depth
+- `api_verify_signature()` — HMAC verifier with optional
+  algorithm choice (`sha256` / `sha512`)
+- `api_unauthorized($reason)` — emits a 401 JSON response and
+  exits cleanly
+
+#### ⚙️ Per-Tool Rate-Limit Policies
+
+[`api/includes/api_config.php`](api/includes/api_config.php)
+
+| Endpoint | Limit | Window |
+|---|---|---|
+| `randomizer`, `fortune-teller` | 120 / min | 60 s |
+| `password-generator`, `username-generator`, `health-calculator` | 60 / min | 60 s |
+| `qr-code-generator`, `promptpay-qr-generator` | 30 / min | 60 s |
+
+Override any of them via `RATELIMIT_DEFAULT_LIMIT` /
+`RATELIMIT_DEFAULT_WINDOW` env vars, or edit
+`api_config.php` directly. Heavier endpoints (QR generators)
+get a tighter budget because they call out to `goQR.me` or do
+heavy image rendering.
+
+#### 🌐 Nginx Hardening
+
+[`docker/nginx/default.conf`](docker/nginx/default.conf)
+
+- `limit_conn_zone` + `limit_req_zone` moved to the top-level
+  `http {}` context (the only place nginx accepts them)
+- `/api/` location now applies:
+  - `limit_req zone=myapis_req burst=60 nodelay` — request
+    rate cap with a 60-request burst
+  - `limit_conn myapis_conn 20` — concurrent connection cap
+- `client_max_body_size`, `client_header_buffer_size`,
+  `large_client_header_buffers`, `client_body_timeout`,
+  `client_header_timeout` — buffer hardening against
+  slowloris / large-header DoS
+- Direct access to `api_config.php` is now blocked
+- Commented-out **HTTPS server block** template with HSTS —
+  ready to uncomment when TLS certificates are mounted
+
+#### 🐳 Docker / Storage Provisioning
+
+- `docker/entrypoint.sh` now provisions
+  `/var/www/myapis-storage/ratelimit/` and
+  `/var/www/myapis-storage/logs/` with correct ownership
+  (`www-data:www-data`, `0775`)
+- `docker-compose.yml` adds two **persistent named volumes**:
+  - `myapis-ratelimit` → rate-limit state files
+  - `myapis-logs` → application logs
+- All security env vars are forwarded to the `php` service
+  (`SECURITY_ENABLED`, `RATELIMIT_DEFAULT_LIMIT`,
+  `RATELIMIT_DEFAULT_WINDOW`, `RATELIMIT_GLOBAL_LIMIT`,
+  `RATELIMIT_GLOBAL_WINDOW`, `SECURITY_FAIL_LIMIT`,
+  `SECURITY_BAN_WINDOW`, `SECURITY_BLACKLIST`,
+  `SECURITY_WHITELIST`, `TRUST_CF_CONNECTING_IP`,
+  `TRUST_X_FORWARDED_FOR`, `TRUSTED_PROXIES`,
+  `RATELIMIT_STORAGE_DIR`, `MYAPIS_LOG_DIR`)
+
+#### 📝 Configuration Surface (`example.env`)
+
+New documented variables (all optional, all safe-by-default):
+
+- **`SECURITY_ENABLED`** — global kill-switch (default `true`)
+- **`RATELIMIT_DEFAULT_LIMIT`** / **`RATELIMIT_DEFAULT_WINDOW`**
+  — defaults for every endpoint (60 / 60 s)
+- **`RATELIMIT_GLOBAL_LIMIT`** / **`RATELIMIT_GLOBAL_WINDOW`**
+  — global abuse cap (e.g. 1000 / 60 s)
+- **`SECURITY_FAIL_LIMIT`** / **`SECURITY_BAN_WINDOW`** — auto-ban
+  thresholds (10 failures → 300 s ban)
+- **`SECURITY_BLACKLIST`** / **`SECURITY_WHITELIST`** — comma-
+  separated CIDR / IP lists
+- **`TRUST_CF_CONNECTING_IP`** — read `CF-Connecting-IP`
+  (Cloudflare)
+- **`TRUST_X_FORWARDED_FOR`** — read `X-Forwarded-For` when
+  the request comes from a trusted proxy
+- **`TRUSTED_PROXIES`** — CIDR allowlist for proxy trust
+- **`RATELIMIT_STORAGE_DIR`** / **`MYAPIS_LOG_DIR`** — runtime
+  paths
+
+#### 🔒 Optional HMAC Request Signing
+
+```php
+if (!api_verify_signature('YOUR_SHARED_SECRET', 'sha256', true)) {
+    api_unauthorized('Invalid signature');
+}
+```
+
+Clients send the hex digest of the request body in the
+`X-Signature` header. Constant-time comparison via
+`hash_equals()` prevents timing attacks.
+
+#### 🌍 Reverse-Proxy / Cloudflare Awareness
+
+When the stack sits behind Cloudflare or another trusted proxy,
+the rate limiter buckets by the real client IP instead of the
+proxy IP:
+
+```env
+TRUST_CF_CONNECTING_IP=true
+# or
+TRUST_X_FORWARDED_FOR=true
+TRUSTED_PROXIES=10.0.0.0/8,172.16.0.0/12
+```
+
+**Do not** enable these flags without listing your proxy IPs
+in `TRUSTED_PROXIES` — otherwise clients can spoof their IP
+via the `X-Forwarded-For` header.
+
+#### 📚 Documentation
+
+- New **🔒 Security** section in
+  [`README.md`](README.md) — covers rate limiting, headers,
+  input validation, nginx hardening, HMAC, whitelist /
+  blacklist, reverse-proxy trust, and the global kill switch
+- README **Latest Updates** bumped to v2.6.0
+- `RELEASE.md` — this entry
+
+### 📁 New / Updated Files
+
+#### New files
+- `api/includes/security/RateLimiter.php` — sliding-window
+  limiter
+- `api/includes/security/Security.php` — defensive headers,
+  input helpers, HMAC
+- `api/includes/api_config.php` — per-tool rate-limit policies
+- `storage/ratelimit/` — runtime bucket state (git-ignored)
+- `storage/logs/` — runtime app logs (git-ignored)
+
+#### Updated files
+- `api/includes/bootstrap.php` — security init + new helpers
+- `api/password-generator/index.php` — adds `api_rate_limit()`
+- `api/username-generator/index.php` — adds `api_rate_limit()`
+- `api/randomizer/index.php` — adds `api_rate_limit()`
+- `api/fortune-teller/index.php` — adds `api_rate_limit()`
+- `api/health-calculator/index.php` — adds `api_rate_limit()`
+- `api/qr-code-generator/index.php` — adds `api_rate_limit()`
+- `api/promptpay-qr-generator/index.php` — adds
+  `api_rate_limit()`
+- `docker/nginx/default.conf` — rate limits, connection caps,
+  buffer hardening, blocked `api_config.php`, HTTPS template
+- `docker/entrypoint.sh` — provision `ratelimit/` and `logs/`
+- `docker-compose.yml` — persistent volumes + security env vars
+- `.gitignore` — exclude `storage/`
+- `example.env` — full security configuration documentation
+- `README.md` — new 🔒 Security section, Latest Updates bump
+
+### ✅ Verification
+
+- `php -l` passes for every modified PHP file (all 7 endpoints,
+  `bootstrap.php`, `api_config.php`, both `security/*.php`
+  files)
+- Live HTTP smoke tests against the running stack:
+  - Every API endpoint returns `X-RateLimit-*` and
+    `Retry-After` headers
+  - `Permissions-Policy`, `X-Frame-Options`, etc. are present
+    in the response
+  - Request #119 of `/api/randomizer/` returns
+    **HTTP 429** with `Retry-After: 47`, `X-RateLimit-Remaining: 0`
+    and the expected JSON body
+  - Public pages (`/`, `/tools/randomizer.php`,
+    `/api-specs/randomizer.php`) return **200 OK** (rate
+    limiting is scoped to `/api/`)
+  - Storage verified — bucket JSON files appear under
+    `/var/www/myapis-storage/ratelimit/` with `www-data` ownership
+- `docker compose config` validates cleanly (no YAML errors,
+  no duplicate keys)
+- Nginx config validates cleanly:
+  - No "directive is duplicate" errors
+  - No "directive is not allowed here" errors
+  - `limit_req` / `limit_conn` correctly applied at the `/api/`
+    location
 
 ---
 

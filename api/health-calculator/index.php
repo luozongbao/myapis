@@ -19,6 +19,10 @@ if (api_handle_preflight()) {
 }
 api_register_exception_handler();
 
+// Rate-limit this endpoint using the policy defined in api_config.php.
+$configs = require __DIR__ . '/../includes/api_config.php';
+api_rate_limit('api:health-calculator', $configs['health-calculator'] ?? null);
+
 /**
  * Pure health calculations.
  */
