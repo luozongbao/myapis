@@ -681,7 +681,7 @@ $typeSelector = function ($name, array $options, $current, $placeholder = 'Custo
                                                value="<?= htmlspecialchars($dVal($row, 'value')) ?>">
                                     </div>
                                     <div class="form-group" style="margin: 0;">
-                                        <select name="names[<?= $i ?>][type]">
+                                        <select name="names[<?= $i ?>][type]" data-name-type-select>
                                             <?php foreach ($nameOptions as $val => $label): ?>
                                                 <option value="<?= $val ?>" <?= $curType === $val ? 'selected' : '' ?>><?= $label ?></option>
                                             <?php endforeach; ?>
@@ -1106,7 +1106,7 @@ $typeSelector = function ($name, array $options, $current, $placeholder = 'Custo
                             <input type="text" name="names[${i}][value]" placeholder="e.g. John">
                         </div>
                         <div class="form-group" style="margin: 0;">
-                            <select name="names[${i}][type]">
+                            <select name="names[${i}][type]" data-name-type-select>
                                 <option value="first_name" selected>First Name</option>
                                 <option value="middle_name">Middle Name</option>
                                 <option value="last_name">Last Name</option>
@@ -1237,6 +1237,54 @@ $typeSelector = function ($name, array $options, $current, $placeholder = 'Custo
             });
         };
 
+        // ----------------------------------------------------------------
+        // vCard Name dropdown coordination
+        // ----------------------------------------------------------------
+        // The five Name rows share a fixed pool of types (First / Middle /
+        // Last / Prefix / Suffix).  Whenever one row picks a type, that
+        // option must be removed from every other row's dropdown so the
+        // same name part can't be entered twice.  When a row is removed
+        // (or its type changed) the option becomes available again.
+        const NAME_TYPES = [
+            ['first_name',  'First Name'],
+            ['middle_name', 'Middle Name'],
+            ['last_name',   'Last Name'],
+            ['prefix',      'Prefix (e.g. Mr., Dr.)'],
+            ['suffix',      'Suffix (e.g. Jr., PhD)'],
+        ];
+
+        const syncNameSelects = () => {
+            const list    = document.querySelector('[data-list="names"]');
+            if (!list) { return; }
+            const selects = list.querySelectorAll('[data-name-type-select]');
+            // Gather the types currently in use across all rows.
+            const used = new Set();
+            selects.forEach(sel => {
+                if (sel.value) { used.add(sel.value); }
+            });
+
+            selects.forEach(sel => {
+                const current = sel.value;
+                // Rebuild options from the canonical pool, disabling any
+                // type that's already taken by another row.
+                const frag = document.createDocumentFragment();
+                NAME_TYPES.forEach(([val, label]) => {
+                    const opt = document.createElement('option');
+                    opt.value = val;
+                    opt.textContent = label;
+                    if (val !== current && used.has(val)) {
+                        opt.disabled = true;
+                    }
+                    if (val === current) {
+                        opt.selected = true;
+                    }
+                    frag.appendChild(opt);
+                });
+                sel.innerHTML = '';
+                sel.appendChild(frag);
+            });
+        };
+
         document.querySelectorAll('[data-add]').forEach(btn => {
             btn.addEventListener('click', () => {
                 const kind = btn.dataset.add;
@@ -1245,6 +1293,19 @@ $typeSelector = function ($name, array $options, $current, $placeholder = 'Custo
                 const i = list.querySelectorAll('[data-row]').length;
                 list.insertAdjacentHTML('beforeend', TEMPLATES[kind](i));
                 bindRemoveHandlers();
+                if (kind === 'names') {
+                    // Pick the first type from NAME_TYPES that isn't already
+                    // used elsewhere, then run sync so all selects stay in
+                    // agreement (the chosen value stays enabled, the rest
+                    // become disabled per the normal rules).
+                    const allSelects = list.querySelectorAll('[data-name-type-select]');
+                    const newSelect  = allSelects[allSelects.length - 1];
+                    const used       = new Set();
+                    allSelects.forEach(sel => { if (sel !== newSelect && sel.value) { used.add(sel.value); } });
+                    const firstFree  = NAME_TYPES.find(([val]) => !used.has(val));
+                    if (newSelect && firstFree) { newSelect.value = firstFree[0]; }
+                    syncNameSelects();
+                }
             });
         });
 
@@ -1273,7 +1334,8 @@ $typeSelector = function ($name, array $options, $current, $placeholder = 'Custo
 
         // Delegated listener so rows added via "+ Add another …" work too.
         document.addEventListener('change', (e) => {
-            if (e.target.matches('[data-type-select]')) { onTypeChange(e.target); }
+            if (e.target.matches('[data-type-select]'))     { onTypeChange(e.target); }
+            if (e.target.matches('[data-name-type-select]')) { syncNameSelects(); }
         });
 
         const bindRemoveHandlers = () => {
@@ -1283,10 +1345,14 @@ $typeSelector = function ($name, array $options, $current, $placeholder = 'Custo
                     const list = row.parentElement;
                     row.remove();
                     reindex(list);
+                    if (list && list.dataset.list === 'names') { syncNameSelects(); }
                 };
             });
         };
         bindRemoveHandlers();
+
+        // Initialise the Name dropdown coordination on first paint.
+        syncNameSelects();
     })();
     </script>
 </body>
