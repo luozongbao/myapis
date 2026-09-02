@@ -35,7 +35,11 @@ $fields = [
     'encryption'   => $_POST['encryption']   ?? 'WPA',
     'hidden'       => isset($_POST['hidden']) ? 1 : 0,
     'first_name'   => $_POST['first_name']   ?? '',
+    'middle_name'  => $_POST['middle_name']  ?? '',
     'last_name'    => $_POST['last_name']    ?? '',
+    'prefix'       => $_POST['prefix']       ?? '',
+    'suffix'       => $_POST['suffix']       ?? '',
+    'nickname'     => $_POST['nickname']     ?? '',
     'organization' => $_POST['organization'] ?? '',
     'title'        => $_POST['title']        ?? '',
     'work_email'   => $_POST['work_email']   ?? '',
@@ -74,7 +78,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ['type' => $selectedType, 'ecc' => $ecc, 'size' => $size, 'qzone' => $qzone,
          'margin' => $margin, 'color' => $color, 'bgcolor' => $bgcolor,
          'file_type' => $fileType],
-        $fields
+        $fields,
+        // Forward the dynamic vCard lists (names, nicknames, emails,
+        // phones, urls, addresses).  These are submitted as bracketed
+        // arrays (e.g. names[0][value]) and must reach the API so the
+        // validation and payload building can see them.
+        [
+            'names'      => $_POST['names']      ?? [],
+            'nicknames'  => $_POST['nicknames']  ?? [],
+            'emails'     => $_POST['emails']     ?? [],
+            'phones'     => $_POST['phones']     ?? [],
+            'urls'       => $_POST['urls']       ?? [],
+            'addresses'  => $_POST['addresses']  ?? [],
+        ]
     );
 
     $ch = curl_init();
@@ -110,11 +126,15 @@ $dynEmails    = $_POST['emails']    ?? [];
 $dynPhones    = $_POST['phones']    ?? [];
 $dynUrls      = $_POST['urls']      ?? [];
 $dynAddresses = $_POST['addresses'] ?? [];
+$dynNames     = $_POST['names']     ?? [];
+$dynNicknames = $_POST['nicknames'] ?? [];
 
 if (!is_array($dynEmails))    { $dynEmails    = []; }
 if (!is_array($dynPhones))    { $dynPhones    = []; }
 if (!is_array($dynUrls))      { $dynUrls      = []; }
 if (!is_array($dynAddresses)) { $dynAddresses = []; }
+if (!is_array($dynNames))     { $dynNames     = []; }
+if (!is_array($dynNicknames)) { $dynNicknames = []; }
 
 // On first load (GET), seed each list with a single empty row so the UI
 // shows them by default.
@@ -123,12 +143,40 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     $dynPhones    = [[]];
     $dynUrls      = [[]];
     $dynAddresses = [[]];
+    $dynNames     = [['type' => 'first_name']];
+    $dynNicknames = [[]];
 }
 
 // Helpers to read a value from a posted dynamic row
 $dVal = function ($row, $key, $default = '') {
     if (!is_array($row)) { return $default; }
     return isset($row[$key]) ? (string)$row[$key] : $default;
+};
+
+// Render a vCard TYPE selector: a <select> of predefined options plus a
+// "+ Custom…" entry.  Selecting the custom entry reveals a free-text input
+// that shares the same field name (only one of the two is enabled at a
+// time, so only the active control is submitted).
+$typeSelector = function ($name, array $options, $current, $placeholder = 'Custom type') {
+    $current  = (string)$current;
+    $isCustom = $current !== '' && !array_key_exists($current, $options);
+
+    $out  = '<div class="form-group type-select" style="margin: 0;">';
+    $out .= '<select name="' . htmlspecialchars($name) . '" data-type-select'
+          . ($isCustom ? ' disabled style="display:none;"' : '') . '>';
+    foreach ($options as $val => $label) {
+        $sel = (!$isCustom && $current === (string)$val) ? ' selected' : '';
+        $out .= '<option value="' . htmlspecialchars((string)$val) . '"' . $sel . '>'
+              . htmlspecialchars((string)$label) . '</option>';
+    }
+    $out .= '<option value="__custom__"' . ($isCustom ? ' selected' : '') . '>+ Custom…</option>';
+    $out .= '</select>';
+    $out .= '<input type="text" name="' . htmlspecialchars($name) . '" data-type-custom'
+          . ' placeholder="' . htmlspecialchars($placeholder) . '"'
+          . ($isCustom ? ' value="' . htmlspecialchars($current) . '"' : ' disabled style="display:none;"')
+          . '>';
+    $out .= '</div>';
+    return $out;
 };
 ?>
 <!DOCTYPE html>
@@ -535,6 +583,7 @@ $dVal = function ($row, $key, $default = '') {
             .dyn-row.address .row + .row { grid-template-columns: 1fr; }
         }
     </style>
+<?php /** MyAPIs Analytics (Hostinger / shared-hosting friendly) */ if (file_exists(__DIR__ . "/analytics.php")) { require __DIR__ . "/analytics.php"; } ?>
 </head>
 <body>
     <div class="container">
@@ -610,19 +659,61 @@ $dVal = function ($row, $key, $default = '') {
 
                 <!-- ============= VCARD ============= -->
                 <div class="field-group <?= $selectedType === 'vcard' ? 'active' : '' ?>" data-group="vcard">
-                    <div class="section-title">Personal</div>
-                    <div class="row">
-                        <div class="form-group">
-                            <label for="first_name">First Name *</label>
-                            <input type="text" id="first_name" name="first_name" placeholder="John"
-                                   value="<?= htmlspecialchars($fields['first_name']) ?>">
-                        </div>
-                        <div class="form-group">
-                            <label for="last_name">Last Name</label>
-                            <input type="text" id="last_name" name="last_name" placeholder="Doe"
-                                   value="<?= htmlspecialchars($fields['last_name']) ?>">
-                        </div>
+                    <div class="section-title">👤 Name</div>
+                    <div class="dyn-list" data-list="names">
+                        <?php
+                        $nameOptions = [
+                            'first_name'  => 'First Name',
+                            'middle_name' => 'Middle Name',
+                            'last_name'   => 'Last Name',
+                            'prefix'      => 'Prefix (e.g. Mr., Dr.)',
+                            'suffix'      => 'Suffix (e.g. Jr., PhD)',
+                        ];
+                        foreach ($dynNames as $i => $row):
+                            $curType = $dVal($row, 'type', 'first_name');
+                            if (!isset($nameOptions[$curType])) { $curType = 'first_name'; }
+                        ?>
+                            <div class="dyn-row name" data-row>
+                                <div class="row-3">
+                                    <div class="form-group" style="margin: 0;">
+                                        <input type="text" name="names[<?= $i ?>][value]"
+                                               placeholder="e.g. John"
+                                               value="<?= htmlspecialchars($dVal($row, 'value')) ?>">
+                                    </div>
+                                    <div class="form-group" style="margin: 0;">
+                                        <select name="names[<?= $i ?>][type]">
+                                            <?php foreach ($nameOptions as $val => $label): ?>
+                                                <option value="<?= $val ?>" <?= $curType === $val ? 'selected' : '' ?>><?= $label ?></option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                    </div>
+                                    <button type="button" class="remove-row" data-remove title="Remove name part">✕</button>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
                     </div>
+                    <button type="button" class="add-row" data-add="names">+ Add another name part</button>
+
+                    <div class="section-title">🏷️ Nick Names</div>
+                    <div class="dyn-list" data-list="nicknames">
+                        <?php foreach ($dynNicknames as $i => $row): ?>
+                            <div class="dyn-row nickname" data-row>
+                                <div class="row-3">
+                                    <div class="form-group" style="margin: 0;">
+                                        <input type="text" name="nicknames[<?= $i ?>][value]"
+                                               placeholder="e.g. Johnny"
+                                               value="<?= htmlspecialchars($dVal($row, 'value')) ?>">
+                                    </div>
+                                    <div class="form-group" style="margin: 0;">
+                                        <input type="hidden" name="nicknames[<?= $i ?>][type]" value="nickname">
+                                        <input type="text" value="Nick Name" disabled style="background:#eef0f5; color:#666;">
+                                    </div>
+                                    <button type="button" class="remove-row" data-remove title="Remove nickname">✕</button>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                    <button type="button" class="add-row" data-add="nicknames">+ Add another nick name</button>
 
                     <div class="section-title">Organisation</div>
                     <div class="row">
@@ -648,16 +739,11 @@ $dVal = function ($row, $key, $default = '') {
                                                placeholder="name@example.com"
                                                value="<?= htmlspecialchars($dVal($row, 'value')) ?>">
                                     </div>
-                                    <div class="form-group" style="margin: 0;">
-                                        <select name="emails[<?= $i ?>][type]">
-                                            <?php
-                                            $emailTypes = ['WORK', 'HOME', 'INTERNET'];
-                                            $cur = $dVal($row, 'type', 'WORK');
-                                            foreach ($emailTypes as $t): ?>
-                                                <option value="<?= $t ?>" <?= $cur === $t ? 'selected' : '' ?>><?= $t ?></option>
-                                            <?php endforeach; ?>
-                                        </select>
-                                    </div>
+                                    <?php
+                                    $emailTypes = ['WORK' => 'WORK', 'HOME' => 'HOME', 'INTERNET' => 'INTERNET'];
+                                    $cur = $dVal($row, 'type', 'WORK');
+                                    echo $typeSelector('emails[' . $i . '][type]', $emailTypes, $cur, 'e.g. X-CORP');
+                                    ?>
                                     <button type="button" class="remove-row" data-remove title="Remove email">✕</button>
                                 </div>
                             </div>
@@ -675,16 +761,11 @@ $dVal = function ($row, $key, $default = '') {
                                                placeholder="+66 81 234 5678"
                                                value="<?= htmlspecialchars($dVal($row, 'value')) ?>">
                                     </div>
-                                    <div class="form-group" style="margin: 0;">
-                                        <select name="phones[<?= $i ?>][type]">
-                                            <?php
-                                            $phoneTypes = ['CELL,VOICE' => 'Mobile', 'WORK,VOICE' => 'Work', 'HOME,VOICE' => 'Home', 'FAX' => 'Fax', 'VOICE' => 'Voice'];
-                                            $cur = $dVal($row, 'type', 'CELL,VOICE');
-                                            foreach ($phoneTypes as $val => $label): ?>
-                                                <option value="<?= $val ?>" <?= $cur === $val ? 'selected' : '' ?>><?= $label ?></option>
-                                            <?php endforeach; ?>
-                                        </select>
-                                    </div>
+                                    <?php
+                                    $phoneTypes = ['CELL,VOICE' => 'Mobile', 'WORK,VOICE' => 'Work', 'HOME,VOICE' => 'Home', 'FAX' => 'Fax', 'VOICE' => 'Voice'];
+                                    $cur = $dVal($row, 'type', 'CELL,VOICE');
+                                    echo $typeSelector('phones[' . $i . '][type]', $phoneTypes, $cur, 'e.g. X-EXT');
+                                    ?>
                                     <button type="button" class="remove-row" data-remove title="Remove phone">✕</button>
                                 </div>
                             </div>
@@ -1018,18 +1099,51 @@ $dVal = function ($row, $key, $default = '') {
         // Dynamic vCard rows
         // ----------------------------------------------------------------
         const TEMPLATES = {
+            names: (i) => `
+                <div class="dyn-row name" data-row>
+                    <div class="row-3">
+                        <div class="form-group" style="margin: 0;">
+                            <input type="text" name="names[${i}][value]" placeholder="e.g. John">
+                        </div>
+                        <div class="form-group" style="margin: 0;">
+                            <select name="names[${i}][type]">
+                                <option value="first_name" selected>First Name</option>
+                                <option value="middle_name">Middle Name</option>
+                                <option value="last_name">Last Name</option>
+                                <option value="prefix">Prefix (e.g. Mr., Dr.)</option>
+                                <option value="suffix">Suffix (e.g. Jr., PhD)</option>
+                            </select>
+                        </div>
+                        <button type="button" class="remove-row" data-remove title="Remove name part">✕</button>
+                    </div>
+                </div>`,
+            nicknames: (i) => `
+                <div class="dyn-row nickname" data-row>
+                    <div class="row-3">
+                        <div class="form-group" style="margin: 0;">
+                            <input type="text" name="nicknames[${i}][value]" placeholder="e.g. Johnny">
+                        </div>
+                        <div class="form-group" style="margin: 0;">
+                            <input type="hidden" name="nicknames[${i}][type]" value="nickname">
+                            <input type="text" value="Nick Name" disabled style="background:#eef0f5; color:#666;">
+                        </div>
+                        <button type="button" class="remove-row" data-remove title="Remove nickname">✕</button>
+                    </div>
+                </div>`,
             emails: (i) => `
                 <div class="dyn-row email" data-row>
                     <div class="row-3">
                         <div class="form-group" style="margin: 0;">
                             <input type="email" name="emails[${i}][value]" placeholder="name@example.com">
                         </div>
-                        <div class="form-group" style="margin: 0;">
-                            <select name="emails[${i}][type]">
-                                <option value="WORK">WORK</option>
+                        <div class="form-group type-select" style="margin: 0;">
+                            <select name="emails[${i}][type]" data-type-select>
+                                <option value="WORK" selected>WORK</option>
                                 <option value="HOME">HOME</option>
                                 <option value="INTERNET">INTERNET</option>
+                                <option value="__custom__">+ Custom…</option>
                             </select>
+                            <input type="text" name="emails[${i}][type]" data-type-custom placeholder="e.g. X-CORP" disabled style="display:none;">
                         </div>
                         <button type="button" class="remove-row" data-remove title="Remove email">✕</button>
                     </div>
@@ -1040,14 +1154,16 @@ $dVal = function ($row, $key, $default = '') {
                         <div class="form-group" style="margin: 0;">
                             <input type="tel" name="phones[${i}][value]" placeholder="+66 81 234 5678">
                         </div>
-                        <div class="form-group" style="margin: 0;">
-                            <select name="phones[${i}][type]">
-                                <option value="CELL,VOICE">Mobile</option>
+                        <div class="form-group type-select" style="margin: 0;">
+                            <select name="phones[${i}][type]" data-type-select>
+                                <option value="CELL,VOICE" selected>Mobile</option>
                                 <option value="WORK,VOICE">Work</option>
                                 <option value="HOME,VOICE">Home</option>
                                 <option value="FAX">Fax</option>
                                 <option value="VOICE">Voice</option>
+                                <option value="__custom__">+ Custom…</option>
                             </select>
+                            <input type="text" name="phones[${i}][type]" data-type-custom placeholder="e.g. X-EXT" disabled style="display:none;">
                         </div>
                         <button type="button" class="remove-row" data-remove title="Remove phone">✕</button>
                     </div>
@@ -1130,6 +1246,34 @@ $dVal = function ($row, $key, $default = '') {
                 list.insertAdjacentHTML('beforeend', TEMPLATES[kind](i));
                 bindRemoveHandlers();
             });
+        });
+
+        const onTypeChange = (sel) => {
+            const wrap = sel.closest('.type-select');
+            if (!wrap) { return; }
+            const input = wrap.querySelector('[data-type-custom]');
+            if (sel.value === '__custom__') {
+                sel.disabled = true;
+                sel.style.display = 'none';
+                if (input) {
+                    input.disabled = false;
+                    input.style.display = '';
+                    input.focus();
+                }
+            } else {
+                sel.disabled = false;
+                sel.style.display = '';
+                if (input) {
+                    input.disabled = true;
+                    input.style.display = 'none';
+                    input.value = '';
+                }
+            }
+        };
+
+        // Delegated listener so rows added via "+ Add another …" work too.
+        document.addEventListener('change', (e) => {
+            if (e.target.matches('[data-type-select]')) { onTypeChange(e.target); }
         });
 
         const bindRemoveHandlers = () => {

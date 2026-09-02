@@ -1,9 +1,153 @@
 # 📋 MyAPIs Release Notes
 
-## Current Release: Version 2.4.0
+## Current Release: Version 2.5.0
 
-**Release Date**: August 29, 2026
+**Release Date**: September 2, 2026
 **Status**: Stable Release
+
+---
+
+## 📈 Version 2.5.0 - Dynamic vCard Fields & Shared-Hosting Deployment
+*Released: September 2, 2026*
+
+### 🌟 Highlights
+- **Dynamic vCard builder** for the QR Code Generator — add/remove
+  unlimited **name variants**, **nicknames**, **emails** with custom
+  types (`WORK` / `HOME` / `INTERNET`), and **phones** with custom
+  types (`CELL,VOICE` / `WORK,VOICE` / `HOME,VOICE` / `FAX` / `VOICE`)
+- **Shared-hosting deployment guide** for Hostinger / cPanel /
+  SiteGround / Namecheap with `public/config.php` analytics fallback
+- **Pluggable visitor tracking** (Umami + GA4) extended with a
+  shared-hosting-friendly `config.php` fallback and shipped in
+  every public page
+- **Single-source env configuration** via `example.env` tracked in
+  the repo for Docker / production deployments
+
+---
+
+### 🌟 New Features
+
+#### 📇 QR Code Generator — Dynamic vCard Name & Contact Types
+
+- **Dynamic name fields**
+  ([`api/qr-code-generator/index.php`](api/qr-code-generator/index.php),
+  [`public/qr-code-generator.php`](public/qr-code-generator.php)):
+  - Add/remove unlimited structured names (`formatted`,
+    `prefix`, `first`, `middle`, `last`, `suffix`) — each rendered
+    in the right order in the generated vCard
+  - Optional `kind` selector (`Individual` / `Organisation` /
+    `Group`) so the same UI works for personal and business cards
+- **Dynamic nickname fields**
+  - Add/remove unlimited `nickname[]` entries rendered as
+    `NICKNAME:nick1,nick2,...`
+- **Dynamic email types**
+  - Each row now carries its own `type` dropdown
+    (`WORK` / `HOME` / `INTERNET`) instead of a single hard-coded
+    prefix
+  - Backward-compatible: legacy `work_email` / `home_email` fields
+    still accepted when no dynamic rows are present
+- **Dynamic phone types**
+  - Each row now carries its own `type` dropdown
+    (`CELL,VOICE` / `WORK,VOICE` / `HOME,VOICE` / `FAX` / `VOICE`)
+  - Backward-compatible: legacy `work_phone` / `home_phone` /
+    `cell_phone` / `fax` fields still accepted
+- **Backend collection helper** (`collectDynamicItems()`):
+  - Reads both `$_GET` and `$_POST`
+  - Re-indexes dynamic rows server-side so missing/empty entries
+    do not break the vCard output
+  - Merges with legacy single fields so existing API consumers are
+    unaffected
+
+#### 📘 Per-Tool README Migration
+
+- Moved the QR Code Generator documentation into
+  [`api/qr-code-generator/README.md`](api/qr-code-generator/README.md)
+  so the API folder is self-describing
+- Removed the legacy `docs/nginx-conf/*.conf` and
+  `docs/requirements/myapi-2.0.md` files — they were stale and are
+  now superseded by the **Shared Hosting Deployment** guide in the
+  project root README
+
+#### ⚙️ Environment Configuration
+
+- **Tracked [`example.env`](example.env)**: ships a fully-commented
+  copy of every environment variable the stack understands (ports,
+  PHP limits, timezone, analytics provider, Umami / GA4
+  credentials). Update `.gitignore` so it does **not** exclude the
+  example file — `.env` itself remains git-ignored.
+
+#### 📈 Analytics: Shared-Hosting Fallback
+
+- New [`public/analytics.php`](public/analytics.php) partial:
+  - Mirrors the Docker `analytics.php` snippet logic so non-Docker
+    / shared-hosting deployments get the same tracking output
+  - Tries to `require_once` `public/config.php` (or `config.php`
+    next to the partial) **before** reading env vars — shared
+    hosting providers that do not support `.env` or
+    `auto_prepend_file` can still configure analytics
+  - JSON / API responses are still excluded automatically
+- [`public/config.php.example`](public/config.php.example): copy /
+  edit template that calls `putenv()` for Umami or GA4
+- Every page under [`public/`](public/) now includes
+  [`public/analytics.php`](public/analytics.php) so the snippet is
+  present on every tool page without manual edits
+
+#### 🌐 Shared-Hosting Deployment (Hostinger / cPanel) Guide
+
+- Brand-new **🌐 Shared Hosting Deployment** section in
+  [`README.md`](README.md):
+  - Prerequisites table (PHP version, extensions, `mod_rewrite`)
+  - Two project-layout strategies (upload only `public/` + `api/`,
+    or the whole repo) with a recommended Hostinger Single / Premium
+    layout
+  - hPanel upload walkthrough (File Manager / FTP / SSH)
+  - PHP version + extension enablement on hPanel / MultiPHP Manager
+  - Analytics without `.env` — drop a `public/config.php` that
+    calls `putenv()` (shared-hosting fallback)
+  - File-permissions cheat sheet (644 / 755)
+  - Two clean domain-mapping strategies (root-repo upload vs.
+    `public/`-only upload with separate `api/` folder)
+  - Verification `curl` commands
+  - Troubleshooting table (403, 500, missing `gd`, 404 on `/api/`,
+    blank QR images, etc.)
+  - Hosting-specific notes for Hostinger Single / Premium / Business
+    / Cloud, SiteGround, Namecheap, and Cloudflare
+  - "What you do **not** get on shared hosting" honest checklist
+
+### 📁 New / Updated Files
+- `api/qr-code-generator/index.php` — dynamic vCard collection
+- `api/qr-code-generator/README.md` — moved per-tool docs here
+- `public/qr-code-generator.php` — dynamic name / nickname / email
+  type / phone type UI
+- `public/analytics.php` — **new** shared-hosting analytics partial
+- `public/config.php.example` — **new** shared-hosting analytics
+  template
+- `public/*.php` (every tool) — include `analytics.php`
+- `public/api-specs/*.php` — include `analytics.php`
+- `example.env` — now tracked (no longer git-ignored)
+- `.gitignore` — exclude only `.env`, not `example.env`
+- `docker/php/analytics.php` — read shared-hosting `config.php` first
+- `README.md` — new Shared Hosting Deployment section, env table
+  update, Latest Updates bump
+- `RELEASE.md` — this entry
+- Removed `docs/nginx-conf/lab01.conf` … `lab04.conf`
+- Removed `docs/requirements/myapi-2.0.md`
+
+### ✅ Verification
+- `php -l` passes for every modified PHP file
+- QR Code Generator vCard output verified end-to-end via Docker:
+  - Multiple structured names render in the expected order
+  - Multiple nicknames collapse into a single `NICKNAME:` line
+  - Email / phone types appear with the chosen prefixes
+- Analytics:
+  - `curl -s http://localhost:8080/ | grep -E 'umami|gtag'` →
+    returns the matching `<script>` tag when enabled
+  - `curl -s http://localhost:8080/api/health-calculator/ | grep -E 'umami|gtag'`
+    → returns nothing (API paths are excluded)
+  - On shared hosting: drop a `public/config.php` that sets the
+    provider via `putenv()`, hit any tool page, view-source, and
+    the matching `<script>` tag is present
+- `example.env` is committed, `.env` is still git-ignored
 
 ---
 
@@ -58,23 +202,63 @@
   [`README.md`](README.md) with:
   - Provider comparison table
   - Step-by-step Umami + GA4 setup instructions
+  - **Option C** for Umami Cloud / externally-hosted Umami, including
+    C.1 (managed SaaS) and C.2 (separate server) plus a comparison
+    table with Option A
   - Tracking-scope clarification (HTML pages vs. `/api/*`)
   - Verification `curl` commands
 - README env-vars table extended with every analytics variable
 - README **Latest Updates** bumped to v2.4.0
 
+#### 🌐 Shared Hosting (Hostinger / cPanel) Deployment Guide
+- Brand-new **🌐 Shared Hosting Deployment (Hostinger / cPanel)**
+  section in the README covering every step from upload to verify:
+  - Prerequisites table (PHP version, extensions, `mod_rewrite`)
+  - Two project layouts (upload only `public/` + `api/`, or the whole
+    repo — including a recommended Hostinger Single/Premium layout)
+  - hPanel upload walkthrough (File Manager / FTP / SSH)
+  - PHP version + extension enablement on hPanel / MultiPHP Manager
+  - **Analytics without `.env`** — drop a `public/config.php` that
+    calls `putenv()` (shared-hosting fallback in
+    [`docker/php/analytics.php`](docker/php/analytics.php))
+  - File-permissions cheat sheet (644 / 755)
+  - Two clean domain-mapping strategies (root repo upload vs.
+    `public/`-only upload with separate `api/` folder)
+  - Verification curl commands
+  - **Troubleshooting table** (403, 500, missing `gd`, 404 on `/api/`,
+    blank QR images, etc.)
+  - Hosting-specific notes for Hostinger Single / Premium / Business
+    / Cloud, SiteGround, Namecheap, and Cloudflare
+  - "What you do **not** get on shared hosting" honest checklist
+
+#### 🆕 Shared-Hosting Analytics Fallback
+- [`docker/php/analytics.php`](docker/php/analytics.php) now tries
+  to `require_once` `public/config.php`, `../config.php`, or
+  `config.php` (next to the partial) **before** reading env vars.
+  This means shared-hosting deployments that can't use `.env` or
+  `auto_prepend_file` can still configure analytics by including
+  the partial manually.
+- [`public/config.php.example`](public/config.php.example) ships as
+  a copy-and-edit template for Umami / GA4 / disabled configurations.
+
 ### 📁 New / Updated Files
-- `docker/php/analytics.php` — new tracking partial
+- `docker/php/analytics.php` — new tracking partial + shared-hosting
+  `config.php` fallback
 - `docker/php/php.ini.tpl` — adds `auto_prepend_file`
 - `docker-compose.yml` — adds analytics env forwarding + optional
   Umami / PostgreSQL service block
 - `example.env` — documents `ANALYTICS_PROVIDER`, `UMAMI_SCRIPT_URL`,
   `UMAMI_WEBSITE_ID`, `GA4_MEASUREMENT_ID`
-- `README.md` — new analytics section, env table, version banner
+- `public/config.php.example` — **new** shared-hosting analytics
+  template
+- `README.md` — new analytics section (with **Option C** Umami Cloud
+  / externally-hosted), env table, full **🌐 Shared Hosting
+  Deployment** section, project-structure update, version banner
 - `RELEASE.md` — this entry
 
 ### ✅ Verification
 - `php -l docker/php/analytics.php` passes
+- `php -l public/config.php.example` passes
 - `docker compose config` validates with the optional Umami block
   both commented and uncommented
 - Manual checks once running:
@@ -82,6 +266,9 @@
     the matching `<script>` tag when the provider is enabled
   - `curl -s http://localhost:8080/api/health-calculator/ | grep -E 'umami|gtag'`
     → returns nothing (API paths are excluded)
+  - On shared hosting: drop a `public/config.php` that sets the
+    provider via `putenv()`, hit any tool page, view-source, and
+    the matching `<script>` tag is present
 - Switching `ANALYTICS_PROVIDER=none` and restarting removes every
   snippet without code changes
 
