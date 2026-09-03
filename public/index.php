@@ -144,6 +144,13 @@ $TOOLS = [
             <h1>🚀 MyAPIs</h1>
             <p>A comprehensive collection of developer tools and APIs designed to streamline your development workflow</p>
             <div class="status-badge">✅ All Systems Operational</div>
+            <div style="margin-top: 12px;">
+                <a href="#"
+                   data-open-about
+                   style="color: #667eea; font-size: 0.9em; font-weight: 600; text-decoration: none;">
+                    ℹ️ About MyAPIs
+                </a>
+            </div>
         </div>
 
         <!-- Tools Grid -->

@@ -1,9 +1,105 @@
 # 📋 MyAPIs Release Notes
 
-## Current Release: Version 2.6.2
+## Current Release: Version 2.6.3
 
 **Release Date**: September 3, 2026
 **Status**: Stable Release
+
+---
+
+## 📈 Version 2.6.3 - About Popup & README Cleanup
+*Released: September 3, 2026*
+
+### 🌟 Highlights
+- **New About popup** — a beautiful modal that shows the
+  current MyAPIs version (loaded from a single source of truth),
+  a short project description, six feature highlights, and
+  quick links to GitHub, the release notes and the author's
+  blog
+- **Single-source version metadata** in
+  [`public/includes/version.php`](public/includes/version.php) —
+  bumps only need to be made once and they propagate to every
+  page that renders the About popup (homepage + all 7 tool
+  pages)
+- **`data-open-about` trigger** — any element with the
+  `data-open-about` attribute opens the popup; the homepage
+  exposes it under the status badge (`ℹ️ About MyAPIs`) and
+  every page exposes it through the footer (`ℹ️ About`)
+- **Accessibility built-in** — `role="dialog"`, `aria-modal`,
+  `aria-labelledby`, Escape-to-close, backdrop click-to-close,
+  and a small focus-trap so keyboard users stay inside the
+  modal while it is open
+- **Responsive** — on screens ≤ 480 px the feature list stacks
+  to a single column and the action buttons wrap to multiple
+  rows
+- **Rendered once per request** — guarded by the
+  `MYAPIS_ABOUT_POPUP_RENDERED` constant inside the footer
+  partial, so even if multiple pages `include` the footer the
+  popup markup / `<style>` / `<script>` only appears once
+
+### 🔧 How It Works
+
+A new shared partial lives at
+[`public/includes/about_popup.php`](public/includes/about_popup.php)
+and is automatically appended by the footer partial. It
+expects (or `require`s on demand)
+[`public/includes/version.php`](public/includes/version.php):
+
+```php
+$MYAPIS_VERSION = [
+    'version'  => '2.6.3',
+    'codename' => 'About Popup',
+    'released' => '2026-09-03',
+];
+```
+
+To bump the version, edit `public/includes/version.php` —
+nothing else needs to change. The popup reads the array and
+renders both the gradient version pill (`v2.6.3 · About Popup`)
+and the released date automatically.
+
+To add a new trigger anywhere on the site, just add the
+`data-open-about` attribute:
+
+```html
+<a href="#" data-open-about>ℹ️ About</a>
+<button data-open-about>What's this?</button>
+```
+
+The popup closes when the user clicks the close button, the
+backdrop, or presses `Escape`.
+
+### 📁 Updated Files
+
+- `public/includes/version.php` — **new** single-source
+  version metadata (`version`, `codename`, `released`)
+- `public/includes/about_popup.php` — **new** About popup
+  partial (HTML + scoped CSS + JS open/close behaviour,
+  focus trap, Escape handler)
+- `public/includes/footer.php` — appends the popup partial
+  (guarded by `MYAPIS_ABOUT_POPUP_RENDERED`) and adds a new
+  `ℹ️ About` link with `data-open-about`
+- `public/index.php` — adds an extra `ℹ️ About MyAPIs` link
+  under the status badge for first-visit discoverability
+- `README.md` — removed the in-README version / changelog
+  sections (Latest Updates v2.5.0, v2.4.0, v2.3.x, v2.0.0);
+  a one-liner now points readers at this file
+- `RELEASE.md` — bumped current release pointer to 2.6.3
+
+### ✅ Verification
+
+- All four PHP files (`version.php`, `about_popup.php`,
+  `footer.php`, `index.php`) pass `php -l`
+- `ℹ️ About` link confirmed in the footer of every page
+  (homepage + 7 tool pages)
+- `ℹ️ About MyAPIs` link confirmed on the homepage, sitting
+  just below the `✅ All Systems Operational` badge
+- Popup opens via both triggers, closes via the close
+  button, backdrop click, and `Escape`
+- Keyboard tab order stays inside the modal while it is open
+- No duplicate popup markup when multiple pages include the
+  footer in the same request (constant guard)
+- No backend / API changes; existing endpoints unaffected
 
 ---
 

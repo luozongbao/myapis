@@ -80,7 +80,15 @@ $footer_variant = $footer_variant ?? 'glass';
     <p class="footer-tagline">Built with ❤️ for developers by developers</p>
     <p class="footer-copyright">&copy; 2026 Atipat Lorwongam</p>
     <div class="footer-links">
+        <a href="#" data-open-about>ℹ️ About</a>
         <a href="https://github.com/luozongbao/myapis" target="_blank" rel="noopener noreferrer">🔗 GitHub</a>
         <a href="https://atipat.lorwongam.com" target="_blank" rel="noopener noreferrer">📝 Blog</a>
     </div>
 </footer>
+<?php
+// About popup (version + info). Renders only once per request.
+if (!defined('MYAPIS_ABOUT_POPUP_RENDERED')) {
+    define('MYAPIS_ABOUT_POPUP_RENDERED', true);
+    include __DIR__ . '/about_popup.php';
+}
+?>
