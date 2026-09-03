@@ -237,6 +237,13 @@ body {
     margin-bottom: 15px;
 }
 
+.footer p:last-of-type {
+    font-size: 0.9em;
+    opacity: 0.85;
+    margin-top: -5px;
+    margin-bottom: 15px;
+}
+
 .footer-links {
     display: flex;
     justify-content: center;

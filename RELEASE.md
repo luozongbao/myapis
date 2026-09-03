@@ -1,9 +1,90 @@
 # 📋 MyAPIs Release Notes
 
-## Current Release: Version 2.6.1
+## Current Release: Version 2.6.2
 
-**Release Date**: September 2, 2026
+**Release Date**: September 3, 2026
 **Status**: Stable Release
+
+---
+
+## 📈 Version 2.6.2 - Unified Site Footer
+*Released: September 3, 2026*
+
+### 🌟 Highlights
+- **Shared footer across every page** — the homepage and all
+  seven tool pages (`fortune-teller`, `health-calculator`,
+  `password-generator`, `promptpay-qr-generator`,
+  `qr-code-generator`, `randomizer`, `username-generator`)
+  now render the same footer via a single partial, so links
+  and copyright stay consistent everywhere
+- **New Blog link** to <https://atipat.lorwongam.com> — sits
+  alongside the GitHub repository link and opens in a new tab
+- **Dead anchor links removed** — `#documentation`, `#api-status`
+  and `#support` (which had no targets on the homepage) are
+  gone; only meaningful links remain in the footer
+- **Two style variants** (`glass` / `simple`) so the footer
+  looks right on the gradient homepage **and** on the lighter,
+  opaque-container tool pages
+- **Responsive** — links stack vertically on narrow screens
+  (≤ 600 px)
+
+### 🔧 How It Works
+
+A new shared partial lives at
+[`public/includes/footer.php`](public/includes/footer.php).
+It accepts an optional `$footer_variant` variable:
+
+- `'glass'` *(default)* — translucent card with white text and
+  a `#ffd700` hover, designed for the gradient homepage
+- `'simple'` — lighter styling for tool pages that already
+  have their own opaque background container
+
+Each tool page simply sets the variant and `include`s the
+partial right before `</body>`:
+
+```php
+<?php $footer_variant = 'simple'; ?>
+<?php include __DIR__ . '/../includes/footer.php'; ?>
+```
+
+CSS is emitted inline by the partial itself, so the existing
+inline `<style>` blocks in each tool page don't need any
+changes. The homepage keeps using the old `.footer` class names
+intact in `public/assets/css/index.css` for backwards
+compatibility — the new partial just supersedes them.
+
+### 📁 Updated Files
+
+- `public/includes/footer.php` — **new** shared footer
+  partial (`glass` + `simple` variants, responsive)
+- `public/index.php` — replaces inline `.footer` markup with
+  `include` of the partial (`glass` variant)
+- `public/tools/fortune-teller.php` — includes partial
+  (`simple` variant)
+- `public/tools/health-calculator.php` — includes partial
+  (`simple` variant)
+- `public/tools/password-generator.php` — includes partial
+  (`simple` variant)
+- `public/tools/promptpay-qr-generator.php` — includes
+  partial (`simple` variant)
+- `public/tools/qr-code-generator.php` — includes partial
+  (`simple` variant)
+- `public/tools/randomizer.php` — includes partial
+  (`simple` variant)
+- `public/tools/username-generator.php` — includes partial
+  (`simple` variant)
+- `README.md` — bumped current release pointer to 2.6.2
+
+### ✅ Verification
+
+- All eight pages (`public/index.php` + 7 tools) confirmed to
+  render exactly one footer instance — no duplicate footers
+- Footer links (GitHub + Blog) verified to open in a new tab
+  with `rel="noopener noreferrer"`
+- Blog link points to `https://atipat.lorwongam.com`
+- Responsive layout verified: links switch from row to column
+  at ≤ 600 px viewport width
+- No backend / API changes; existing endpoints unaffected
 
 ---
 

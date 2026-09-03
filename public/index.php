@@ -191,15 +191,8 @@ $TOOLS = [
         </div>
 
         <!-- Footer -->
-        <div class="footer">
-            <p>Built with ❤️ for developers by developers</p>
-            <div class="footer-links">
-                <a href="#documentation">📚 Documentation</a>
-                <a href="https://github.com/luozongbao/myapis">🔗 GitHub</a>
-                <a href="#api-status">📡 API Status</a>
-                <a href="#support">💬 Support</a>
-            </div>
-        </div>
+        <?php $footer_variant = 'glass'; ?>
+        <?php include __DIR__ . '/includes/footer.php'; ?>
     </div>
 
     </body>
