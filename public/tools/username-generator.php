@@ -695,5 +695,7 @@
             document.getElementById('copyAllBtn').style.display = 'none';
         }
     </script>
+    <?php $footer_variant = 'simple'; ?>
+    <?php include __DIR__ . '/../includes/footer.php'; ?>
 </body>
 </html>
