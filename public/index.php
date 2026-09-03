@@ -144,6 +144,13 @@ $TOOLS = [
             <h1>🚀 MyAPIs</h1>
             <p>A comprehensive collection of developer tools and APIs designed to streamline your development workflow</p>
             <div class="status-badge">✅ All Systems Operational</div>
+            <div style="margin-top: 12px;">
+                <a href="#"
+                   data-open-about
+                   style="color: #667eea; font-size: 0.9em; font-weight: 600; text-decoration: none;">
+                    ℹ️ About MyAPIs
+                </a>
+            </div>
         </div>
 
         <!-- Tools Grid -->
@@ -191,15 +198,8 @@ $TOOLS = [
         </div>
 
         <!-- Footer -->
-        <div class="footer">
-            <p>Built with ❤️ for developers by developers</p>
-            <div class="footer-links">
-                <a href="#documentation">📚 Documentation</a>
-                <a href="https://github.com/luozongbao/myapis">🔗 GitHub</a>
-                <a href="#api-status">📡 API Status</a>
-                <a href="#support">💬 Support</a>
-            </div>
-        </div>
+        <?php $footer_variant = 'glass'; ?>
+        <?php include __DIR__ . '/includes/footer.php'; ?>
     </div>
 
     </body>

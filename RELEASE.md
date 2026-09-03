@@ -1,9 +1,186 @@
 # 📋 MyAPIs Release Notes
 
-## Current Release: Version 2.6.1
+## Current Release: Version 2.6.3
 
-**Release Date**: September 2, 2026
+**Release Date**: September 3, 2026
 **Status**: Stable Release
+
+---
+
+## 📈 Version 2.6.3 - About Popup & README Cleanup
+*Released: September 3, 2026*
+
+### 🌟 Highlights
+- **New About popup** — a beautiful modal that shows the
+  current MyAPIs version (loaded from a single source of truth),
+  a short project description, six feature highlights, and
+  quick links to GitHub, the release notes and the author's
+  blog
+- **Single-source version metadata** in
+  [`public/includes/version.php`](public/includes/version.php) —
+  bumps only need to be made once and they propagate to every
+  page that renders the About popup (homepage + all 7 tool
+  pages)
+- **`data-open-about` trigger** — any element with the
+  `data-open-about` attribute opens the popup; the homepage
+  exposes it under the status badge (`ℹ️ About MyAPIs`) and
+  every page exposes it through the footer (`ℹ️ About`)
+- **Accessibility built-in** — `role="dialog"`, `aria-modal`,
+  `aria-labelledby`, Escape-to-close, backdrop click-to-close,
+  and a small focus-trap so keyboard users stay inside the
+  modal while it is open
+- **Responsive** — on screens ≤ 480 px the feature list stacks
+  to a single column and the action buttons wrap to multiple
+  rows
+- **Rendered once per request** — guarded by the
+  `MYAPIS_ABOUT_POPUP_RENDERED` constant inside the footer
+  partial, so even if multiple pages `include` the footer the
+  popup markup / `<style>` / `<script>` only appears once
+
+### 🔧 How It Works
+
+A new shared partial lives at
+[`public/includes/about_popup.php`](public/includes/about_popup.php)
+and is automatically appended by the footer partial. It
+expects (or `require`s on demand)
+[`public/includes/version.php`](public/includes/version.php):
+
+```php
+$MYAPIS_VERSION = [
+    'version'  => '2.6.3',
+    'codename' => 'About Popup',
+    'released' => '2026-09-03',
+];
+```
+
+To bump the version, edit `public/includes/version.php` —
+nothing else needs to change. The popup reads the array and
+renders both the gradient version pill (`v2.6.3 · About Popup`)
+and the released date automatically.
+
+To add a new trigger anywhere on the site, just add the
+`data-open-about` attribute:
+
+```html
+<a href="#" data-open-about>ℹ️ About</a>
+<button data-open-about>What's this?</button>
+```
+
+The popup closes when the user clicks the close button, the
+backdrop, or presses `Escape`.
+
+### 📁 Updated Files
+
+- `public/includes/version.php` — **new** single-source
+  version metadata (`version`, `codename`, `released`)
+- `public/includes/about_popup.php` — **new** About popup
+  partial (HTML + scoped CSS + JS open/close behaviour,
+  focus trap, Escape handler)
+- `public/includes/footer.php` — appends the popup partial
+  (guarded by `MYAPIS_ABOUT_POPUP_RENDERED`) and adds a new
+  `ℹ️ About` link with `data-open-about`
+- `public/index.php` — adds an extra `ℹ️ About MyAPIs` link
+  under the status badge for first-visit discoverability
+- `README.md` — removed the in-README version / changelog
+  sections (Latest Updates v2.5.0, v2.4.0, v2.3.x, v2.0.0);
+  a one-liner now points readers at this file
+- `RELEASE.md` — bumped current release pointer to 2.6.3
+
+### ✅ Verification
+
+- All four PHP files (`version.php`, `about_popup.php`,
+  `footer.php`, `index.php`) pass `php -l`
+- `ℹ️ About` link confirmed in the footer of every page
+  (homepage + 7 tool pages)
+- `ℹ️ About MyAPIs` link confirmed on the homepage, sitting
+  just below the `✅ All Systems Operational` badge
+- Popup opens via both triggers, closes via the close
+  button, backdrop click, and `Escape`
+- Keyboard tab order stays inside the modal while it is open
+- No duplicate popup markup when multiple pages include the
+  footer in the same request (constant guard)
+- No backend / API changes; existing endpoints unaffected
+
+---
+
+## 📈 Version 2.6.2 - Unified Site Footer
+*Released: September 3, 2026*
+
+### 🌟 Highlights
+- **Shared footer across every page** — the homepage and all
+  seven tool pages (`fortune-teller`, `health-calculator`,
+  `password-generator`, `promptpay-qr-generator`,
+  `qr-code-generator`, `randomizer`, `username-generator`)
+  now render the same footer via a single partial, so links
+  and copyright stay consistent everywhere
+- **New Blog link** to <https://atipat.lorwongam.com> — sits
+  alongside the GitHub repository link and opens in a new tab
+- **Dead anchor links removed** — `#documentation`, `#api-status`
+  and `#support` (which had no targets on the homepage) are
+  gone; only meaningful links remain in the footer
+- **Two style variants** (`glass` / `simple`) so the footer
+  looks right on the gradient homepage **and** on the lighter,
+  opaque-container tool pages
+- **Responsive** — links stack vertically on narrow screens
+  (≤ 600 px)
+
+### 🔧 How It Works
+
+A new shared partial lives at
+[`public/includes/footer.php`](public/includes/footer.php).
+It accepts an optional `$footer_variant` variable:
+
+- `'glass'` *(default)* — translucent card with white text and
+  a `#ffd700` hover, designed for the gradient homepage
+- `'simple'` — lighter styling for tool pages that already
+  have their own opaque background container
+
+Each tool page simply sets the variant and `include`s the
+partial right before `</body>`:
+
+```php
+<?php $footer_variant = 'simple'; ?>
+<?php include __DIR__ . '/../includes/footer.php'; ?>
+```
+
+CSS is emitted inline by the partial itself, so the existing
+inline `<style>` blocks in each tool page don't need any
+changes. The homepage keeps using the old `.footer` class names
+intact in `public/assets/css/index.css` for backwards
+compatibility — the new partial just supersedes them.
+
+### 📁 Updated Files
+
+- `public/includes/footer.php` — **new** shared footer
+  partial (`glass` + `simple` variants, responsive)
+- `public/index.php` — replaces inline `.footer` markup with
+  `include` of the partial (`glass` variant)
+- `public/tools/fortune-teller.php` — includes partial
+  (`simple` variant)
+- `public/tools/health-calculator.php` — includes partial
+  (`simple` variant)
+- `public/tools/password-generator.php` — includes partial
+  (`simple` variant)
+- `public/tools/promptpay-qr-generator.php` — includes
+  partial (`simple` variant)
+- `public/tools/qr-code-generator.php` — includes partial
+  (`simple` variant)
+- `public/tools/randomizer.php` — includes partial
+  (`simple` variant)
+- `public/tools/username-generator.php` — includes partial
+  (`simple` variant)
+- `README.md` — bumped current release pointer to 2.6.2
+
+### ✅ Verification
+
+- All eight pages (`public/index.php` + 7 tools) confirmed to
+  render exactly one footer instance — no duplicate footers
+- Footer links (GitHub + Blog) verified to open in a new tab
+  with `rel="noopener noreferrer"`
+- Blog link points to `https://atipat.lorwongam.com`
+- Responsive layout verified: links switch from row to column
+  at ≤ 600 px viewport width
+- No backend / API changes; existing endpoints unaffected
 
 ---
 

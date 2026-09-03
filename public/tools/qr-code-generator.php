@@ -1355,5 +1355,7 @@ $typeSelector = function ($name, array $options, $current, $placeholder = 'Custo
         syncNameSelects();
     })();
     </script>
+    <?php $footer_variant = 'simple'; ?>
+    <?php include __DIR__ . '/../includes/footer.php'; ?>
 </body>
 </html>
