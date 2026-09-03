@@ -1,9 +1,21 @@
 # 📋 MyAPIs Release Notes
 
-## Current Release: Version 2.6.3
+## Current Release: Version 2.6.3.1
 
 **Release Date**: September 3, 2026
 **Status**: Stable Release
+
+---
+
+## 📈 Version 2.6.3.1 - About Popup - Release Note Link
+*Released: September 3, 2026*
+
+### 🌟 Highlights
+- **Release note link** — switched from in-repo `RELEASE.md`
+  to the GitHub Project release page.
+
+📦 **Release page:**
+[https://github.com/luozongbao/myapis/releases/](https://github.com/luozongbao/myapis/releases/)
 
 ---
 
