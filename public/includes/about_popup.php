@@ -259,7 +259,8 @@ $MYAPIS_RELEASED_LABEL = htmlspecialchars(
                href="https://github.com/luozongbao/myapis"
                target="_blank" rel="noopener noreferrer">⭐ Star on GitHub</a>
             <a class="about-popup__btn about-popup__btn--secondary"
-               href="RELEASE.md" target="_blank" rel="noopener noreferrer">📋 Release Notes</a>
+               href="https://github.com/luozongbao/myapis/releases"
+               target="_blank" rel="noopener noreferrer">📋 Release Notes</a>
             <a class="about-popup__btn about-popup__btn--secondary"
                href="https://atipat.lorwongam.com"
                target="_blank" rel="noopener noreferrer">📝 Blog</a>
