@@ -18,7 +18,7 @@
 declare(strict_types=1);
 
 $MYAPIS_VERSION = [
-    'version'  => '2.6.3',
-    'codename' => 'About Popup',
+    'version'  => '2.6.3.1',
+    'codename' => 'About Popup - Release Note Link',
     'released' => '2026-09-03',
 ];
