@@ -84,7 +84,7 @@ $baseUrl = getBaseUrl($spec['slug']);
             <div class="breadcrumb">
                 <a href="../index.php">← Back to Main</a>
                 <span>/</span>
-                <a href="../<?php echo htmlspecialchars($spec['slug']); ?>.php"><?php echo htmlspecialchars($spec['crumb']); ?></a>
+                <a href="../tools/<?php echo htmlspecialchars($spec['slug']); ?>.php"><?php echo htmlspecialchars($spec['crumb']); ?></a>
                 <span>/</span>
                 <span>API Documentation</span>
             </div>
