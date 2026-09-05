@@ -167,7 +167,6 @@ $TOOLS = [
                 </ul>
                 <div class="tool-actions">
                     <a href="tools/<?php echo htmlspecialchars($tool['slug']); ?>.php" class="btn btn-primary">Try Tool</a>
-                    <a href="/api/<?php echo htmlspecialchars($tool['slug']); ?>/" class="btn btn-secondary">API</a>
                     <a href="api-specs/<?php echo htmlspecialchars($tool['slug']); ?>.php" class="btn btn-secondary">API Docs</a>
                 </div>
             </div>
