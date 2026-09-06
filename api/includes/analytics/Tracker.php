@@ -245,7 +245,12 @@ final class Tracker
         if (strpos($ip, ',') !== false) {
             $ip = trim(explode(',', $ip)[0]);
         }
-        $ua = $_SERVER['HTTP_USER_AGENT'] ?? 'MyAPIs-Bot/1.0';
+        // Use the real visitor's UA when available; otherwise fall
+        // back to a generic browser UA. The previous default
+        // ("MyAPIs-Bot/1.0") tripped Cloudflare's bot filter on
+        // the Umami endpoint and caused every hit to be dropped.
+        $ua = $_SERVER['HTTP_USER_AGENT'] ?? ''
+            ?: 'Mozilla/5.0 (compatible; MyAPIs-Tracker/1.0; +https://github.com/luozongbao/myapis)';
 
         foreach ($hits as $hit) {
             $endpoint = (string) ($hit['endpoint'] ?? 'unknown');
@@ -259,30 +264,32 @@ final class Tracker
             // share the same Umami website still separate cleanly.
             $hostname = $_SERVER['HTTP_HOST'] ?? 'unknown';
 
-            // Default API request = a pageview on /api/<endpoint>,
-            // so Umami's "Pages" report shows every API endpoint
-            // as its own row. Custom events (api_rate_limited,
-            // api_unauthorized, api_exception) become type=event.
-            $type = $eventName !== '' ? 'event' : 'pageview';
-
-            $payloadData = [
-                'method'   => $method,
-                'status'   => $status,
-                'duration' => round($duration, 2),
-            ];
+            // Umami /api/send only accepts type="event" | "identify"
+            // | "performance" — there is no "pageview". We send every
+            // hit as type="event" and use the `name` field to
+            // distinguish API requests (name="api_request") from
+            // custom events (name="api_rate_limited", etc.).
+            //
+            // The `url` is set to /api/<endpoint> so the path still
+            // shows up in Umami's Pages / metrics reports.
+            $type = 'event';
+            $name = $eventName !== '' ? $eventName : 'api_request';
 
             $payload = [
                 'website'  => $website,
                 'hostname' => $hostname,
                 'language' => $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? 'en-US',
                 'screen'   => '0x0', // server-side: unknown
-                'url'      => '/api/' . ltrim($endpoint, '/') . ($method !== 'GET' ? ' [' . $method . ']' : ''),
+                'url'      => '/api/' . ltrim($endpoint, '/'),
                 'referrer' => '',
+                'name'     => $name,
+                'data'     => [
+                    'method'   => $method,
+                    'status'   => $status,
+                    'duration' => round($duration, 2),
+                    'endpoint' => $endpoint,
+                ],
             ];
-            if ($eventName !== '') {
-                $payload['name'] = $eventName;
-                $payload['data'] = $payloadData;
-            }
 
             self::curlPost(
                 $url,
@@ -344,7 +351,8 @@ final class Tracker
         if (strpos($ip, ',') !== false) {
             $ip = trim(explode(',', $ip)[0]);
         }
-        $ua       = $_SERVER['HTTP_USER_AGENT'] ?? 'MyAPIs-Bot/1.0';
+        $ua       = $_SERVER['HTTP_USER_AGENT'] ?? ''
+            ?: 'Mozilla/5.0 (compatible; MyAPIs-Tracker/1.0)';
         $clientId = substr(
             hash('sha256', $apiSecret . '|' . $ip . '|' . $ua),
             0,
