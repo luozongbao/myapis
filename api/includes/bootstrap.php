@@ -29,6 +29,29 @@ require_once __DIR__ . '/analytics/Tracker.php';
 use MyAPIs\Analytics\Tracker;
 
 /**
+ * Shared-hosting fallback: if the deployment doesn't inject env
+ * vars (e.g. Hostinger / cPanel where you can't rely on `.env`
+ * or `auto_prepend_file`), try to load `public/config.php`
+ * which calls `putenv()` for every analytics key.
+ *
+ * We only load it when ANALYTICS_PROVIDER is still empty — so
+ * Docker / VPS deployments (which already export the vars from
+ * docker-compose) are unaffected.
+ */
+if (!getenv('ANALYTICS_PROVIDER') && PHP_SAPI !== 'cli') {
+    $configCandidates = [
+        __DIR__ . '/../../public/config.php', // repo layout
+        __DIR__ . '/../public/config.php',    // api/ + public/ as siblings of public_html root
+    ];
+    foreach ($configCandidates as $cfg) {
+        if (is_file($cfg)) {
+            require_once $cfg;
+            break;
+        }
+    }
+}
+
+/**
  * Capture the wall-clock start time once per request so the
  * tracker can compute duration without each endpoint having to
  * remember to record it.

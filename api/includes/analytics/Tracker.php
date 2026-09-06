@@ -214,14 +214,14 @@ final class Tracker
      *
      * Endpoint:
      *   POST {UMAMI_API_URL}/api/send
-     *   Body:  { type: "event" | null,
-     *            payload: { website, url, referrer, name, data, ... } }
+     *   Body:  { type: "pageview" | "event",
+     *            payload: { website, hostname, language, screen,
+     *                       url, referrer, name, data } }
      *
-     * We treat every hit as a custom event named "api_request"
-     * (or whatever the caller passed via event_name). For Umami's
-     * purposes the `url` field is the most visible — we put the
-     * endpoint name there so the dashboard's "Pages" report
-     * shows each API endpoint as its own "page".
+     * API requests are sent as `type: "pageview"` (so Umami's
+     * Pages report shows each /api/<tool> endpoint as its own
+     * row). Custom events (api_rate_limited, api_unauthorized,
+     * api_exception) are sent as `type: "event"` with a `name`.
      *
      * @param list<array<string,mixed>> $hits
      */
@@ -252,24 +252,50 @@ final class Tracker
             $method   = strtoupper((string) ($hit['method'] ?? 'GET'));
             $status   = (int) ($hit['status'] ?? 200);
             $duration = isset($hit['duration']) ? (float) $hit['duration'] : 0.0;
-            $eventName = (string) ($hit['event_name'] ?? 'api_request');
+            $eventName = (string) ($hit['event_name'] ?? '');
 
-            $payload = [
-                'website'   => $website,
-                'url'       => '/api/' . ltrim($endpoint, '/'),
-                'referrer'  => '',
-                'name'      => $eventName,
-                'data'      => [
-                    'method'   => $method,
-                    'status'   => $status,
-                    'duration' => round($duration, 2),
-                ],
+            // Hostname for Umami's "Websites" breakdown. We use
+            // the request's Host header so multiple domains that
+            // share the same Umami website still separate cleanly.
+            $hostname = $_SERVER['HTTP_HOST'] ?? 'unknown';
+
+            // Default API request = a pageview on /api/<endpoint>,
+            // so Umami's "Pages" report shows every API endpoint
+            // as its own row. Custom events (api_rate_limited,
+            // api_unauthorized, api_exception) become type=event.
+            $type = $eventName !== '' ? 'event' : 'pageview';
+
+            $payloadData = [
+                'method'   => $method,
+                'status'   => $status,
+                'duration' => round($duration, 2),
             ];
 
-            self::curlPost($url, $payload, $token !== '' ? "Bearer {$token}" : null, [
-                'X-Forwarded-For: ' . $ip,
-                'User-Agent: ' . $ua,
-            ]);
+            $payload = [
+                'website'  => $website,
+                'hostname' => $hostname,
+                'language' => $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? 'en-US',
+                'screen'   => '0x0', // server-side: unknown
+                'url'      => '/api/' . ltrim($endpoint, '/') . ($method !== 'GET' ? ' [' . $method . ']' : ''),
+                'referrer' => '',
+            ];
+            if ($eventName !== '') {
+                $payload['name'] = $eventName;
+                $payload['data'] = $payloadData;
+            }
+
+            self::curlPost(
+                $url,
+                [
+                    'type'    => $type,
+                    'payload' => $payload,
+                ],
+                $token !== '' ? "Bearer {$token}" : null,
+                [
+                    'X-Forwarded-For: ' . $ip,
+                    'User-Agent: ' . $ua,
+                ]
+            );
         }
     }
 
