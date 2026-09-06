@@ -42,11 +42,14 @@ services:
       PHP_UPLOAD_MAX_FILESIZE: ${PHP_UPLOAD_MAX_FILESIZE:-10M}
       PHP_POST_MAX_SIZE: ${PHP_POST_MAX_SIZE:-10M}
       PHP_DATE_TIMEZONE: ${PHP_DATE_TIMEZONE:-UTC}
-      # ---- Analytics (see docker/php/analytics.php) ----
+      # ---- Analytics (see docker/php/analytics.php + api/includes/analytics/Tracker.php) ----
       ANALYTICS_PROVIDER: ${ANALYTICS_PROVIDER:-none}
       UMAMI_SCRIPT_URL: ${UMAMI_SCRIPT_URL:-}
       UMAMI_WEBSITE_ID: ${UMAMI_WEBSITE_ID:-}
+      UMAMI_API_URL: ${UMAMI_API_URL:-${UMAMI_SCRIPT_URL%/script.js}}
+      UMAMI_API_TOKEN: ${UMAMI_API_TOKEN:-}
       GA4_MEASUREMENT_ID: ${GA4_MEASUREMENT_ID:-}
+      GA4_API_SECRET: ${GA4_API_SECRET:-}
       # ---- Security / rate limiting (see api/includes/security) ----
       SECURITY_ENABLED: ${SECURITY_ENABLED:-true}
       RATELIMIT_DEFAULT_LIMIT: ${RATELIMIT_DEFAULT_LIMIT:-60}

@@ -26,6 +26,13 @@
  * When ANALYTICS_PROVIDER is unset / "none", nothing is emitted.
  * The snippet is skipped for CLI invocations and API JSON
  * responses so JSON output is never polluted.
+ *
+ * NOTE: this partial is the *browser-side* tracker. JSON-only API
+ * endpoints under /api/* are tracked *server-side* by
+ * api/includes/analytics/Tracker.php (works on shared hosting too
+ * because the API entry points also include this config.php).
+ * Both layers honour ANALYTICS_PROVIDER so enabling / disabling
+ * is a single env-var flip.
  * =============================================================
  */
 

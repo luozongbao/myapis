@@ -1,9 +1,58 @@
 # 📋 MyAPIs Release Notes
 
-## Current Release: Version 2.6.3.1
+## Current Release: Version 2.6.4
 
-**Release Date**: September 3, 2026
+**Release Date**: September 6, 2026
 **Status**: Stable Release
+
+---
+
+## 📈 Version 2.6.4 - Server-side API Analytics
+*Released: September 6, 2026*
+
+### 🌟 Highlights
+- **API endpoints are now tracked.** Until now the analytics
+  partial deliberately skipped anything under `/api/*` because
+  JSON responses have no `<script>` tag for a browser tracker to
+  attach to. A new server-side tracker
+  ([`api/includes/analytics/Tracker.php`](api/includes/analytics/Tracker.php))
+  fills that gap by posting hits directly to Umami's HTTP API or
+  GA4's Measurement Protocol.
+- **Zero-effort integration.** The tracker is wired into
+  [`api/includes/bootstrap.php`](api/includes/bootstrap.php) — every
+  endpoint that uses `api_json()` / `api_error()` /
+  `api_handle_preflight()` / `api_unauthorized()` /
+  `api_rate_limit()` is tracked automatically. No per-endpoint
+  changes needed.
+- **Fire-and-forget.** All hits are dispatched via a hard-capped
+  curl call (`TIMEOUT_MS=800`) hooked to `register_shutdown_function`,
+  so tracking never blocks or breaks the API response.
+- **Custom events** for security-relevant signals:
+  `api_rate_limited`, `api_unauthorized`, `api_exception` — so the
+  analytics dashboard doubles as a lightweight abuse / error
+  monitor.
+- **Privacy-preserving client identity.** GA4 `client_id` is a
+  salted SHA-256 of `(IP + UA)`, no PII stored. Umami uses the
+  real IP behind a Bearer token.
+- **Unified provider switch.** `ANALYTICS_PROVIDER` now drives
+  both the browser-side snippet (`docker/php/analytics.php`) and
+  the new server-side tracker. Flip one env var to turn both on
+  or off.
+
+### ⚙️ New / changed environment variables
+- `UMAMI_API_URL` — base URL of Umami's HTTP API (auto-derived
+  from `UMAMI_SCRIPT_URL` if unset)
+- `UMAMI_API_TOKEN` — Bearer token for Umami HTTP API (optional)
+- `GA4_API_SECRET` — GA4 Measurement Protocol API secret
+  (required for server-side GA tracking)
+
+### 📦 Files
+- ➕ `api/includes/analytics/Tracker.php`
+- ✏️ `api/includes/bootstrap.php` (wired tracker)
+- ✏️ `docker-compose.yml`, `example.env`,
+  `public/config.php.example` (new env vars)
+- ✏️ `docker/php/analytics.php`, `public/analytics.php`
+  (docblock updated)
 
 ---
 
