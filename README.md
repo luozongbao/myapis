@@ -796,7 +796,10 @@ All variables are read from `.env` (see [example.env](example.env)):
 | `ANALYTICS_PROVIDER` | `none` | Tracking snippet to inject: `umami`, `ga4` (Google Analytics 4), or `none` |
 | `UMAMI_SCRIPT_URL` | _(empty)_ | URL to the Umami tracker script (e.g. `http://umami:3000/script.js`) |
 | `UMAMI_WEBSITE_ID` | _(empty)_ | Umami website UUID shown in the dashboard |
+| `UMAMI_API_URL` | auto-derived | Base URL of Umami's HTTP API for **server-side tracking** of `/api/*` requests. Defaults to `UMAMI_SCRIPT_URL` minus `/script.js` |
+| `UMAMI_API_TOKEN` | _(empty)_ | Bearer token for the Umami HTTP API (optional; required only when your Umami installation enforces auth on `/api/send`) |
 | `GA4_MEASUREMENT_ID` | _(empty)_ | Google Analytics 4 measurement ID (e.g. `G-XXXXXXXXXX`) |
+| `GA4_API_SECRET` | _(empty)_ | GA4 Measurement Protocol API secret for **server-side tracking** of `/api/*` requests. Create in GA admin → Data Streams → Measurement Protocol API secrets |
 | `UMAMI_PORT` | `3000` | Host port mapped to the optional Umami web container |
 | `UMAMI_DB_NAME` / `UMAMI_DB_USER` / `UMAMI_DB_PASSWORD` | `umami` | PostgreSQL credentials for Umami |
 | `UMAMI_APP_SECRET` | _(change me)_ | Long random string used by Umami (`openssl rand -hex 32`) |
@@ -962,14 +965,90 @@ containerised stack from Option A.
 
 ### Tracking scope
 
-- ✅ **HTML pages** in `public/` (landing page + every tool)
-- ❌ `/api/*` JSON endpoints — skipped (would corrupt responses)
+MyAPIs uses **two complementary tracking layers** that are both
+gated by the single `ANALYTICS_PROVIDER` switch:
+
+| Layer | Where it runs | What it tracks | Implementation |
+|---|---|---|---|
+| **Browser-side** | Visitor's browser | HTML pages in `public/` (landing + every tool) | [`docker/php/analytics.php`](docker/php/analytics.php) (Docker) / [`public/analytics.php`](public/analytics.php) (shared hosting) — auto-prepended to every HTML response |
+| **Server-side** | PHP, on every API request | Every `/api/*` call (endpoint, method, status, duration) + custom events for `api_rate_limited`, `api_unauthorized`, `api_exception` | [`api/includes/analytics/Tracker.php`](api/includes/analytics/Tracker.php) — posts hits directly to Umami's HTTP API or GA4's Measurement Protocol |
+
+Details:
+
+- ✅ **HTML pages** in `public/` (browser-side)
+- ✅ **`/api/*` JSON endpoints** (server-side) — endpoint name shows
+  up as `/api/fortune-teller`, `/api/password-generator`, etc. in
+  the dashboard's "Pages" / events report
 - ❌ CLI invocations — skipped
-- ❌ Requests with `Accept: application/json` — skipped
+- ❌ Requests with `Accept: application/json` from non-API paths —
+  skipped by the browser-side snippet (no script tag in JSON)
 - 🏢 **Shared hosting** — see
    [🌐 Shared Hosting Deployment](#-shared-hosting-deployment-hostinger--cpanel);
    use `public/config.php` (template:
-   [`public/config.php.example`](public/config.php.example))
+   [`public/config.php.example`](public/config.php.example)).
+   The API entry points share the same `config.php`, so server-side
+   tracking works there too.
+
+#### Server-side tracking setup (Docker / VPS)
+
+Both Umami and GA4 expose a server-side HTTP endpoint that MyAPIs
+calls directly via cURL (fire-and-forget, 800 ms hard cap, never
+blocks the response). Enable it after configuring the
+browser-side provider above:
+
+**Umami** — nothing extra if you enabled Option A/C; the compose
+stack defaults `UMAMI_API_URL` to the same host as
+`UMAMI_SCRIPT_URL`. If you set an explicit Bearer token on your
+Umami installation, also set:
+
+```env
+UMAMI_API_TOKEN=<your-token>
+```
+
+**GA4** — generate a Measurement Protocol API secret in the
+[Google Analytics admin](https://analytics.google.com/) (Admin →
+Data Streams → [your stream] → Measurement Protocol API secrets →
+Create) and set:
+
+```env
+GA4_API_SECRET=<the-secret-you-just-created>
+```
+
+Then `docker compose up -d --build` and trigger an API call:
+
+```bash
+curl -s http://localhost:8080/api/randomizer/ >/dev/null
+docker compose logs php | grep -i myapis-analytics
+# → any 4xx/5xx from Umami / GA4 is logged here.
+#   Successful hits are silent (fire-and-forget).
+```
+
+#### Server-side tracking on shared hosting
+
+The `api/` PHP entry points read the **same** `public/config.php`
+you already create in Step 4 of the shared-hosting section, so no
+extra file is needed. Just add the server-side vars:
+
+````php
+// filepath: public/config.php (shared hosting)
+putenv('ANALYTICS_PROVIDER=umami');
+putenv('UMAMI_SCRIPT_URL=https://cloud.umami.is/script.js');
+putenv('UMAMI_WEBSITE_ID=YOUR-UUID-HERE');
+// --- Server-side API tracking ---
+putenv('UMAMI_API_URL=https://cloud.umami.is');
+// putenv('UMAMI_API_TOKEN=YOUR-UMAMI-API-TOKEN');  // only if enforced
+
+// Or for GA4:
+putenv('ANALYTICS_PROVIDER=ga4');
+putenv('GA4_MEASUREMENT_ID=G-XXXXXXXXXX');
+putenv('GA4_API_SECRET=YOUR-GA4-API-SECRET');
+````
+
+Privacy notes: GA4 `client_id` is a salted SHA-256 of
+`(IP + UA)` — no PII is stored. Umami uses the real client IP but
+behind a Bearer token. Request bodies / response payloads are
+**never** sent — only the endpoint name, HTTP method, status code
+and duration in ms.
 
 ### Disabling analytics
 
