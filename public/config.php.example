@@ -29,10 +29,21 @@
 putenv('ANALYTICS_PROVIDER=umami');
 putenv('UMAMI_SCRIPT_URL=https://cloud.umami.is/script.js');   // or http://localhost:3000/script.js
 putenv('UMAMI_WEBSITE_ID=YOUR-UMAMI-WEBSITE-UUID');
+// Server-side tracking of /api/* requests. Set this to the base
+// URL of your Umami HTTP API (same host as SCRIPT_URL, just
+// without "/script.js"). Leave empty to skip server-side tracking.
+putenv('UMAMI_API_URL=https://cloud.umami.is');
+// Optional. Bearer token for the Umami HTTP API. Required only
+// if your Umami installation enforces authentication on /api/send.
+// putenv('UMAMI_API_TOKEN=YOUR-UMAMI-API-TOKEN');
 
 // --- Google Analytics 4 (gtag.js) ---
 // putenv('ANALYTICS_PROVIDER=ga4');
 // putenv('GA4_MEASUREMENT_ID=G-XXXXXXXXXX');
+// GA4 Measurement Protocol API secret (Admin > Data Streams >
+// [your stream] > Measurement Protocol API secrets > Create).
+// Required for server-side tracking of /api/* requests.
+// putenv('GA4_API_SECRET=YOUR-GA4-API-SECRET');
 
 // --- Disable analytics entirely ---
 // putenv('ANALYTICS_PROVIDER=none');

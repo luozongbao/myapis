@@ -16,6 +16,13 @@
  * When ANALYTICS_PROVIDER is unset or "none", nothing is emitted.
  * The script is skipped for CLI invocations and API JSON responses
  * (anything whose Accept header asks for JSON).
+ *
+ * NOTE: this partial is the *browser-side* tracker. JSON-only API
+ * endpoints under /api/* are tracked *server-side* by
+ * api/includes/analytics/Tracker.php, which posts hits directly
+ * to Umami's HTTP API or GA4's Measurement Protocol. Both layers
+ * honour ANALYTICS_PROVIDER so enabling / disabling is a single
+ * env-var flip.
  * =============================================================
  */
 

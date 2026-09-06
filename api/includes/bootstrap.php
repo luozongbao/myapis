@@ -24,6 +24,51 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/security/RateLimiter.php';
 require_once __DIR__ . '/security/Security.php';
+require_once __DIR__ . '/analytics/Tracker.php';
+
+use MyAPIs\Analytics\Tracker;
+
+/**
+ * Capture the wall-clock start time once per request so the
+ * tracker can compute duration without each endpoint having to
+ * remember to record it.
+ */
+if (!defined('MYAPIS_API_START')) {
+    define('MYAPIS_API_START', microtime(true));
+}
+
+/**
+ * Extract the API tool name from the request URI.
+ *
+ * Examples:
+ *   /api/fortune-teller/        -> "fortune-teller"
+ *   /api/fortune-teller?id=1    -> "fortune-teller"
+ *   /api/                       -> ""
+ */
+function api_tool_name(): string
+{
+    $uri = $_SERVER['REQUEST_URI'] ?? '';
+    if (preg_match('#^/api/([^/?]+)#', $uri, $m) === 1) {
+        return $m[1];
+    }
+    return '';
+}
+
+/**
+ * Push a server-side analytics hit. Called from every code
+ * path that produces a response (success, error, exception,
+ * preflight).
+ *
+ * @param int $status HTTP status code that will be returned
+ */
+function api_track(int $status): void
+{
+    Tracker::trackRequest(Tracker::contextFromRequest(
+        api_tool_name(),
+        $status,
+        MYAPIS_API_START
+    ));
+}
 
 /**
  * Send CORS + content-type headers, plus the common security
@@ -59,6 +104,7 @@ function api_handle_preflight(): bool
     // existing endpoints historically used 200. We keep 200 here to
     // preserve the previous behaviour.
     http_response_code(200);
+    api_track(200);
     return true;
 }
 
@@ -138,6 +184,7 @@ function api_json($data, int $statusCode = 200, array $extra = []): void
     }
 
     http_response_code($statusCode);
+    api_track($statusCode);
     echo json_encode(
         $data,
         JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
@@ -202,6 +249,11 @@ function api_register_exception_handler(): void
 {
     set_exception_handler(function (Throwable $e): void {
         error_log('[api] Uncaught exception: ' . $e->getMessage());
+        Tracker::trackEvent('api_exception', [
+            'endpoint' => api_tool_name(),
+            'method'   => $_SERVER['REQUEST_METHOD'] ?? 'GET',
+            'message'  => substr($e->getMessage(), 0, 200),
+        ]);
         api_error('Internal server error: ' . $e->getMessage(), 500);
     });
 }
@@ -288,6 +340,11 @@ function api_rate_limit(string $bucket, ?array $policy = null): bool
     $identity = $apiKey !== null ? 'key:' . $apiKey : null;
 
     if (!RateLimiter::hit($bucket, $identity)) {
+        Tracker::trackEvent('api_rate_limited', [
+            'endpoint' => api_tool_name(),
+            'method'   => $_SERVER['REQUEST_METHOD'] ?? 'GET',
+            'bucket'   => $bucket,
+        ]);
         RateLimiter::sendLimitResponse();
         // sendLimitResponse() already calls exit, but be explicit.
         exit;
@@ -343,6 +400,10 @@ function api_verify_signature(string $secret, ?string $algo = 'sha256', bool $re
  */
 function api_unauthorized(string $reason = 'Unauthorized'): void
 {
+    Tracker::trackEvent('api_unauthorized', [
+        'endpoint' => api_tool_name(),
+        'method'   => $_SERVER['REQUEST_METHOD'] ?? 'GET',
+    ]);
     api_json(['success' => false, 'error' => $reason], 401);
     exit;
 }
