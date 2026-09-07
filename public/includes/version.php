@@ -7,9 +7,9 @@
  * rather than hard-coding a version string.
  *
  *   $MYAPIS_VERSION = [
- *       'version'  => '2.6.2',
- *       'codename' => 'Unified Site Footer',
- *       'released' => '2026-09-03',
+ *       'version'  => '2.6.4.1',
+ *       'codename' => 'Server-side Tracker Hotfixes',
+ *       'released' => '2026-09-06',
  *   ];
  *
  * To bump the version, edit this file and (optionally) add a
@@ -18,7 +18,7 @@
 declare(strict_types=1);
 
 $MYAPIS_VERSION = [
-    'version'  => '2.6.4',
-    'codename' => 'Server-side API Analytics',
+    'version'  => '2.6.4.1',
+    'codename' => 'Server-side Tracker Hotfixes',
     'released' => '2026-09-06',
 ];
