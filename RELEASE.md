@@ -1,9 +1,80 @@
 # 📋 MyAPIs Release Notes
 
-## Current Release: Version 2.6.4
+## Current Release: Version 2.6.4.1
 
 **Release Date**: September 6, 2026
-**Status**: Stable Release
+**Status**: Stable Release (hotfix)
+
+---
+
+## 🐛 Version 2.6.4.1 - Server-side Tracker Hotfixes
+*Released: September 6, 2026 — patch on v2.6.4*
+
+Live debugging on Hostinger shared hosting (with Cloudflare-fronted
+self-hosted Umami) uncovered three show-stopper bugs in the tracker
+introduced in v2.6.4. None of the unit-test paths inside the Docker
+stack exercised the production network path, so they slipped through
+into v2.6.4. All fixed in this patch.
+
+### 🐞 Bugs fixed
+
+#### 1. Cloudflare blocked the tracker's User-Agent
+The default curl UA (`MyAPIs-Tracker/1.0`) was flagged as a bot by
+the Cloudflare WAF in front of the Umami host. Umami returned an
+HTTP 200 with body `{"beep":"boop"}` — the Cloudflare JS-challenge
+response, **not** Umami. The tracker silently logged it as a
+successful hit and the dashboard stayed empty.
+**Fix**: the tracker now sends a browser-shaped UA that Cloudflare
+accepts:
+`Mozilla/5.0 (compatible; MyAPIs-Tracker/1.0; +https://github.com/luozongbao/myapis)`
+
+#### 2. Wrong `type` value (`pageview` → `event`)
+The initial dispatch sent `payload.type = "pageview"`. Umami's
+HTTP API rejects that — only `event | identify | performance` are
+accepted. The server returned `Invalid option: expected one of
+"event" | "identify" | "performance"`.
+**Fix**: every tracker hit now uses `type: "event"` with a
+descriptive `payload.name` (`api_request`, `api_rate_limited`,
+`api_unauthorized`, `api_exception`). The semantic meaning lives
+in `name`, while `data` carries the structured attributes
+(endpoint, method, status, duration).
+
+#### 3. Missing top-level `type` field on first iteration
+An earlier draft built only the inner `payload` object. Umami
+expects the `type` field at the **top level** of the request body
+(`{type, payload}`), not inside `payload`. Adding it at the top
+level made the dispatch match Umami's schema.
+
+### 🔧 Other improvements in this patch
+
+- **Shared-hosting config fallback.** `getenv('ANALYTICS_PROVIDER')`
+  returns empty on Hostinger (no FPM env injection). The bootstrap
+  now auto-loads `public/config.php` when the var is unset, so
+  shared-hosting users only need to edit one file (and they already
+  do — it was created in v2.4.0 for the browser-side snippet).
+- **Clearer `data.endpoint` in events.** The endpoint is now
+  promoted into the `data` object so it surfaces in the Umami
+  *Breakdown* view next to event names.
+
+### 📦 Files changed
+- ✏️ `api/includes/analytics/Tracker.php` — UA, `type=event`,
+  `data.endpoint`
+- ✏️ `api/includes/bootstrap.php` — auto-load `public/config.php`
+  fallback, register tracker helpers
+- ✏️ `public/includes/version.php` — bump to `2.6.4.1`
+
+### 🧹 Cleanup after deployment
+If you used the debug helpers during the live-debug session, please
+remove them from production. They are **not** part of the release:
+
+- `public/test-track.php`
+- `public/test-umami.php`
+- `public/test-hostname.php`
+- `public/test-net.php`
+- `public/test-real.php`
+- `public/test-real-call.php`
+- `public/tracker-debug.log`
+- `public/tracker-shutdown.log`
 
 ---
 
