@@ -2,10 +2,8 @@
 /**
  * Fortune Teller API
  *
- * GET /api/fortune-teller/                    — random fortune
- * GET /api/fortune-teller/?id=N               — specific fortune (1-52)
- * GET /api/fortune-teller/?language=en|th|zh  — pick a random fortune
- *                                              from a language subset
+ * GET /api/fortune-teller/      — random fortune (all three language fields)
+ * GET /api/fortune-teller/?id=N — specific fortune (1-52)
  *
  * Backward-compatible response shape preserved.
  */

@@ -7,9 +7,9 @@
  * rather than hard-coding a version string.
  *
  *   $MYAPIS_VERSION = [
- *       'version'  => '2.6.4.1',
+ *       'version'  => '2.6.4.2',
  *       'codename' => 'Server-side Tracker Hotfixes',
- *       'released' => '2026-09-06',
+ *       'released' => '2026-09-08',
  *   ];
  *
  * To bump the version, edit this file and (optionally) add a
@@ -18,7 +18,7 @@
 declare(strict_types=1);
 
 $MYAPIS_VERSION = [
-    'version'  => '2.6.4.1',
+    'version'  => '2.6.4.2',
     'codename' => 'Server-side Tracker Hotfixes',
-    'released' => '2026-09-06',
+    'released' => '2026-09-08',
 ];

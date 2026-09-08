@@ -23,12 +23,12 @@ require __DIR__ . '/../includes/apispec_layout.php';
             <!-- Overview -->
             <div class="section">
                 <h2>📖 Overview</h2>
-                <p>The Random Generator API provides cryptographically secure random number generation, dice rolls, coin flips, card draws, and weighted selection. Perfect for games, simulations, statistical sampling, and decision-making applications.</p>
+                <p>The Random Generator API provides cryptographically secure random number generation, dice rolls, coin flips and card draws. Perfect for games, simulations and decision-making applications.</p>
 
                 <div class="features-grid">
                     <div class="feature-card">
                         <h4>🎲 Multiple Generator Types</h4>
-                        <p>Numbers, dice, coins, cards, lists, and weighted selection</p>
+                        <p>Numbers, dice, coins, cards, and an all-in-one bundle</p>
                     </div>
                     <div class="feature-card">
                         <h4>🔒 Cryptographically Secure</h4>
@@ -36,7 +36,7 @@ require __DIR__ . '/../includes/apispec_layout.php';
                     </div>
                     <div class="feature-card">
                         <h4>📊 Multiple Results</h4>
-                        <p>Generate up to 100 results in a single request</p>
+                        <p>Batch dice rolls and coin flips (up to 10 per request) or draw up to a full deck of cards</p>
                     </div>
                     <div class="feature-card">
                         <h4>🎯 Customizable Ranges</h4>
@@ -135,11 +135,11 @@ require __DIR__ . '/../includes/apispec_layout.php';
   "type":      "number",
   "result":    10,
   "range":     { "min": 1, "max": 10 },
-  "timestamp": "2025-09-09T12:00:00Z",
+  "timestamp": "2025-09-09 12:00:00",
   "success":   true,
   "api_info": {
     "version":         "1.0",
-    "endpoint":        "/randomizer/api/",
+    "endpoint":        "/api/randomizer/",
     "supported_types": ["number", "dice", "coin", "card", "all"]
   }
 }</div>
@@ -152,7 +152,7 @@ require __DIR__ . '/../includes/apispec_layout.php';
   "result":      [5, 5],
   "total":       10,
   "dice_config": { "sides": 6, "count": 2 },
-  "timestamp":   "2025-09-09T12:00:00Z",
+  "timestamp":   "2025-09-09 12:00:00",
   "success":     true,
   "api_info":    { "...": "..." }
 }</div>
@@ -166,7 +166,7 @@ require __DIR__ . '/../includes/apispec_layout.php';
   "result":     ["Tails", "Heads", "Heads"],
   "statistics": { "heads": 2, "tails": 1 },
   "count":      3,
-  "timestamp":  "2025-09-09T12:00:00Z",
+  "timestamp":  "2025-09-09 12:00:00",
   "success":    true,
   "api_info":   { "...": "..." }
 }</div>
@@ -200,7 +200,7 @@ require __DIR__ . '/../includes/apispec_layout.php';
     "with_jokers": false,
     "cards_drawn": 2
   },
-  "timestamp": "2025-09-09T12:00:00Z",
+  "timestamp": "2025-09-09 12:00:00",
   "success":   true,
   "api_info":  { "...": "..." }
 }</div>
@@ -217,7 +217,7 @@ require __DIR__ . '/../includes/apispec_layout.php';
     "coin":   { "type": "coin",   "result": "...", "...": "..." },
     "card":   { "type": "card",   "result": { "...": "..." }, "...": "..." }
   },
-  "timestamp": "2025-09-09T12:00:00Z",
+  "timestamp": "2025-09-09 12:00:00",
   "success":   true,
   "api_info":  { "...": "..." }
 }</div>
@@ -229,8 +229,8 @@ require __DIR__ . '/../includes/apispec_layout.php';
                     <div class="code-block">{
   "success":   false,
   "error":     "Invalid type. Supported types: number, dice, coin, card, all",
-  "timestamp": "2025-09-09T12:00:00Z",
-  "api_info":  { "version": "1.0", "endpoint": "/randomizer/api/", "supported_types": ["number", "dice", "coin", "card", "all"] }
+  "timestamp": "2025-09-09 12:00:00",
+  "api_info":  { "version": "1.0", "endpoint": "/api/randomizer/", "supported_types": ["number", "dice", "coin", "card", "all"] }
 }</div>
                 </div>
                 <p>Other triggers and their messages:</p>
@@ -244,9 +244,9 @@ require __DIR__ . '/../includes/apispec_layout.php';
                     </thead>
                     <tbody>
                         <tr>
-                            <td><code>type</code> missing or unsupported</td>
+                            <td><code>type</code> set to an unsupported value</td>
                             <td>400</td>
-                            <td><em>Invalid type. Supported types: number, dice, coin, card, all</em></td>
+                            <td><em>Invalid type. Supported types: number, dice, coin, card, all</em><br>(omitting <code>type</code> is not an error — it defaults to <code>number</code>)</td>
                         </tr>
                         <tr>
                             <td><code>min &gt; max</code></td>
@@ -313,11 +313,11 @@ require __DIR__ . '/../includes/apispec_layout.php';
                     </div>
                     <div class="category-item">
                         <h4>📊 Statistical Sampling</h4>
-                        <p>Random sampling for surveys, A/B testing, and statistical analysis with weighted options.</p>
+                        <p>Random numbers for surveys, A/B testing, and statistical simulation.</p>
                     </div>
                     <div class="category-item">
                         <h4>🎁 Giveaways &amp; Contests</h4>
-                        <p>Fair random selection of winners from participant lists with cryptographic verification.</p>
+                        <p>Use the cryptographically secure random values as the randomness source in your own raffle and contest logic.</p>
                     </div>
                     <div class="category-item">
                         <h4>🔐 Security &amp; Tokens</h4>
@@ -343,7 +343,7 @@ require __DIR__ . '/../includes/apispec_layout.php';
             <!-- Rate Limits -->
             <div class="section">
                 <h2>🚦 Rate Limits</h2>
-                <p>Currently, there are no rate limits imposed on this API. However, please use it responsibly and avoid excessive requests that might impact service availability for other users.</p>
+                <p>This endpoint is rate-limited per client identity (IP address, or API key when one is supplied): <strong>120 requests per minute</strong>. When the budget is exhausted the API responds with HTTP 429 and includes <code>X-RateLimit-*</code> headers so clients can self-throttle. The exact policy is configured in <code>api/includes/api_config.php</code>.</p>
             </div>
 
             <!-- Try It Out -->

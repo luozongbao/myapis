@@ -31,8 +31,8 @@ require __DIR__ . '/../includes/apispec_layout.php';
                         <p>Carefully curated predictions covering all aspects of life</p>
                     </div>
                     <div class="feature-card">
-                        <h4>📚 5 Life Categories</h4>
-                        <p>Love, Career, Health, Finance, and General life advice</p>
+                        <h4>🌱 Positive, Uplifting Content</h4>
+                        <p>Every fortune is kind, respectful and safe for all audiences</p>
                     </div>
                     <div class="feature-card">
                         <h4>🎲 Random Selection</h4>
@@ -143,7 +143,7 @@ require __DIR__ . '/../includes/apispec_layout.php';
     "chinese": "...",
     "english": "..."
   },
-  "timestamp": "2025-09-09T12:00:00Z",
+  "timestamp": "2025-09-09 12:00:00",
   "total_fortunes": 52
 }</div>
                 </div>
@@ -259,7 +259,7 @@ if data['success']:
             <!-- Rate Limits -->
             <div class="section">
                 <h2>🚦 Rate Limits</h2>
-                <p>Currently, there are no rate limits imposed on this API. However, please use it responsibly and avoid excessive requests that might impact service availability for other users.</p>
+                <p>This endpoint is rate-limited per client identity (IP address, or API key when one is supplied): <strong>120 requests per minute</strong>. When the budget is exhausted the API responds with HTTP 429 and includes <code>X-RateLimit-*</code> headers so clients can self-throttle. The exact policy is configured in <code>api/includes/api_config.php</code>.</p>
             </div>
 
             <!-- Cultural Notes -->

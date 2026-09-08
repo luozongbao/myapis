@@ -21,20 +21,20 @@ A comprehensive collection of developer tools and APIs designed to streamline yo
 
 | Tool | Description | Web Interface | API | Documentation |
 |------|-------------|---------------|-----|---------------|
-| 🏥 **Health Calculator** | Calculate BMI, BMR, Daily Intake, and Water Intake with health recommendations | [Try Tool](public/health-calculator.php) | [API](api/health-calculator/) | [Full Specs](public/api-specs/health-calculator.php) |
-| 🔐 **Password Generator** | Generate cryptographically secure passwords | [Try Tool](public/password-generator.php) | [API](api/password-generator/) | [Full Specs](public/api-specs/password-generator.php) |
-| 👤 **Username Generator** | Create unique usernames with multi-theme support (Fantasy, Professional, Science, Tech, Chemistry, Things, Body & Health) | [Try Tool](public/username-generator.php) | [API](api/username-generator/) | [Full Specs](public/api-specs/username-generator.php) |
-| 💳 **PromptPay QR Generator** | Generate EMV-compliant PromptPay QR codes | [Try Tool](public/promptpay-qr-generator.php) | [API](api/promptpay-qr-generator/) | [Full Specs](public/api-specs/promptpay-qr-generator.php) |
-| 📱 **QR Code Generator** | Universal QR code generator (text, URL, vCard, event, Wi-Fi, phone) powered by [goQR.me](https://goqr.me/api/doc/create-qr-code/) | [Try Tool](public/qr-code-generator.php) | [API](api/qr-code-generator/) | [Full Specs](public/api-specs/qr-code-generator.php) |
-| 🔮 **Fortune Teller** | Get multilingual fortune predictions | [Try Tool](public/fortune-teller.php) | [API](api/fortune-teller/) | [Full Specs](public/api-specs/fortune-teller.php) |
-| 🎲 **Random Generator** | Generate random numbers, dice, coins, and cards | [Try Tool](public/randomizer.php) | [API](api/randomizer/) | [Full Specs](public/api-specs/randomizer.php) |
+| 🏥 **Health Calculator** | Calculate BMI, BMR, Daily Intake, and Water Intake with health recommendations | [Try Tool](public/tools/health-calculator.php) | [API](api/health-calculator/) | [Full Specs](public/api-specs/health-calculator.php) |
+| 🔐 **Password Generator** | Generate cryptographically secure passwords | [Try Tool](public/tools/password-generator.php) | [API](api/password-generator/) | [Full Specs](public/api-specs/password-generator.php) |
+| 👤 **Username Generator** | Create unique usernames across 9 built-in themes (Fantasy, Professional, Science and Space, Computer Technology, Elements and Chemistry, Things, Body and Health, Nature, Space and Time) | [Try Tool](public/tools/username-generator.php) | [API](api/username-generator/) | [Full Specs](public/api-specs/username-generator.php) |
+| 💳 **PromptPay QR Generator** | Generate EMV-compliant PromptPay QR codes | [Try Tool](public/tools/promptpay-qr-generator.php) | [API](api/promptpay-qr-generator/) | [Full Specs](public/api-specs/promptpay-qr-generator.php) |
+| 📱 **QR Code Generator** | Universal QR code generator (text, URL, vCard, event, Wi-Fi, phone) powered by [goQR.me](https://goqr.me/api/doc/create-qr-code/) | [Try Tool](public/tools/qr-code-generator.php) | [API](api/qr-code-generator/) | [Full Specs](public/api-specs/qr-code-generator.php) |
+| 🔮 **Fortune Teller** | Get multilingual fortune predictions | [Try Tool](public/tools/fortune-teller.php) | [API](api/fortune-teller/) | [Full Specs](public/api-specs/fortune-teller.php) |
+| 🎲 **Random Generator** | Generate random numbers, dice, coins, and cards | [Try Tool](public/tools/randomizer.php) | [API](api/randomizer/) | [Full Specs](public/api-specs/randomizer.php) |
 
 ### 🎯 Key Features
 
 - **🌐 Modern Web Interfaces**: Beautiful, responsive designs that work on all devices
 - **🔌 REST APIs**: Well-documented APIs with JSON responses
-- **� Comprehensive API Documentation**: Interactive documentation for all endpoints
-- **�🔒 Security First**: Cryptographically secure random generation
+- **📖 Comprehensive API Documentation**: Interactive documentation for all endpoints
+- **🔒 Security First**: Cryptographically secure random generation
 - **🌍 Multi-language Support**: Thai, Chinese, and English support where applicable
 - **📱 Mobile Responsive**: Optimized for desktop, tablet, and mobile
 - **⚡ Fast & Lightweight**: Pure PHP implementation with minimal dependencies
@@ -44,7 +44,7 @@ A comprehensive collection of developer tools and APIs designed to streamline yo
 
 ### Prerequisites
 
-- PHP 7.0 or higher
+- PHP 8.0 or higher (the Docker image ships PHP 8.2)
 - Web server (Apache, Nginx, or built-in PHP server)
 - Optional: GD extension for QR code generation
 - **Docker** & **Docker Compose** (recommended, easiest setup)
@@ -84,7 +84,7 @@ A comprehensive collection of developer tools and APIs designed to streamline yo
    - Upload the project to your web root (see
      [🌐 Shared Hosting Deployment](#-shared-hosting-deployment-hostinger--cpanel)
      for a full Hostinger / cPanel walkthrough)
-   - Ensure PHP ≥ 7.4 is enabled in the control panel
+   - Ensure PHP ≥ 8.0 is enabled in the control panel
    - The bundled `.htaccess` already rewrites requests into `/public/`
    - No Docker, no root access, no `.env` required — see the shared
      hosting section for the `config.php` step
@@ -93,7 +93,8 @@ A comprehensive collection of developer tools and APIs designed to streamline yo
    - Copy files to your web server's document root
    - Ensure PHP-FPM is configured and enabled
    - Set appropriate file permissions
-   - See `docs/nginx-conf/` for ready-to-use Nginx vhost samples
+   - See [`docker/nginx/default.conf`](docker/nginx/default.conf) for
+     the Nginx vhost used by the Docker stack
    - The provided `.htaccess` already rewrites requests into `/public/`
 
 
@@ -239,7 +240,7 @@ Most shared-hosting providers (Hostinger, SiteGround, Bluehost,
 Namecheap, etc.) give you a cPanel (or hPanel on Hostinger), **no
 Docker**, **no root shell**, and **no `.env` file routing** — so the
 Docker stack above won't work, but the rest of MyAPIs will run
-fine as long as PHP ≥ 7.4 is available and `mod_rewrite` is on.
+fine as long as PHP ≥ 8.0 is available and `mod_rewrite` is on.
 
 The short version: upload the project, point your domain at
 `/public/`, and (optionally) drop a `config.php` to enable
@@ -249,7 +250,7 @@ analytics. The long version follows.
 
 | Item | Minimum | Recommended |
 |---|---|---|
-| PHP | 7.4 | 8.1 or 8.2 |
+| PHP | 8.0 | 8.2 |
 | PHP extensions | `json`, `mbstring` | + `gd` (PromptPay QR), `intl`, `bcmath` |
 | Apache module | `mod_rewrite` | (almost always on by default) |
 | Disk space | 20 MB | 50 MB |
@@ -277,8 +278,7 @@ public_html/
     ├── public/             ← web UIs
     │   ├── .htaccess       ← already in repo
     │   ├── index.php
-    │   ├── health-calculator.php
-    │   └── … (all tool pages)
+    │   └── tools/          ← one page per tool
     └── config.php          ← optional analytics config (see Step 4)
 ```
 
@@ -454,7 +454,7 @@ seen cause a silent failure on shared hosting:
    first line a no-op and PHP may then choke on the BOM inside
    `putenv()`. Re-upload via FTP in **binary** mode if in doubt.
 6. **Make sure Cloudflare / your CDN is not caching the old HTML**.
-   Purge the cache for `/`, `/health-calculator.php`, etc.
+   Purge the cache for `/`, `/tools/health-calculator.php`, etc.
 7. **Open `public/analytics.php` in the browser directly** —
    it should output a single comment line (`<!-- MyAPIs Analytics
    … -->`) or nothing. If you get a *blank page* the PHP parser
@@ -496,27 +496,56 @@ seen cause a silent failure on shared hosting:
 
 ## 📖 API Documentation
 
-All tools provide RESTful APIs with consistent response formats:
+All tools provide RESTful APIs with a **similar** JSON style, but the exact
+shape differs per tool (see the individual spec pages in
+[`public/api-specs/`](public/api-specs/) for precise schemas).
 
 ### Common Response Format
+
+Every successful call returns `"success": true` and — for most tools — a
+`"timestamp"` in `Y-m-d H:i:s` format (e.g. `2026-09-08 09:45:56`). The
+payload key is **tool-specific**: `fortune`, `data`, `password`,
+`usernames`, `payload`, etc.
+
+Example — Fortune Teller:
+
 ```json
 {
   "success": true,
-  "data": { ... },
-  "message": "Success message",
-  "timestamp": "2025-09-09T12:00:00Z"
+  "fortune": {
+    "id": 1,
+    "thai": "…",
+    "chinese": "…",
+    "english": "…"
+  },
+  "timestamp": "2026-09-08 09:45:56"
 }
 ```
 
 ### Error Response Format
+
+Failures return a non-2xx HTTP status (usually `400`) with a JSON body.
+There is no single fixed envelope: tools send `"success": false` plus a
+human-readable `"error"` or `"message"` field, and may also include
+`"timestamp"` and/or `"api_info"`.
+
+Example — Randomizer (`400 Bad Request`):
+
 ```json
 {
   "success": false,
-  "error": "Error description",
-  "code": "ERROR_CODE",
-  "timestamp": "2025-09-09T12:00:00Z"
+  "error": "Minimum value cannot be greater than maximum value",
+  "timestamp": "2026-09-08 09:45:56",
+  "api_info": {
+    "version": "1.0",
+    "endpoint": "/api/randomizer/",
+    "supported_types": ["number", "dice", "coin", "card", "all"]
+  }
 }
 ```
+
+Rate-limit exhaustion (`429`) is handled uniformly — see the
+[Security](#security) section.
 
 ### Individual Tool APIs
 
@@ -530,7 +559,7 @@ Each tool has its own API endpoint and documentation:
 - **Fortune Teller API**: `GET /api/fortune-teller/` - Get random fortune predictions
 - **Random Generator API**: `POST /api/randomizer/` - Generate random numbers, dice, etc.
 
-## � Security
+## 🛡️ Security
 
 The stack ships with a defence-in-depth setup that works **without
 Composer** and runs on plain PHP-FPM + Nginx. No Redis or Memcached is
@@ -652,41 +681,55 @@ their IP via the `X-Forwarded-For` header.
 SECURITY_ENABLED=false
 ```
 
-## �🛠️ Usage Examples
+## 🛠️ Usage Examples
+
+All examples use a `BASE_URL` variable, so the same snippets work against a
+local Docker install or a deployed instance — just set it once:
+
+```bash
+# 👇 Set BASE_URL to match your environment:
+#    local Docker install (default) → http://localhost:8080
+#    deployed / production          → https://<your-domain>
+BASE_URL="http://localhost:8080"
+```
 
 ### Health Calculator
 ```bash
-curl -X POST "http://localhost:8080/api/health-calculator/" \
+curl -X POST "$BASE_URL/api/health-calculator/" \
   -H "Content-Type: application/json" \
-  -d '{"weight": 70, "height": 175, "unit": "metric", "type": "bmi"}'
+  -d '{"calculator": "bmi", "weight": 70, "height": 175, "unit": "metric"}'
 ```
 
 ### Password Generator
 ```bash
-curl -X POST "http://localhost:8080/api/password-generator/" \
+curl -X POST "$BASE_URL/api/password-generator/" \
   -H "Content-Type: application/json" \
-  -d '{"length": 16, "uppercase": true, "lowercase": true, "numbers": true, "symbols": true}'
+  -d '{"min_length": 16, "max_length": 16, "count": 3, "include_lowercase": true, "include_uppercase": true, "include_numbers": true, "include_symbols": true}'
 ```
 
 ### Fortune Teller
 ```bash
-curl "http://localhost:8080/api/fortune-teller/?lang=en"
+# A specific fortune by ID
+curl "$BASE_URL/api/fortune-teller/?id=1"
+
+# …or omit the parameter for a random fortune
+curl "$BASE_URL/api/fortune-teller/"
 ```
 
 ### QR Code Generator
 ```bash
-# Plain text → PNG (JSON response with base64 image)
-curl -X POST "http://localhost:8080/api/qr-code-generator/?format=json" \
-  -d "type=text" -d "text=Hello, world!" -d "size=300x300"
+# Plain text → JSON response with a base64 data-URL
+curl -X POST "$BASE_URL/api/qr-code-generator/?format=json" \
+  -d "type=text" -d "text=Hello, world!" -d "size=300"
 
 # Wi-Fi credentials → direct SVG download
-curl "http://localhost:8080/api/qr-code-generator/?format=image" \
+curl "$BASE_URL/api/qr-code-generator/?format=image" \
   -d "type=wifi" -d "ssid=CafeWiFi" -d "password=beans2024" \
   -d "encryption=WPA" -d "file_type=svg" -d "color=cc0066" \
   --output qr.svg
 
 # Business vCard with multiple dynamic emails / phones / addresses
-curl -X POST "http://localhost:8080/api/qr-code-generator/?format=json" \
+curl -X POST "$BASE_URL/api/qr-code-generator/?format=json" \
   -d "type=vcard" \
   -d "first_name=Jane" -d "last_name=Doe" \
   -d "emails[0][type]=WORK" -d "emails[0][value]=jane@acme.com" \
@@ -695,9 +738,9 @@ curl -X POST "http://localhost:8080/api/qr-code-generator/?format=json" \
   -d "addresses[0][city]=Bangkok" -d "addresses[0][country]=Thailand"
 ```
 
-> 💡 If you are using the built-in PHP server (`php -S`), replace
-> `http://localhost:8080` with `http://localhost:8000` and add the
-> `/public/` prefix as described in the Quick Start section.
+> 💡 Running the built-in PHP server (`php -S`)? Point `BASE_URL` at it
+> instead, e.g. `BASE_URL="http://localhost:8000"`, and add the `/public/`
+> prefix as described in the Quick Start section.
 
 ## 📁 Project Structure
 
@@ -705,51 +748,61 @@ curl -X POST "http://localhost:8080/api/qr-code-generator/?format=json" \
 myapis/
 ├── public/                   # Web interfaces and documentation
 │   ├── index.php            # Main landing page
-│   ├── health-calculator.php # Health Calculator web interface
-│   ├── password-generator.php # Password Generator web interface
-│   ├── username-generator.php # Username Generator web interface
-│   ├── promptpay-qr-generator.php # PromptPay QR Generator web interface
-│   ├── qr-code-generator.php # QR Code Generator web interface (text, URL, vCard, event, Wi-Fi, phone)
-│   ├── fortune-teller.php   # Fortune Teller web interface
-│   ├── randomizer.php       # Random Generator web interface
-│   └── api-specs/           # API documentation pages
-│       ├── health-calculator.php
-│       ├── password-generator.php
-│       ├── username-generator.php
-│       ├── promptpay-qr-generator.php
-│       ├── qr-code-generator.php
-│       ├── fortune-teller.php
-│       └── randomizer.php
+│   ├── tools/               # Interactive web UI — one page per tool
+│   │   ├── health-calculator.php # Health Calculator web interface
+│   │   ├── password-generator.php # Password Generator web interface
+│   │   ├── username-generator.php # Username Generator web interface
+│   │   ├── promptpay-qr-generator.php # PromptPay QR Generator web interface
+│   │   ├── qr-code-generator.php # QR Code Generator web interface (text, URL, vCard, event, Wi-Fi, phone)
+│   │   ├── fortune-teller.php # Fortune Teller web interface
+│   │   └── randomizer.php   # Random Generator web interface
+│   ├── api-specs/           # API documentation pages (one page per tool)
+│   │   ├── health-calculator.php
+│   │   ├── password-generator.php
+│   │   ├── username-generator.php
+│   │   ├── promptpay-qr-generator.php
+│   │   ├── qr-code-generator.php
+│   │   ├── fortune-teller.php
+│   │   └── randomizer.php
+│   ├── includes/            # Shared layout/footer partials used by public pages
+│   ├── assets/              # CSS/JS shared by the web interfaces
+│   ├── config.php.example   # Shared-hosting analytics template
+│   │                       # (copy to config.php — that file is gitignored)
+│   └── analytics.php        # Analytics dashboard page
 ├── api/                     # REST API implementations
 │   ├── health-calculator/   # Health Calculator API
 │   │   └── index.php
 │   ├── password-generator/  # Password Generator API
 │   │   └── index.php
 │   ├── username-generator/  # Username Generator API
-│   │   └── index.php
+│   │   ├── index.php
+│   │   └── wordlists.php    # Username-theme wordlists
 │   ├── promptpay-qr-generator/ # PromptPay QR Generator API
-│   │   └── index.php
+│   │   ├── index.php
+│   │   └── PromptPayAPI.php # EMV PromptPay payload builder
 │   ├── qr-code-generator/   # QR Code Generator API (powered by goQR.me)
-│   │   └── index.php
+│   │   ├── index.php
+│   │   └── QrCodeGenerator.php # Payload builders + goQR.me client
 │   ├── fortune-teller/      # Fortune Teller API
 │   │   ├── index.php
-│   │   └── predictions/     # Fortune data files
-│   └── randomizer/          # Random Generator API
-│       └── index.php
+│   │   └── predictions/     # Fortune data files (1.json … 52.json)
+│   ├── randomizer/          # Random Generator API
+│   │   └── index.php
+│   └── includes/            # Shared bootstrap, config, security, analytics
 ├── docker/                  # Docker configuration files
 │   ├── nginx/default.conf   # Nginx vhost (public + api routing)
 │   └── php/
-│       ├── php.ini          # PHP runtime overrides
+│       ├── php.ini.tpl      # PHP runtime overrides (rendered from template)
 │       ├── opcache.ini      # Opcache tuning
 │       └── analytics.php    # Tracking snippet (auto-prepended)
+├── storage/                 # Runtime data (gitignored)
+│   ├── logs/                # Log files
+│   └── ratelimit/           # Rate-limiter bucket state
 ├── docker-compose.yml       # PHP-FPM + Nginx stack definition
 ├── Dockerfile               # PHP-FPM image with required extensions
 ├── example.env              # Sample environment variables
 ├── .dockerignore            # Files excluded from the image
 ├── .htaccess                # Apache rewrite rules (root → public)
-├── public/
-│   └── config.php.example   # Shared-hosting analytics template
-│                           # (copy to public/config.php; gitignored)
 ├── README.md                # This file
 └── RELEASE.md               # Release notes
 ```
@@ -820,12 +873,13 @@ docker compose logs -f nginx
 ### URL routing in Docker
 
 The bundled Nginx vhost serves everything from `public/` and proxies
-API requests to PHP-FPM:
+API requests to PHP-FPM. Locally, prefix each path with
+`http://localhost:${WEB_PORT:-8080}` (or your domain once deployed):
 
-- `http://localhost:8080/` → `public/index.php`
-- `http://localhost:8080/health-calculator.php` → tool page
-- `http://localhost:8080/api/health-calculator/` → `api/health-calculator/index.php`
-- `http://localhost:8080/api/fortune-teller/?lang=en` → fortune API
+- `/` → `public/index.php`
+- `/tools/health-calculator.php` → `public/tools/health-calculator.php`
+- `/api/health-calculator/` → `api/health-calculator/index.php`
+- `/api/fortune-teller/?id=1` → fortune API
 
 > 🛡️ Requests for hidden files, `.env`, `README.md`, etc. are
 > explicitly denied by the Nginx configuration.
@@ -970,7 +1024,7 @@ gated by the single `ANALYTICS_PROVIDER` switch:
 
 | Layer | Where it runs | What it tracks | Implementation |
 |---|---|---|---|
-| **Browser-side** | Visitor's browser | HTML pages in `public/` (landing + every tool) | [`docker/php/analytics.php`](docker/php/analytics.php) (Docker) / [`public/analytics.php`](public/analytics.php) (shared hosting) — auto-prepended to every HTML response |
+| **Browser-side** | Visitor's browser | HTML pages in `public/` — the landing page plus every `public/tools/` tool page | [`docker/php/analytics.php`](docker/php/analytics.php) (Docker) / [`public/analytics.php`](public/analytics.php) (shared hosting) — auto-prepended to every HTML response |
 | **Server-side** | PHP, on every API request | Every `/api/*` call (endpoint, method, status, duration) + custom events for `api_rate_limited`, `api_unauthorized`, `api_exception` | [`api/includes/analytics/Tracker.php`](api/includes/analytics/Tracker.php) — posts hits directly to Umami's HTTP API or GA4's Measurement Protocol |
 
 Details:
@@ -1064,7 +1118,7 @@ In both cases the prepended file short-circuits and emits nothing.
 ### Adding a New Tool
 
 1. Create the API implementation in `api/your-tool-name/index.php`
-2. Create the web interface in `public/your-tool-name.php`
+2. Create the web interface in `public/tools/your-tool-name.php`
 3. Create API documentation in `public/api-specs/your-tool-name.php`
 4. Update the main `public/index.php` to include your tool in the grid
 5. Test both web interface and API endpoints
@@ -1100,7 +1154,7 @@ In both cases the prepended file short-circuits and emits nothing.
 
 ## 📝 License
 
-This project is open source and available under the [MIT License](LICENSE).
+This project is open source and available under the MIT License.
 
 ## 🔗 Links
 

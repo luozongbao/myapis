@@ -122,14 +122,14 @@ require __DIR__ . '/../includes/apispec_layout.php';
                                 <td>integer</td>
                                 <td><span class="optional">Optional</span></td>
                                 <td>6</td>
-                                <td>Lower length bound in characters (3–30).</td>
+                                <td>Lower length bound in characters (must be ≥ 1).</td>
                             </tr>
                             <tr>
                                 <td><code>max_length</code></td>
                                 <td>integer</td>
                                 <td><span class="optional">Optional</span></td>
                                 <td>20</td>
-                                <td>Upper length bound in characters (4–50). Must be ≥ <code>min_length</code>.</td>
+                                <td>Upper length bound in characters (must be ≤ 50). Must be ≥ <code>min_length</code>.</td>
                             </tr>
                             <tr>
                                 <td><code>include_numbers</code></td>
@@ -150,7 +150,7 @@ require __DIR__ . '/../includes/apispec_layout.php';
                                 <td>boolean</td>
                                 <td><span class="optional">Optional</span></td>
                                 <td>true</td>
-                                <td>When true, render each component with leading capitals (e.g. <code>CelestialLeviathan</code>). When false, output is lowercase (e.g. <code>celestial_leviathan</code>).</td>
+                                <td>When true, words are kept in their dictionary capitalisation, e.g. <code>CelestialLeviathan</code>. When false, the result is lower-cased (e.g. <code>celestialleviathan</code>). Adjectives and nouns are always joined directly with no separator.</td>
                             </tr>
                             <tr>
                                 <td><code>avoid_repetition</code></td>
@@ -408,7 +408,7 @@ fetch('/api/username-generator/', {
             <!-- Rate Limits -->
             <div class="section">
                 <h2>🚦 Rate Limits</h2>
-                <p>Currently, there are no rate limits imposed on this API. However, please use it responsibly and avoid excessive requests that might impact service availability for other users.</p>
+                <p>This endpoint is rate-limited per client identity (IP address, or API key when one is supplied): <strong>60 requests per minute</strong>. When the budget is exhausted the API responds with HTTP 429 and includes <code>X-RateLimit-*</code> headers so clients can self-throttle. The exact policy is configured in <code>api/includes/api_config.php</code>.</p>
             </div>
 
             <!-- Try It Out -->

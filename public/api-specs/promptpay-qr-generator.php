@@ -105,7 +105,7 @@ require __DIR__ . '/../includes/apispec_layout.php';
                                 <td>integer</td>
                                 <td><span class="optional">Optional</span></td>
                                 <td>300</td>
-                                <td>Pixel size passed to goQR.me (10–1000, clamped).</td>
+                                <td>Pixel size passed to goQR.me. Accepts 50–1000; values outside that range fall back to the default (300).</td>
                             </tr>
                             <tr>
                                 <td><code>format</code></td>
@@ -134,7 +134,7 @@ require __DIR__ . '/../includes/apispec_layout.php';
                                 <td><code>0812345678</code></td>
                             </tr>
                             <tr>
-                                <td><code>tax</code></td>
+                                <td><code>tax_id</code></td>
                                 <td>13-digit Tax ID</td>
                                 <td><code>1234567890123</code></td>
                             </tr>
@@ -187,7 +187,7 @@ require __DIR__ . '/../includes/apispec_layout.php';
   "qr_size":     300
 }</div>
                 </div>
-                <p><code>amount</code> is <code>null</code> when the caller did not provide one. <code>target_type</code> is one of <code>phone</code>, <code>tax</code>, or <code>ewallet</code>.</p>
+                <p><code>amount</code> is <code>null</code> when the caller did not provide one. <code>target_type</code> is one of <code>phone</code>, <code>tax_id</code>, or <code>ewallet</code>.</p>
 
                 <h3><code>format=base64</code></h3>
                 <p>Slimmer JSON wrapper containing only the image data URI and the EMV payload. Note that this shape uses the key <code>image_base64</code> and <code>size</code> (not <code>qr_size</code>):</p>
@@ -358,7 +358,7 @@ require __DIR__ . '/../includes/apispec_layout.php';
             <!-- Rate Limits -->
             <div class="section">
                 <h2>🚦 Rate Limits</h2>
-                <p>Currently, there are no rate limits imposed on this API. However, please use it responsibly and avoid excessive requests that might impact service availability for other users.</p>
+                <p>This endpoint is rate-limited per client identity (IP address, or API key when one is supplied): <strong>30 requests per minute</strong>. When the budget is exhausted the API responds with HTTP 429 and includes <code>X-RateLimit-*</code> headers so clients can self-throttle. The exact policy is configured in <code>api/includes/api_config.php</code>.</p>
             </div>
 
             <!-- Try It Out -->
