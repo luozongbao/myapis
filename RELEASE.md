@@ -1,9 +1,73 @@
 # 📋 MyAPIs Release Notes
 
-## Current Release: Version 2.6.4.1
+## Current Release: Version 2.6.4.2
 
-**Release Date**: September 6, 2026
+**Release Date**: September 8, 2026
 **Status**: Stable Release (hotfix)
+
+---
+
+## 🐛 Version 2.6.4.2 - Documentation Accuracy Hotfix
+*Released: September 8, 2026 — patch on v2.6.4.1*
+
+A full audit of the seven API spec docs (`public/api-specs/*.php`)
+and their corresponding tool READMEs (`api/*/README.md`), plus the
+root `README.md`, was carried out by cross-checking each spec
+against the live endpoint (curl smoke tests), the per-tool
+README, the single-source `version.php`, and the
+`api_config.php` rate-limit defaults. The audit surfaced two
+documentation inaccuracies — both fixed in this patch.
+
+### 🐞 Bugs fixed
+
+#### 1. Randomizer endpoint self-reported a legacy pre-monolith path
+`api/randomizer/index.php` hard-coded `api_info.endpoint` as
+`/randomizer/api/` — a path that predates the unified
+`/api/<tool>/` URL scheme. The spec doc (`public/api-specs/randomizer.php`),
+the tool README (`api/randomizer/README.md`), and the root
+`README.md` (Error Response Format example) had all been
+copy-pasted from the same response, so all four places agreed —
+they just happened to be **all** pointing at a path that no
+longer exists.
+**Fix**: the code now reports `/api/randomizer/`, and the three
+documentation copies were updated to match. Verified live:
+`POST /api/randomizer/` (success) and `?type=invalid` (error)
+both now return `api_info.endpoint: "/api/randomizer/"`.
+
+#### 2. Username Generator README over-promised the symbols
+The `include_symbols` parameter row in `api/username-generator/README.md`
+described the appended symbols as `` `_`, `-`, `.`, `X`, `Z` `` —
+five characters. The actual code (`api/username-generator/index.php`
+line 148) defines `$symbols = ['_', '-', '.'];` — only three
+characters. Clients following the README would have been
+surprised by the missing `X` and `Z`.
+**Fix**: the README row now reads `` Append `_`, `-`, or `.` ``,
+matching the real character set. No code change; the symbols
+array remains `['_', '-', '.']`.
+
+### 📦 Files changed
+- ✏️ `api/randomizer/index.php` — `api_info.endpoint` →
+  `/api/randomizer/`
+- ✏️ `api/randomizer/README.md` — Success + Error example
+  blocks
+- ✏️ `public/api-specs/randomizer.php` — Number Response +
+  Error box
+- ✏️ `README.md` — Error Response Format example
+- ✏️ `api/username-generator/README.md` — `include_symbols`
+  parameter description
+- ✏️ `public/includes/version.php` — bump to `2.6.4.2`
+
+### ✅ Verification
+
+- `php -l` passes for the two PHP files touched
+- Live API smoke tests on all seven endpoints match the spec
+  docs (`/api/fortune-teller/`, `/api/randomizer/`,
+  `/api/health-calculator/`, `/api/password-generator/`,
+  `/api/username-generator/`, `/api/qr-code-generator/`,
+  `/api/promptpay-qr-generator/`)
+- `php -l` passes for all seven `public/api-specs/*.php` files
+- 0 broken links across the root `README.md` and every
+  per-tool `api/*/README.md`
 
 ---
 

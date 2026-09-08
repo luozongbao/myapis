@@ -191,7 +191,7 @@ require __DIR__ . '/../includes/apispec_layout.php';
     "advice": "Great! Maintain your current lifestyle with a balanced diet and regular exercise."
   },
   "calculator": "bmi",
-  "timestamp": "2025-09-09T12:00:00Z"
+  "timestamp": "2025-09-09 12:00:00"
 }</div>
                 </div>
 
@@ -205,7 +205,7 @@ require __DIR__ . '/../includes/apispec_layout.php';
     "advice": "Your BMR is 1649 calories per day. With your activity level, you need approximately 2556 calories daily to maintain your current weight."
   },
   "calculator": "bmr",
-  "timestamp": "2025-09-09T12:00:00Z"
+  "timestamp": "2025-09-09 12:00:00"
 }</div>
                 </div>
 
@@ -224,7 +224,7 @@ require __DIR__ . '/../includes/apispec_layout.php';
     }
   },
   "calculator": "intake",
-  "timestamp": "2025-09-09T12:00:00Z"
+  "timestamp": "2025-09-09 12:00:00"
 }</div>
                 </div>
 
@@ -244,7 +244,7 @@ require __DIR__ . '/../includes/apispec_layout.php';
     }
   },
   "calculator": "water",
-  "timestamp": "2025-09-09T12:00:00Z"
+  "timestamp": "2025-09-09 12:00:00"
 }</div>
                 </div>
 
@@ -309,12 +309,17 @@ require __DIR__ . '/../includes/apispec_layout.php';
                         <tr>
                             <td>Unrealistic weight / height</td>
                             <td>400</td>
-                            <td><code>message</code>: <em>"Please check your height and weight values - they seem unrealistic"</em></td>
+                            <td><code>message</code>: <em>"Please check your height and weight values - they seem unrealistic"</em> (for water: <em>"Please check your weight value - it seems unrealistic"</em>)</td>
                         </tr>
                         <tr>
-                            <td>Negative or zero weight / height</td>
+                            <td>Negative or zero weight / height (bmi, bmr, intake)</td>
                             <td>400</td>
                             <td><code>message</code>: <em>"Weight and height must be positive values"</em></td>
+                        </tr>
+                        <tr>
+                            <td>Negative or zero weight (water)</td>
+                            <td>400</td>
+                            <td><code>message</code>: <em>"Weight must be a positive value"</em></td>
                         </tr>
                     </tbody>
                 </table>
@@ -323,7 +328,7 @@ require __DIR__ . '/../includes/apispec_layout.php';
             <!-- Rate Limits -->
             <div class="section">
                 <h2>🚦 Rate Limits</h2>
-                <p>Currently, there are no rate limits imposed on this API. However, please use it responsibly and avoid excessive requests that might impact service availability for other users.</p>
+                <p>This endpoint is rate-limited per client identity (IP address, or API key when one is supplied): <strong>60 requests per minute</strong>. When the budget is exhausted the API responds with HTTP 429 and includes <code>X-RateLimit-*</code> headers so clients can self-throttle. The exact policy is configured in <code>api/includes/api_config.php</code>.</p>
             </div>
 
             <!-- Try It Out -->

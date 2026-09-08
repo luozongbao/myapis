@@ -24,7 +24,7 @@ require __DIR__ . '/../includes/apispec_layout.php';
                 <div class="features-grid">
                     <div class="feature-card">
                         <h4>🔒 Cryptographically Secure</h4>
-                        <p>Uses PHP's secure random_bytes() function for true randomness</p>
+                        <p>Uses PHP's secure random_int() function for true randomness</p>
                     </div>
                     <div class="feature-card">
                         <h4>⚙️ Customizable Character Sets</h4>
@@ -36,7 +36,7 @@ require __DIR__ . '/../includes/apispec_layout.php';
                     </div>
                     <div class="feature-card">
                         <h4>📏 Flexible Length</h4>
-                        <p>Generate passwords from 4 to 128 characters long</p>
+                        <p>Generate passwords from 1 to 128 characters long</p>
                     </div>
                 </div>
 
@@ -244,7 +244,7 @@ require __DIR__ . '/../includes/apispec_layout.php';
       "must_include_each_type": "enabled"
     }
   },
-  "timestamp": "2025-09-09T12:00:00Z"
+  "timestamp": "2025-09-09 12:00:00"
 }</div>
                 </div>
 
@@ -262,9 +262,9 @@ require __DIR__ . '/../includes/apispec_layout.php';
     "score":         5
   },
   "tips": [
-    "Great! Your password meets all security recommendations"
+    "Include special characters (!@#$%^&*)"
   ],
-  "timestamp": "2025-09-09T12:00:00Z"
+  "timestamp": "2025-09-09 12:00:00"
 }</div>
                 </div>
 
@@ -292,10 +292,13 @@ require __DIR__ . '/../includes/apispec_layout.php';
                 </div>
 
                 <div class="error-box">
-                    <p><strong>Charset collapsed to nothing</strong></p>
+                    <p><strong>All character types disabled</strong> (caught by validation before generation)</p>
                     <div class="code-block">{
   "success": false,
-  "error":   "No character types selected"
+  "error":    "Validation failed",
+  "messages": [
+    "At least one character type must be selected"
+  ]
 }</div>
                 </div>
             </div>
@@ -375,7 +378,7 @@ require __DIR__ . '/../includes/apispec_layout.php';
             <!-- Rate Limits -->
             <div class="section">
                 <h2>🚦 Rate Limits</h2>
-                <p>Currently, there are no rate limits imposed on this API. However, please use it responsibly and avoid excessive requests that might impact service availability for other users.</p>
+                <p>This endpoint is rate-limited per client identity (IP address, or API key when one is supplied): <strong>60 requests per minute</strong>. When the budget is exhausted the API responds with HTTP 429 and includes <code>X-RateLimit-*</code> headers so clients can self-throttle. The exact policy is configured in <code>api/includes/api_config.php</code>.</p>
             </div>
 
             <!-- Try It Out -->
