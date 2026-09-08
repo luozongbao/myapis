@@ -231,10 +231,10 @@ require __DIR__ . '/../includes/apispec_layout.php';
     "type": "vcard",
     "first_name": "John",
     "last_name":  "Doe",
-    "organization": "Acme Corp",
-    "emails":    [{"type": "WORK", "value": "john@acme.com"}],
-    "phones":    [{"type": "CELL,VOICE", "value": "+1234567890"}]
+    "organization": "Acme Corp"
   }'</div>
+                    <p class="info-box"><strong>Dynamic lists must be sent as query-string / form parameters, not JSON keys.</strong> Single-value fields such as <code>type</code>, <code>first_name</code>, <code>last_name</code> and <code>organization</code> are read from the JSON body, but multi-value lists — <code>emails[][type/value]</code>, <code>phones[][type/value]</code>, <code>names[][type/value]</code>, <code>nicknames[][type/value]</code>, <code>urls[][value]</code>, <code>addresses[][...]</code> — are only parsed from query-string / form-encoded arrays. Include them in the URL:</p>
+                    <div class="code-block">curl "<?php echo htmlspecialchars($baseUrl); ?>?type=vcard&format=json&first_name=John&last_name=Doe&organization=Acme+Corp&emails[0][type]=WORK&emails[0][value]=john@acme.com&phones[0][type]=CELL,VOICE&phones[0][value]=%2B1234567890"</div>
                 </div>
             </div>
 
@@ -427,8 +427,8 @@ require __DIR__ . '/../includes/apispec_layout.php';
                 <h2>🔗 Integration Examples</h2>
 
                 <h3>HTML display</h3>
-                <p>Just point an <code>&lt;img&gt;</code> tag at the JSON endpoint's <code>qr_url</code> field:</p>
-                <div class="code-block">&lt;img src="https://your-host/api/qr-code-generator/?type=url&url=https://example.com&format=json"
+                <p>Point an <code>&lt;img&gt;</code> tag straight at the endpoint with the raw image format (<code>format=image</code> / <code>png</code> / <code>svg</code>):</p>
+                <div class="code-block">&lt;img src="https://your-host/api/qr-code-generator/?type=url&url=https://example.com&format=image"
      alt="QR code" /&gt;</div>
 
                 <h3>JavaScript fetch (JSON)</h3>
@@ -451,11 +451,12 @@ require __DIR__ . '/../includes/apispec_layout.php';
   method:  'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({
-    type:    'vcard',
-    first_name: 'John',
-    last_name:  'Doe',
-    organization: 'Acme Corp',
-    emails: [{ type: 'WORK', value: 'john@acme.com' }]
+    type:         'vcard',
+    first_name:   'John',
+    last_name:    'Doe',
+    organization: 'Acme Corp'
+    // Note: dynamic lists (emails[], phones[], ...) are read from
+    // query-string/form parameters only — not from the JSON body.
   })
 })
   .then(r =&gt; r.json())
@@ -465,7 +466,7 @@ require __DIR__ . '/../includes/apispec_layout.php';
             <!-- Rate Limits -->
             <div class="section">
                 <h2>🚦 Rate Limits</h2>
-                <p>Currently, there are no rate limits imposed on this API. However, please use it responsibly and avoid excessive requests that might impact service availability for other users.</p>
+                <p>This endpoint is rate-limited per client identity (IP address, or API key when one is supplied): <strong>30 requests per minute</strong>. When the budget is exhausted the API responds with HTTP 429 and includes <code>X-RateLimit-*</code> headers so clients can self-throttle. The exact policy is configured in <code>api/includes/api_config.php</code>.</p>
             </div>
 
             <!-- Try It Out -->

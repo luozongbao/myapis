@@ -167,7 +167,7 @@ class RandomGenerator
 // ---------------------------------------------------------------------------
 $apiInfo = [
     'version'         => '1.0',
-    'endpoint'        => '/randomizer/api/',
+    'endpoint'        => '/api/randomizer/',
     'supported_types' => ['number', 'dice', 'coin', 'card', 'all'],
 ];
 
