@@ -54,4 +54,17 @@ export MYAPIS_LOG_DIR="$LOG_DIR"
 echo "[entrypoint] Rate-limit storage: $RATELIMIT_DIR"
 echo "[entrypoint] Logs:             $LOG_DIR"
 
+# ---------------------------------------------------------------
+# Derive UMAMI_API_URL from UMAMI_SCRIPT_URL (strip /script.js)
+# when it isn't set explicitly. Docker Compose doesn't support
+# nested ${VAR%suffix} default-value syntax, so we handle it here
+# in shell instead.
+# ---------------------------------------------------------------
+if [ -z "${UMAMI_API_URL:-}" ] && [ -n "${UMAMI_SCRIPT_URL:-}" ]; then
+    # shellcheck disable=SC2030
+    UMAMI_API_URL="${UMAMI_SCRIPT_URL%/script.js}"
+    export UMAMI_API_URL
+    echo "[entrypoint] UMAMI_API_URL derived: $UMAMI_API_URL"
+fi
+
 exec "$@"
